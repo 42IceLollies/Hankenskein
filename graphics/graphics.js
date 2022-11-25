@@ -57,6 +57,9 @@ const player = {
 	ySpeed: 0,
 	acceleration: 150,
 	fillColor: "#e2619f",
+	// both below are temporary
+	xCollide: false,
+	yCollide: false,
 };
 
 const lines = [];
@@ -98,6 +101,50 @@ function propelPlayer() {
 			break;
 	}
 } // end of propelPlayer
+
+
+function withinRange(num, rangeStart, rangeEnd) {
+	return (num >= rangeStart && num <= rangeEnd);
+} // end of withinRange
+
+
+// only works for horizontal and vertical lines
+function testForCollision(circle, line) {
+	const circleLeft = circle.x - circle.radius;
+	const circleRight = circle.x + circle.radius;
+	const circleUp = circle.y - circle.radius;
+	const circleDown = circle.x + circle.radius;
+
+	// vertical line
+	if (line.x1 == line.x2) {
+		if (withinRange(circleUp, line.y1, line.y2) || withinRange(circleDown, line.y1, line.y2)) {
+			if (Math.abs(circle.x - line.x1) < circle.radius) {
+				circle.xCollide = true;
+				console.log("hit1");
+				return
+			} else {
+				circle.xCollide = false;
+			}
+		} else {
+			circle.xCollide = false;
+		}
+	// horizontal line
+	} else if (line.y1 == line.y2) {
+		if (withinRange(circleLeft, line.x1, line.x2) || withinRange(circleRight, line.x1, line.x2)) {
+			if (Math.abs(circle.y - line.y1) < circle.radius) {
+				circle.yCollide = true;
+				console.log("hit2");
+			} else {
+				circle.yCollide = false;
+			}
+		} else {
+			circle.yCollide = false;
+		}
+	} else {
+		circle.xCollide = false;
+		circle.yCollide = false;
+	}
+} // end of testForCollision
 
 
 // ====================
@@ -177,6 +224,9 @@ function resizeCanvas() {
 
 // moves the player
 function movePlayer() {
+	if (player.yCollide) {
+		return;
+	}
 	// speeds are pixels/second, so reduce it for how frequently it's happening
 	// player.x += player.xSpeed / game.fps;
 	player.y += player.ySpeed / game.fps;
@@ -229,9 +279,13 @@ const animateID = setInterval(() => {
 	propelPlayer();
 	friction(player);
 	
-	game.xOffset -= player.xSpeed / game.fps;
+	if (!player.xCollide) {
+		game.xOffset -= player.xSpeed / game.fps;
+	}
 	movePlayer();
 	moveLines();
+
+	testForCollision(player, testLine);
 
 	clearCanvas();
 	drawLines();
