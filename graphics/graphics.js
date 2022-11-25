@@ -26,6 +26,8 @@ class Line {
 	}
 
 	draw() {
+		//we could maybe just pass in the parameters of canvas and context instead of declaring it everytime
+		//idk its the same thing ig tho just fewer lines
 		const canvas = document.getElementById('canvas');
 		const ctx = canvas.getContext('2d');
 
@@ -35,6 +37,63 @@ class Line {
 		ctx.stroke();
 	}
 } // end of Line
+
+
+//===================
+//OBSTRUCTION CLASS
+//====================
+
+//creates any physical objects that the ball rolls on/ runs into, etc
+
+class Obstruction{
+    constructor(x, y, width, height){
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+	//tells if the player has touched any obstructions
+	collide(player, game)
+	{
+		//there's either an error in this or somewhere in the setting of canvas size because it thinks that canvas.height is 
+		//at least 50 px below where my screen ends
+		//but anyway, yeah, the ground should be changed but i'm too lazy to do it rn
+		if(player.x + player.radius >=this.x + game.xOffset && player.x - player.radius <= this.x + game.xOffset + this.width &&
+		   player.y + player.radius >= this.y && player.y - player.radius <= this.y + this.height)
+		{
+			return true;
+		} 
+		return false;
+	}
+
+	//tells which direction the collision has happened from
+	//can only be called after it is established that there is a collision
+	directionCollided(player, game)
+	{
+		if(player.x + player.radius >=this.x + game.xOffset)
+		{
+			return "from left";
+		}
+		if(player.x - player.radius <= this.x + game.xOffset + this.width)
+		{
+			return "from right";
+		}
+		if(player.y + player.radius >= this.y)
+		{
+			return "from top";
+		}
+		if(player.y - player.radius <= this.y + this.height)
+		{
+			return "from bottom";
+		}
+	}
+
+    
+}
+
+
+
 
 
 // ==================
@@ -58,6 +117,10 @@ const player = {
 	acceleration: 150,
 	fillColor: "#e2619f",
 };
+
+const obstructions = {
+	ground: new Obstruction(0, canvas.height/2, canvas.width, 20)
+}
 
 const lines = [];
 
@@ -96,6 +159,49 @@ function propelPlayer() {
 		case keydown.down:
 			player.ySpeed += player.acceleration / game.fps;
 			break;
+	}
+
+	//if player runs into an obstruction, it can't move in that direction
+	for(const key in obstructions)
+	{
+		if(obstructions[key].collide(player, game))
+		{
+			const direction = obstructions[key].directionCollided(player, game);
+			switch(direction)
+			{
+				case "from top":
+					//player.xSpeed cannot be less than 0
+					if(player.xSpeed<0)
+					{
+						player.xSpeed = 0; 
+					}
+				break;
+
+				case "from bottom":
+					//player.xSpeed cannot be greater than 0
+					if(player.xSpeed>0)
+					{
+						player.xSpeed = 0; 
+					}
+				break;
+
+				case "from left":
+					//player.ySpeed cannot be greater than 0
+					if(player.ySpeed>0)
+					{
+						player.ySpeed = 0;
+					}
+				break;
+
+				case "from right":
+					//player.ySpeed cannot be less than 0
+					if(player.ySpeed<0)
+					{
+						player.ySpeed =0;
+					}
+				break;
+				}
+		}
 	}
 } // end of propelPlayer
 
@@ -238,4 +344,6 @@ const animateID = setInterval(() => {
 	drawPlayer();
 
 }, 1000 / game.fps); // 1000 is 1 second
+
+
 
