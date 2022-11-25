@@ -47,19 +47,22 @@ class Line {
 
 class Obstruction{
     constructor(x, y, width, height){
-        this.x = x;
-        this.y = y;
+        this.xStart = x;
+		this.x = x;
+		this.y = y;
         this.width = width;
         this.height = height;
     }
 
 	//tells if the player has touched any obstructions
-	collide(player, game)
+	collide(player)
 	{
 		//there's either an error in this or somewhere in the setting of canvas size because it thinks that canvas.height is 
 		//at least 50 px below where my screen ends
 		//but anyway, yeah, the ground should be changed but i'm too lazy to do it rn
-		if(player.x + player.radius >=this.x + game.xOffset && player.x - player.radius <= this.x + game.xOffset + this.width &&
+		//and also the x collide isn't working but now my computer's gonna die
+		//also could be made more accurate using pi instead of just pretending the circle is a square
+		if(player.x + player.radius >=this.x && player.x - player.radius <= this.x + this.width &&
 		   player.y + player.radius >= this.y && player.y - player.radius <= this.y + this.height)
 		{
 			return true;
@@ -69,13 +72,13 @@ class Obstruction{
 
 	//tells which direction the collision has happened from
 	//can only be called after it is established that there is a collision
-	directionCollided(player, game)
+	directionCollided(player)
 	{
-		if(player.x + player.radius >=this.x + game.xOffset)
+		if(player.x + player.radius >=this.x)
 		{
 			return "from left";
 		}
-		if(player.x - player.radius <= this.x + game.xOffset + this.width)
+		if(player.x - player.radius <= this.x + this.width)
 		{
 			return "from right";
 		}
@@ -87,6 +90,11 @@ class Obstruction{
 		{
 			return "from bottom";
 		}
+	}
+
+	adjustX(xOffset) {
+		this.x = this.xStart + xOffset;
+
 	}
 
     
@@ -119,7 +127,8 @@ const player = {
 };
 
 const obstructions = {
-	ground: new Obstruction(0, canvas.height/2, canvas.width, 20)
+	ground: new Obstruction(0, canvas.height/2, canvas.width, 20),
+	testLine: new Obstruction(300,0,5,300)
 }
 
 const lines = [];
@@ -143,7 +152,7 @@ function friction(obj) {
 } // end of friction
 
 
-// propels the player based on arrow keys
+// propels the player based on arrow keys & adjusts speed based on external elements
 function propelPlayer() {
 	// if an arrow key is down, add more speed in that direction
 	switch (true) {
@@ -203,6 +212,8 @@ function propelPlayer() {
 				}
 		}
 	}
+
+	
 } // end of propelPlayer
 
 
@@ -289,11 +300,42 @@ function movePlayer() {
 } // end of movePlayer
 
 
+//if player is above the ground and not on an obstruction, it will be affected by gravity
+var timer = 0;
+
+setInterval(()=>{
+	timer++;
+}, 1000);
+
+function fall()
+{
+	if(player.y + player.radius<= obstructions.ground.y)
+	{
+		//reversed because the negative direction is opposite of usual
+		player.ySpeed -= Physics.affectGravity(0, player.ySpeed, timer);
+	} else
+	{
+		timer = 0;
+	}
+}
+//this function kind of works as a jump type thing, it's not entirely accurate but it seems to work well enough idk
+
+
+
+
 function moveLines() {
 	for (let i = 0; i < lines.length; i++) {
 		lines[i].adjustX(game.xOffset);
 	}
 } // end of moveLines
+
+function moveObstructions()
+{
+	for(const key in obstructions)
+	{
+		obstructions[key].adjustX(game.xOffset);
+	}
+}
 
 
 // =================
@@ -338,6 +380,9 @@ const animateID = setInterval(() => {
 	game.xOffset -= player.xSpeed / game.fps;
 	movePlayer();
 	moveLines();
+	moveObstructions();
+
+	fall();
 
 	clearCanvas();
 	drawLines();

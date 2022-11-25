@@ -1,13 +1,28 @@
 class Physics{
-    //gravity is always -9.8, can be incorporated into all movement equations
-    static g = -9.8;
+    //gravity is -9.8 m/s^2 but I'm not entirely sure what a meter is in this game so feel free to change it
+    //I'm going to say hankenskein is a tenth of a meter in diameter to make things easy
+    static g = -.98;
+    static seconds = 0;
+    static frameCount = 0;
+
+   
+     
+    static getSeconds()
+    {
+        return this.seconds;
+    }
 
     //pulls down player with gravitational accelleration
-    affectGravity()
+    static affectGravity(initYSpeed, ySpeed, timeOffGround)
     {
-        //v = v0(0) + at
-        //ypos -= 9.8m * fps
-        //i think - if I'm understanding this right
-        // basically the velocity that it goes down at is equal to -9.8 m/s^2 * number of seconds so however many fps it will increase by -9.8 m/s
+        //v = v0 + at
+        //new ySpeed = input ySpeed when jumps + g * secs since beginning of jump
+        ySpeed = initYSpeed + (this.g* timeOffGround);
+        console.log(ySpeed);
+        return ySpeed;
+
     }
 }
+
+
+
