@@ -1,17 +1,51 @@
-const canvas = document.getElementById('graphics');
+const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 // it reaches a natural speed cap, where friction is equal to acceleration
 // we can still add an additional speed cap though
 
+
+// ==================
+// LINE CLASS
+// ==================
+
+
+class Line {
+	constructor(x1Start, x2Start, y1, y2, xOffset) {
+		this.x1Start = x1Start;
+		this.x2Start = x2Start;
+		this.y1 = y1;
+		this.y2 = y2;
+		this.x1 = x1Start + xOffset;
+		this.x2 = x2Start + xOffset;
+	}
+
+	adjustX(xOffset) {
+		this.x1 = this.x1Start + xOffset;
+		this.x2 = this.x2Start + xOffset;
+	}
+
+	draw() {
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+
+		ctx.beginPath();
+		ctx.moveTo(this.x1, this.y1);
+		ctx.lineTo(this.x2, this.y2);
+		ctx.stroke();
+	}
+} // end of Line
+
+
 // ==================
 // DATA OBJECTS
 // ==================
 
+
 const game = {
-	fps: 20,
+	fps: 25,
 	xOffset: 0,
-	frictionRate: 0.95,
+	frictionRate: .6,
 };
 
 
@@ -21,18 +55,15 @@ const player = {
 	radius: 25,
 	xSpeed: 0,
 	ySpeed: 0,
-	acceleration: 200,
+	acceleration: 150,
 	fillColor: "#e2619f",
 };
 
+const lines = [];
 
-const testLine = {
-	xStart: 300,
-};
-testLine.x = testLine.xStart + game.xOffset;
+const testLine = new Line(300, 300, 0, 300);
+lines.push(testLine);
 
-const objs = [];
-objs.push(testLine);
 
 // ====================
 // UNSORTED
@@ -41,8 +72,8 @@ objs.push(testLine);
 
 // reduces the speed of an objects speed
 function friction(obj) {
-	obj.xSpeed *= game.frictionRate;
-	obj.ySpeed *= game.frictionRate;
+	obj.xSpeed -= (obj.xSpeed * game.frictionRate) / game.fps;
+	obj.ySpeed -= (obj.ySpeed * game.frictionRate) / game.fps;
 	
 	if (Math.abs(obj.xSpeed) < 1) {obj.xSpeed = 0;}
 	if (Math.abs(obj.ySpeed) < 1) {obj.ySpeed = 0;}
@@ -119,9 +150,11 @@ document.addEventListener("keyup", (e) => {
 	}
 });
 
+
 // ================
 // RESIZING
 // ================
+
 
 function resize() {
 	resizeCanvas();
@@ -150,21 +183,21 @@ function movePlayer() {
 } // end of movePlayer
 
 
-function moveObjs() {
-	game.xOffset -= player.xSpeed / game.fps;
-	for (let i = 0; i < objs.length; i++) {
-		objs[i].x = objs[i].xStart + game.xOffset;
+function moveLines() {
+	for (let i = 0; i < lines.length; i++) {
+		lines[i].adjustX(game.xOffset);
 	}
-} // end of moveObjs
+} // end of moveLines
 
 
 // =================
 // DRAWING
 // =================
 
+
 // clears the entire canvas, by making the entire canvas transparent
 function clearCanvas() {
-	const canvas = document.getElementById('graphics');
+	const canvas = document.getElementById('canvas');
 	const ctx = canvas.getContext('2d');
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 } // end of clearCanvas
@@ -172,7 +205,7 @@ function clearCanvas() {
 
 // draws in the player, off of info from player obj
 function drawPlayer() {
-	const canvas = document.getElementById('graphics');
+	const canvas = document.getElementById('canvas');
 	const ctx = canvas.getContext('2d');
 
 	ctx.fillStyle = player.fillColor;
@@ -182,16 +215,11 @@ function drawPlayer() {
 } // end of drawPlayer
 
 
-function drawTestLine() {
-	const canvas = document.getElementById('graphics');
-	const ctx = canvas.getContext('2d');
-
-	ctx.beginPath();
-	ctx.moveTo(testLine.x, 0);
-	ctx.lineTo(testLine.x, 200);
-	ctx.lineWidth = 5;
-	ctx.stroke();
-} // end of createTestLines
+function drawLines() {
+	for (let i = 0; i < lines.length; i++) {
+		lines[i].draw();
+	}
+} // end of drawLines
 
 
 // the animate loop, draws in the new positions of objects
@@ -201,11 +229,12 @@ const animateID = setInterval(() => {
 	propelPlayer();
 	friction(player);
 	
+	game.xOffset -= player.xSpeed / game.fps;
 	movePlayer();
-	moveObjs();
+	moveLines();
 
 	clearCanvas();
-	drawTestLine();
+	drawLines();
 	drawPlayer();
 
 }, 1000 / game.fps); // 1000 is 1 second
