@@ -144,7 +144,7 @@ lines.push(ground);
 // ====================
 
 
-// reduces the speed of an objects speed
+// reduces an object's speed
 function friction(obj) {
 	obj.xSpeed -= (obj.xSpeed * game.frictionRate) / game.fps;
 	obj.ySpeed -= (obj.ySpeed * game.frictionRate) / game.fps;
@@ -156,21 +156,24 @@ function friction(obj) {
 
 // propels the player based on arrow keys & adjusts speed based on external elements
 function propelPlayer() {
+	//changed this to if statements so that you can press more than one key at once
+
 	// if an arrow key is down, add more speed in that direction
-	switch (true) {
-		case keydown.left:
+		if(keydown.left){
 			player.xSpeed -= player.acceleration / game.fps;
-			break;
-		case keydown.right:
+		}
+		if(keydown.right){
 			player.xSpeed += player.acceleration / game.fps;
-			break;
-		case keydown.up:
-			player.ySpeed -= player.acceleration / game.fps;
-			break;
-		case keydown.down:
+		}
+		if(keydown.up){
+			//player.ySpeed -= player.acceleration / game.fps;
+			//makes gravity on jump more realistic, also easier to maneuver
+			player.ySpeed -= Physics.affectGravity(15, 150, timer);
+		}
+		if(keydown.down){
 			player.ySpeed += player.acceleration / game.fps;
-			break;
-	}
+		}
+	
 } // end of propelPlayer
 
 
