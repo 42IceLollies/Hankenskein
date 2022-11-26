@@ -118,14 +118,14 @@ const player = {
 
 const lines = [];
 
-const testLine = new Line(800, 900, 0, 300);
+const testLine = new Line(800, 1100, 0, 300);
 const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
 lines.push(ground);
 
 
 // ====================
-// UNSORTED
+// SPEED CHANGES
 // ====================
 
 
@@ -159,6 +159,11 @@ function propelPlayer() {
 			player.ySpeed += player.acceleration / game.fps;
 		}
 } // end of propelPlayer
+
+
+// ==================
+// COLLISION
+// ==================
 
 
 function collideWithLines() {
@@ -197,15 +202,6 @@ function collideWithLines() {
 }
 
 
-function withinRange(num, rangeStart, rangeEnd) {
-	if (rangeStart < rangeEnd) {
-		return (num >= rangeStart && num <= rangeEnd);
-	} else {
-		return (num >= rangeEnd && num <= rangeStart);
-	}
-} // end of withinRange
-
-
 // only works for horizontal and vertical lines
 function testForCollision(circle, line) {
 	const circleLeft = circle.x - circle.radius;
@@ -230,6 +226,43 @@ function testForCollision(circle, line) {
 	}
 	return false;
 } // end of testForCollision
+
+
+// returns the degree of the point on a circle
+// where it would collide with the specified line
+function collisionDegree(circle, line) {
+	const degree = (-45 * line.yChangeRate) + 90;
+	return degree;
+} // end of getCollisionDegree
+
+
+
+
+
+// ==============
+// MISC. MATH
+// ==============
+
+
+// returns the length of the adjacent
+function getAdj(degree, hyp) {
+	return hyp * (Math.cos(degree));
+} // end of getAdj
+
+
+// returns the length of the the opposite
+function getOpp(hyp, adj) {
+	return hyp * (Math.sin(degree));
+} // end of getOpp
+
+
+function withinRange(num, rangeStart, rangeEnd) {
+	if (rangeStart < rangeEnd) {
+		return (num >= rangeStart && num <= rangeEnd);
+	} else {
+		return (num >= rangeEnd && num <= rangeStart);
+	}
+} // end of withinRange
 
 
 // ====================
@@ -261,6 +294,9 @@ document.addEventListener("keydown", (e) => {
 		case 40:
 			keydown.down = true;
 			break;
+		// testing, feel free to remove it
+		case 32:
+			console.log(collisionDegree(player, testLine));
 	}
 });
 
