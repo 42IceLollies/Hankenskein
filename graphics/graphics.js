@@ -25,83 +25,68 @@ class Line {
 		this.x2 = this.x2Start + xOffset;
 	}
 
-	draw() {
-		//we could maybe just pass in the parameters of canvas and context instead of declaring it everytime
-		//idk its the same thing ig tho just fewer lines
-		// they're already global variables, so these were redundant, thanks
-		// const canvas = document.getElementById('canvas');
-		// const ctx = canvas.getContext('2d');
-
+	draw(ctx) {
 		ctx.beginPath();
 		ctx.moveTo(this.x1, this.y1);
 		ctx.lineTo(this.x2, this.y2);
 		ctx.stroke();
 	}
-} // end of Line
 
-
-//===================
-//OBSTRUCTION CLASS
-//====================
-
-//creates any physical objects that the ball rolls on/ runs into, etc
-
-class Obstruction{
-    constructor(x, y, width, height){
-        this.xStart = x;
-		this.x = x;
-		this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-
-	//tells if the player has touched any obstructions
-	collide(player)
-	{
-		//there's either an error in this or somewhere in the setting of canvas size because it thinks that canvas.height is 
-		//at least 50 px below where my screen ends
-		//but anyway, yeah, the ground should be changed but i'm too lazy to do it rn
-		//and also the x collide isn't working but now my computer's gonna die
-		//also could be made more accurate using pi instead of just pretending the circle is a square
-		if(player.x + player.radius >= this.x && player.x - player.radius <= this.x + this.width &&
-		   player.y + player.radius >= this.y && player.y - player.radius <= this.y + this.height)
-		{
-			return true;
-		} 
-		return false;
+	isVertical() {
+		return (this.x1 == this.x2);
 	}
 
-	//tells which direction the collision has happened from
-	//can only be called after it is established that there is a collision
+	isHorizontal() {
+		return (this.y1 == this.y2);
+	}
 
-	// if you're called a switch statement for it outside, why not just
-	// test for these outside?
+	static withinRange(num, rangeStart, rangeEnd) {
+		if (rangeStart < rangeEnd) {
+			return (num >= rangeStart && num <= rangeEnd);
+		} else {
+			return (num >= rangeEnd && num <= rangeStart);
+		}
+	}
 
-	// directionCollided(player)
-	// {
-	// 	if(player.x + player.radius >=this.x)
-	// 	{
-	// 		return "from left";
-	// 	}
-	// 	if(player.x - player.radius <= this.x + this.width)
-	// 	{
-	// 		return "from right";
-	// 	}
-	// 	if(player.y + player.radius >= this.y)
-	// 	{
-	// 		return "from top";
-	// 	}
-	// 	if(player.y - player.radius <= this.y + this.height)
-	// 	{
-	// 		return "from bottom";
-	// 	}
-	// }
+	get yChangeRate() {
+		const xChange = this.x2 - this.x1;
+		const yChange = this.y2 - this.y1;
+		if (xChange == 0) {
+			console.log("ERROR: 0 value in xChange");
+			return;
+		}
+		return yChange / xChange;
+	}
 
-	adjustX(xOffset) {
-		this.x = this.xStart + xOffset;
+	// returns the y value on the line at the given x
+	yAt(x) {
+		if (!Line.withinRange(x, this.x1, this.x2) || this.isVertical()) {return;}
+		if (this.isHorizontal()) {return this.y1;}
 
-	} 
-} // end of Obstruction
+		const y = this.y1 + (this.yChangeRate * (x - this.x1));
+		return y;
+	}
+
+	get xChangeRate() {
+		const xChange = this.x2 - this.x1;
+		const yChange = this.y2 - this.y1;
+		if (yChange == 0) {
+			console.log("ERROR: 0 value in yChange");
+			return;
+		}
+		return xChange / yChange;
+	}
+
+	// returns the y value on the line at the given x
+	xAt(y) {
+		if (!Line.withinRange(y, this.y1, this.y2) || this.isHorizontal()) {return;}
+		if (this.isVertical()) {return this.x1;}
+
+		const x = this.x1 + (this.xChangeRate * (y - this.y1));
+		return x;
+	}
+
+} // end of Line
 
 
 // ==================
@@ -133,7 +118,7 @@ const player = {
 
 const lines = [];
 
-const testLine = new Line(900, 900, 0, 300);
+const testLine = new Line(800, 900, 0, 300);
 const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
 lines.push(ground);
@@ -156,7 +141,7 @@ function friction(obj) {
 
 // propels the player based on arrow keys & adjusts speed based on external elements
 function propelPlayer() {
-	//changed this to if statements so that you can press more than one key at once
+	// changed this to if statements so that you can press more than one key at once
 
 	// if an arrow key is down, add more speed in that direction
 		if(keydown.left){
@@ -166,14 +151,13 @@ function propelPlayer() {
 			player.xSpeed += player.acceleration / game.fps;
 		}
 		if(keydown.up){
-			//player.ySpeed -= player.acceleration / game.fps;
-			//makes gravity on jump more realistic, also easier to maneuver
+			// player.ySpeed -= player.acceleration / game.fps;
+			// makes gravity on jump more realistic, also easier to maneuver
 			player.ySpeed -= Physics.affectGravity(15, 150, timer);
 		}
 		if(keydown.down){
 			player.ySpeed += player.acceleration / game.fps;
 		}
-	
 } // end of propelPlayer
 
 
@@ -187,7 +171,7 @@ function collideWithLines() {
 			continue;
 		}
 		// if the line's vertical
-		if (line.x1 == line.x2) {
+		if (line.isVertical()) {
 			// if player's to the left, stop moving right
 			if (player.x < line.x1 && player.xSpeed > 0) {
 				player.xSpeed = 0;
@@ -198,7 +182,7 @@ function collideWithLines() {
 				game.xOffset -= player.radius - (player.x - line.x1);
 			}
 		// if the line's horizontal
-		} else if (line.y1 == line.y2) {
+		} else if (line.isHorizontal()) {
 			// if player's lower, stop moving up
 			if (player.y > line.y1 && player.ySpeed < 0) {
 				player.ySpeed = 0;
@@ -214,7 +198,11 @@ function collideWithLines() {
 
 
 function withinRange(num, rangeStart, rangeEnd) {
-	return (num >= rangeStart && num <= rangeEnd);
+	if (rangeStart < rangeEnd) {
+		return (num >= rangeStart && num <= rangeEnd);
+	} else {
+		return (num >= rangeEnd && num <= rangeStart);
+	}
 } // end of withinRange
 
 
@@ -226,14 +214,14 @@ function testForCollision(circle, line) {
 	const circleDown = circle.x + circle.radius;
 
 	// vertical line
-	if (line.x1 == line.x2) {
+	if (line.isVertical()) {
 		if (withinRange(circleUp, line.y1, line.y2) || withinRange(circleDown, line.y1, line.y2)) {
 			if (Math.abs(circle.x - line.x1) <= circle.radius) {
 				return true;
 			}
 		}
 	// horizontal line
-	} else if (line.y1 == line.y2) {
+	} else if (line.isHorizontal()) {
 		if (withinRange(circleLeft, line.x1, line.x2) || withinRange(circleRight, line.x1, line.x2)) {
 			if (Math.abs(circle.y - line.y1) <= circle.radius) {
 				return true;
@@ -302,6 +290,7 @@ document.addEventListener("keyup", (e) => {
 
 function resize() {
 	resizeCanvas();
+	player.x = canvas.width / 2;
 } // end of resize
 
 
@@ -309,8 +298,6 @@ function resize() {
 function resizeCanvas() {
 	canvas.width = window.innerWidth - 20; // -20 to get around padding I can't find
 	canvas.height = window.innerHeight - 20;
-
-	player.x = canvas.width / 2;
 } // end of resizeCanvas
 
 
@@ -321,7 +308,7 @@ function resizeCanvas() {
 
 // moves the player
 function movePlayer() {
-	// speeds are pixels/second, so reduce it for how frequently it's happening
+	// speeds are pixels/second, so it's reduced for how frequently it's happening
 	player.y += player.ySpeed / game.fps;
 } // end of movePlayer
 
@@ -352,13 +339,6 @@ function moveLines() {
 } // end of moveLines
 
 
-// function moveObstructions() {
-// 	for (const key in obstructions) {
-// 		obstructions[key].adjustX(game.xOffset);
-// 	}
-// } // end of moveObstructions
-
-
 // =================
 // DRAWING
 // =================
@@ -386,7 +366,7 @@ function drawPlayer() {
 
 function drawLines() {
 	for (let i = 0; i < lines.length; i++) {
-		lines[i].draw();
+		lines[i].draw(ctx);
 	}
 } // end of drawLines
 
@@ -403,17 +383,11 @@ const animateID = setInterval(() => {
 
 	movePlayer();
 	moveLines();
-	// moveObstructions();
 
 	fall();
-
-	// testForCollision(player, testLine);
 
 	clearCanvas();
 	drawLines();
 	drawPlayer();
 
 }, 1000 / game.fps); // 1000 is 1 second
-
-
-
