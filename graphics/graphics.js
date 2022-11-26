@@ -26,6 +26,8 @@ class Line {
 	}
 
 	draw() {
+		//we could maybe just pass in the parameters of canvas and context instead of declaring it everytime
+		//idk its the same thing ig tho just fewer lines
 		const canvas = document.getElementById('canvas');
 		const ctx = canvas.getContext('2d');
 
@@ -35,6 +37,71 @@ class Line {
 		ctx.stroke();
 	}
 } // end of Line
+
+
+//===================
+//OBSTRUCTION CLASS
+//====================
+
+//creates any physical objects that the ball rolls on/ runs into, etc
+
+class Obstruction{
+    constructor(x, y, width, height){
+        this.xStart = x;
+		this.x = x;
+		this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+	//tells if the player has touched any obstructions
+	collide(player)
+	{
+		//there's either an error in this or somewhere in the setting of canvas size because it thinks that canvas.height is 
+		//at least 50 px below where my screen ends
+		//but anyway, yeah, the ground should be changed but i'm too lazy to do it rn
+		//and also the x collide isn't working but now my computer's gonna die
+		//also could be made more accurate using pi instead of just pretending the circle is a square
+		if(player.x + player.radius >=this.x && player.x - player.radius <= this.x + this.width &&
+		   player.y + player.radius >= this.y && player.y - player.radius <= this.y + this.height)
+		{
+			return true;
+		} 
+		return false;
+	}
+
+	//tells which direction the collision has happened from
+	//can only be called after it is established that there is a collision
+	directionCollided(player)
+	{
+		if(player.x + player.radius >=this.x)
+		{
+			return "from left";
+		}
+		if(player.x - player.radius <= this.x + this.width)
+		{
+			return "from right";
+		}
+		if(player.y + player.radius >= this.y)
+		{
+			return "from top";
+		}
+		if(player.y - player.radius <= this.y + this.height)
+		{
+			return "from bottom";
+		}
+	}
+
+	adjustX(xOffset) {
+		this.x = this.xStart + xOffset;
+
+	}
+
+    
+}
+
+
+
 
 
 // ==================
@@ -62,6 +129,11 @@ const player = {
 	yCollide: false,
 };
 
+const obstructions = {
+	ground: new Obstruction(0, canvas.height/2, canvas.width, 20),
+	testLine: new Obstruction(300,0,5,300)
+}
+
 const lines = [];
 
 const testLine = new Line(300, 300, 0, 300);
@@ -83,7 +155,7 @@ function friction(obj) {
 } // end of friction
 
 
-// propels the player based on arrow keys
+// propels the player based on arrow keys & adjusts speed based on external elements
 function propelPlayer() {
 	// if an arrow key is down, add more speed in that direction
 	switch (true) {
@@ -100,6 +172,51 @@ function propelPlayer() {
 			player.ySpeed += player.acceleration / game.fps;
 			break;
 	}
+
+	//if player runs into an obstruction, it can't move in that direction
+	for(const key in obstructions)
+	{
+		if(obstructions[key].collide(player, game))
+		{
+			const direction = obstructions[key].directionCollided(player, game);
+			switch(direction)
+			{
+				case "from top":
+					//player.xSpeed cannot be less than 0
+					if(player.xSpeed<0)
+					{
+						player.xSpeed = 0; 
+					}
+				break;
+
+				case "from bottom":
+					//player.xSpeed cannot be greater than 0
+					if(player.xSpeed>0)
+					{
+						player.xSpeed = 0; 
+					}
+				break;
+
+				case "from left":
+					//player.ySpeed cannot be greater than 0
+					if(player.ySpeed>0)
+					{
+						player.ySpeed = 0;
+					}
+				break;
+
+				case "from right":
+					//player.ySpeed cannot be less than 0
+					if(player.ySpeed<0)
+					{
+						player.ySpeed =0;
+					}
+				break;
+				}
+		}
+	}
+
+	
 } // end of propelPlayer
 
 
@@ -233,11 +350,42 @@ function movePlayer() {
 } // end of movePlayer
 
 
+//if player is above the ground and not on an obstruction, it will be affected by gravity
+var timer = 0;
+
+setInterval(()=>{
+	timer++;
+}, 1000);
+
+function fall()
+{
+	if(player.y + player.radius<= obstructions.ground.y)
+	{
+		//reversed because the negative direction is opposite of usual
+		player.ySpeed -= Physics.affectGravity(0, player.ySpeed, timer);
+	} else
+	{
+		timer = 0;
+	}
+}
+//this function kind of works as a jump type thing, it's not entirely accurate but it seems to work well enough idk
+
+
+
+
 function moveLines() {
 	for (let i = 0; i < lines.length; i++) {
 		lines[i].adjustX(game.xOffset);
 	}
 } // end of moveLines
+
+function moveObstructions()
+{
+	for(const key in obstructions)
+	{
+		obstructions[key].adjustX(game.xOffset);
+	}
+}
 
 
 // =================
@@ -284,6 +432,9 @@ const animateID = setInterval(() => {
 	}
 	movePlayer();
 	moveLines();
+	moveObstructions();
+
+	fall();
 
 	testForCollision(player, testLine);
 
@@ -292,4 +443,6 @@ const animateID = setInterval(() => {
 	drawPlayer();
 
 }, 1000 / game.fps); // 1000 is 1 second
+
+
 
