@@ -62,7 +62,7 @@ class Obstruction{
 		//but anyway, yeah, the ground should be changed but i'm too lazy to do it rn
 		//and also the x collide isn't working but now my computer's gonna die
 		//also could be made more accurate using pi instead of just pretending the circle is a square
-		if(player.x + player.radius >=this.x && player.x - player.radius <= this.x + this.width &&
+		if(player.x + player.radius >= this.x && player.x - player.radius <= this.x + this.width &&
 		   player.y + player.radius >= this.y && player.y - player.radius <= this.y + this.height)
 		{
 			return true;
@@ -72,36 +72,35 @@ class Obstruction{
 
 	//tells which direction the collision has happened from
 	//can only be called after it is established that there is a collision
-	directionCollided(player)
-	{
-		if(player.x + player.radius >=this.x)
-		{
-			return "from left";
-		}
-		if(player.x - player.radius <= this.x + this.width)
-		{
-			return "from right";
-		}
-		if(player.y + player.radius >= this.y)
-		{
-			return "from top";
-		}
-		if(player.y - player.radius <= this.y + this.height)
-		{
-			return "from bottom";
-		}
-	}
+
+	// if you're called a switch statement for it outside, why not just
+	// test for these outside?
+
+	// directionCollided(player)
+	// {
+	// 	if(player.x + player.radius >=this.x)
+	// 	{
+	// 		return "from left";
+	// 	}
+	// 	if(player.x - player.radius <= this.x + this.width)
+	// 	{
+	// 		return "from right";
+	// 	}
+	// 	if(player.y + player.radius >= this.y)
+	// 	{
+	// 		return "from top";
+	// 	}
+	// 	if(player.y - player.radius <= this.y + this.height)
+	// 	{
+	// 		return "from bottom";
+	// 	}
+	// }
 
 	adjustX(xOffset) {
 		this.x = this.xStart + xOffset;
 
-	}
-
-    
-}
-
-
-
+	} 
+} // end of Obstruction
 
 
 // ==================
@@ -124,20 +123,19 @@ const player = {
 	ySpeed: 0,
 	acceleration: 150,
 	fillColor: "#e2619f",
-	// both below are temporary
-	xCollide: false,
-	yCollide: false,
 };
 
-const obstructions = {
-	ground: new Obstruction(0, canvas.height/2, canvas.width, 20),
-	testLine: new Obstruction(300,0,5,300)
-}
+// const obstructions = {
+// 	ground: new Obstruction(0, canvas.height/2, canvas.width, 20),
+// 	testLine: new Obstruction(300,0,5,300)
+// }
 
 const lines = [];
 
 const testLine = new Line(300, 300, 0, 300);
+const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
+lines.push(ground);
 
 
 // ====================
@@ -173,50 +171,86 @@ function propelPlayer() {
 			break;
 	}
 
-	//if player runs into an obstruction, it can't move in that direction
-	for(const key in obstructions)
-	{
-		if(obstructions[key].collide(player, game))
-		{
-			const direction = obstructions[key].directionCollided(player, game);
-			switch(direction)
-			{
-				case "from top":
-					//player.xSpeed cannot be less than 0
-					if(player.xSpeed<0)
-					{
-						player.xSpeed = 0; 
-					}
-				break;
-
-				case "from bottom":
-					//player.xSpeed cannot be greater than 0
-					if(player.xSpeed>0)
-					{
-						player.xSpeed = 0; 
-					}
-				break;
-
-				case "from left":
-					//player.ySpeed cannot be greater than 0
-					if(player.ySpeed>0)
-					{
-						player.ySpeed = 0;
-					}
-				break;
-
-				case "from right":
-					//player.ySpeed cannot be less than 0
-					if(player.ySpeed<0)
-					{
-						player.ySpeed =0;
-					}
-				break;
-				}
+	// if player runs into an obstruction, it can't move in that direction
+	// tests the player against every line
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		// console.log(testForCollision(player, line));
+		// if they aren't colliding, skip this one
+		if (!testForCollision(player, line)) {
+			continue;
 		}
-	}
+		// if the line's vertical
+		if (line.x1 == line.x2) {
+			// if player's to the left, stop moving right
+			if (player.x < line.x1 && player.xSpeed > 0) {
+				player.ySpeed = 0;
+			// if player's to the right, stop moving left
+			} else if (player.x > line.x1 && player.xSpeed < 0) {
+				player.xSpeed = 0;
+			}
+		// if the line's horizontal
+		} else if (line.y1 == line.y2) {
+			// if player's lower, stop moving up
+			if (player.y > line.y1 && player.ySpeed < 0) {
+				player.ySpeed = 0; 
+			// if player's higher, stop moving down
+			} else if (player.y < line.y1 && player.ySpeed > 0) {
+				player.ySpeed = 0;
+			}
+		}
 
-	
+		// {
+		// 	return "from left";
+		// }
+		// if(player.x - player.radius <= this.x + this.width)
+		// {
+		// 	return "from right";
+		// }
+		// if(player.y + player.radius >= this.y)
+		// {
+		// 	return "from top";
+		// }
+		// if(player.y - player.radius <= this.y + this.height)
+		// {
+		// 	return "from bottom";
+		// }
+			// const direction = obstructions[key].directionCollided(player, game);
+			// switch(direction)
+			// {
+			// 	case "from top":
+			// 		// player.xSpeed cannot be less than 0
+			// 		if(player.xSpeed<0)
+			// 		{
+			// 			player.xSpeed = 0; 
+			// 		}
+			// 	break;
+
+			// 	case "from bottom":
+			// 		//player.xSpeed cannot be greater than 0
+			// 		if(player.xSpeed>0)
+			// 		{
+			// 			player.xSpeed = 0; 
+			// 		}
+			// 	break;
+
+			// 	case "from left":
+			// 		//player.ySpeed cannot be greater than 0
+			// 		if(player.ySpeed>0)
+			// 		{
+			// 			player.ySpeed = 0;
+			// 		}
+			// 	break;
+
+			// 	case "from right":
+			// 		//player.ySpeed cannot be less than 0
+			// 		if(player.ySpeed<0)
+			// 		{
+			// 			player.ySpeed =0;
+			// 		}
+			// 	break;
+			// 	}
+	}	
 } // end of propelPlayer
 
 
@@ -236,31 +270,18 @@ function testForCollision(circle, line) {
 	if (line.x1 == line.x2) {
 		if (withinRange(circleUp, line.y1, line.y2) || withinRange(circleDown, line.y1, line.y2)) {
 			if (Math.abs(circle.x - line.x1) < circle.radius) {
-				circle.xCollide = true;
-				console.log("hit1");
-				return
-			} else {
-				circle.xCollide = false;
+				return true;
 			}
-		} else {
-			circle.xCollide = false;
 		}
 	// horizontal line
 	} else if (line.y1 == line.y2) {
 		if (withinRange(circleLeft, line.x1, line.x2) || withinRange(circleRight, line.x1, line.x2)) {
 			if (Math.abs(circle.y - line.y1) < circle.radius) {
-				circle.yCollide = true;
-				console.log("hit2");
-			} else {
-				circle.yCollide = false;
+				return true;
 			}
-		} else {
-			circle.yCollide = false;
 		}
-	} else {
-		circle.xCollide = false;
-		circle.yCollide = false;
 	}
+	return false;
 } // end of testForCollision
 
 
@@ -341,36 +362,28 @@ function resizeCanvas() {
 
 // moves the player
 function movePlayer() {
-	if (player.yCollide) {
-		return;
-	}
 	// speeds are pixels/second, so reduce it for how frequently it's happening
-	// player.x += player.xSpeed / game.fps;
 	player.y += player.ySpeed / game.fps;
 } // end of movePlayer
 
 
-//if player is above the ground and not on an obstruction, it will be affected by gravity
+// if player is above the ground and not on an obstruction, it will be affected by gravity
 var timer = 0;
 
 setInterval(()=>{
 	timer++;
 }, 1000);
 
-function fall()
-{
-	if(player.y + player.radius<= obstructions.ground.y)
-	{
-		//reversed because the negative direction is opposite of usual
+function fall() {
+	// if (player.y + player.radius <= obstructions.ground.y) {
+	if (!testForCollision(player, ground)) {
+		// reversed because the negative direction is opposite of usual
 		player.ySpeed -= Physics.affectGravity(0, player.ySpeed, timer);
-	} else
-	{
+	} else {
 		timer = 0;
 	}
 }
-//this function kind of works as a jump type thing, it's not entirely accurate but it seems to work well enough idk
-
-
+// this function kind of works as a jump type thing, it's not entirely accurate but it seems to work well enough idk
 
 
 function moveLines() {
@@ -379,13 +392,12 @@ function moveLines() {
 	}
 } // end of moveLines
 
-function moveObstructions()
-{
-	for(const key in obstructions)
-	{
-		obstructions[key].adjustX(game.xOffset);
-	}
-}
+
+// function moveObstructions() {
+// 	for (const key in obstructions) {
+// 		obstructions[key].adjustX(game.xOffset);
+// 	}
+// } // end of moveObstructions
 
 
 // =================
@@ -427,16 +439,15 @@ const animateID = setInterval(() => {
 	propelPlayer();
 	friction(player);
 	
-	if (!player.xCollide) {
-		game.xOffset -= player.xSpeed / game.fps;
-	}
+	game.xOffset -= player.xSpeed / game.fps;
+
 	movePlayer();
 	moveLines();
-	moveObstructions();
+	// moveObstructions();
 
 	fall();
 
-	testForCollision(player, testLine);
+	// testForCollision(player, testLine);
 
 	clearCanvas();
 	drawLines();

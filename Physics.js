@@ -18,7 +18,7 @@ class Physics{
         //v = v0 + at
         //new ySpeed = input ySpeed when jumps + g * secs since beginning of jump
         ySpeed = initYSpeed + (this.g* timeOffGround);
-        console.log(ySpeed);
+        // console.log(ySpeed);
         return ySpeed;
 
     }
