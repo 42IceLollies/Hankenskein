@@ -28,8 +28,9 @@ class Line {
 	draw() {
 		//we could maybe just pass in the parameters of canvas and context instead of declaring it everytime
 		//idk its the same thing ig tho just fewer lines
-		const canvas = document.getElementById('canvas');
-		const ctx = canvas.getContext('2d');
+		// they're already global variables, so these were redundant, thanks
+		// const canvas = document.getElementById('canvas');
+		// const ctx = canvas.getContext('2d');
 
 		ctx.beginPath();
 		ctx.moveTo(this.x1, this.y1);
@@ -132,7 +133,7 @@ const player = {
 
 const lines = [];
 
-const testLine = new Line(300, 300, 0, 300);
+const testLine = new Line(900, 900, 0, 300);
 const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
 lines.push(ground);
@@ -170,12 +171,14 @@ function propelPlayer() {
 			player.ySpeed += player.acceleration / game.fps;
 			break;
 	}
+} // end of propelPlayer
 
+
+function collideWithLines() {
 	// if player runs into an obstruction, it can't move in that direction
 	// tests the player against every line
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
-		// console.log(testForCollision(player, line));
 		// if they aren't colliding, skip this one
 		if (!testForCollision(player, line)) {
 			continue;
@@ -184,74 +187,27 @@ function propelPlayer() {
 		if (line.x1 == line.x2) {
 			// if player's to the left, stop moving right
 			if (player.x < line.x1 && player.xSpeed > 0) {
-				player.ySpeed = 0;
+				player.xSpeed = 0;
+				game.xOffset += player.radius - (line.x1 - player.x);
 			// if player's to the right, stop moving left
 			} else if (player.x > line.x1 && player.xSpeed < 0) {
 				player.xSpeed = 0;
+				game.xOffset -= player.radius - (player.x - line.x1);
 			}
 		// if the line's horizontal
 		} else if (line.y1 == line.y2) {
 			// if player's lower, stop moving up
 			if (player.y > line.y1 && player.ySpeed < 0) {
-				player.ySpeed = 0; 
+				player.ySpeed = 0;
+				player.y += player.radius - (player.y - line.y1);
 			// if player's higher, stop moving down
 			} else if (player.y < line.y1 && player.ySpeed > 0) {
 				player.ySpeed = 0;
+				player.y -= player.radius - (line.y1 - player.y);
 			}
 		}
-
-		// {
-		// 	return "from left";
-		// }
-		// if(player.x - player.radius <= this.x + this.width)
-		// {
-		// 	return "from right";
-		// }
-		// if(player.y + player.radius >= this.y)
-		// {
-		// 	return "from top";
-		// }
-		// if(player.y - player.radius <= this.y + this.height)
-		// {
-		// 	return "from bottom";
-		// }
-			// const direction = obstructions[key].directionCollided(player, game);
-			// switch(direction)
-			// {
-			// 	case "from top":
-			// 		// player.xSpeed cannot be less than 0
-			// 		if(player.xSpeed<0)
-			// 		{
-			// 			player.xSpeed = 0; 
-			// 		}
-			// 	break;
-
-			// 	case "from bottom":
-			// 		//player.xSpeed cannot be greater than 0
-			// 		if(player.xSpeed>0)
-			// 		{
-			// 			player.xSpeed = 0; 
-			// 		}
-			// 	break;
-
-			// 	case "from left":
-			// 		//player.ySpeed cannot be greater than 0
-			// 		if(player.ySpeed>0)
-			// 		{
-			// 			player.ySpeed = 0;
-			// 		}
-			// 	break;
-
-			// 	case "from right":
-			// 		//player.ySpeed cannot be less than 0
-			// 		if(player.ySpeed<0)
-			// 		{
-			// 			player.ySpeed =0;
-			// 		}
-			// 	break;
-			// 	}
 	}	
-} // end of propelPlayer
+}
 
 
 function withinRange(num, rangeStart, rangeEnd) {
@@ -269,14 +225,14 @@ function testForCollision(circle, line) {
 	// vertical line
 	if (line.x1 == line.x2) {
 		if (withinRange(circleUp, line.y1, line.y2) || withinRange(circleDown, line.y1, line.y2)) {
-			if (Math.abs(circle.x - line.x1) < circle.radius) {
+			if (Math.abs(circle.x - line.x1) <= circle.radius) {
 				return true;
 			}
 		}
 	// horizontal line
 	} else if (line.y1 == line.y2) {
 		if (withinRange(circleLeft, line.x1, line.x2) || withinRange(circleRight, line.x1, line.x2)) {
-			if (Math.abs(circle.y - line.y1) < circle.radius) {
+			if (Math.abs(circle.y - line.y1) <= circle.radius) {
 				return true;
 			}
 		}
@@ -438,6 +394,7 @@ const animateID = setInterval(() => {
 
 	propelPlayer();
 	friction(player);
+	collideWithLines();
 	
 	game.xOffset -= player.xSpeed / game.fps;
 
