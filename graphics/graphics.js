@@ -118,7 +118,7 @@ const player = {
 
 const lines = [];
 
-const testLine = new Line(800, 1100, 0, 300);
+const testLine = new Line(500, 800, 200000, 0);
 const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
 lines.push(ground);
@@ -197,6 +197,8 @@ function collideWithLines() {
 				player.ySpeed = 0;
 				player.y -= player.radius - (line.y1 - player.y);
 			}
+		} else {
+			console.log("angled collide");
 		}
 	}	
 }
@@ -223,6 +225,18 @@ function testForCollision(circle, line) {
 				return true;
 			}
 		}
+	// angled line
+	} else {
+		const points = collisionPoints(circle, line);
+		const point1 = points[0];
+		const point2 = points[1];
+		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) &&
+		withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
+			return true;
+		} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) &&
+		withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
+			return true;
+		}
 	}
 	return false;
 } // end of testForCollision
@@ -236,7 +250,43 @@ function collisionDegree(circle, line) {
 } // end of getCollisionDegree
 
 
+// don't input vertical or horizontal lines (not sure what'll happen though)
+// returns the (x, y) of the point on the circle that would collide with the line
+function collisionPoints(circle, line) {
+	const hyp = circle.radius;
+	const adjs = [];
+	const opps = [];
 
+	const degree1 = collisionDegree(circle, line);
+	adjs.push(getAdj(degree1, hyp));
+	opps.push(getOpp(degree1, hyp));
+
+	const degree2 = degree1 + 180;
+	adjs.push(getAdj(degree2, hyp));
+	opps.push(getOpp(degree2, hyp));
+
+	// keep it in range of 0-360
+	const degrees = [degree1 % 360, degree2 % 360];
+	const points = [];
+
+	for (let i = 0; i < 2; i++) {
+		switch (true) {
+			case withinRange(degrees[i], 0, 90):
+				points.push([circle.x + adjs[i], circle.y - opps[i]]);
+				break;
+			case withinRange(degrees[i], 90, 180):
+				points.push([circle.x - adjs[i], circle.y - opps[i]]);
+				break;
+			case withinRange(degrees[i], 180, 270):
+				points.push([circle.x - adjs[i], circle.y + opps[i]]);
+				break;
+			case withinRange(degrees[i], 270, 360):
+				points.push([circle.x + adjs[i], circle.y + opps[i]]);
+				break;
+		}
+	}
+	return points;
+} // end of collisionPoints
 
 
 // ==============
@@ -246,12 +296,14 @@ function collisionDegree(circle, line) {
 
 // returns the length of the adjacent
 function getAdj(degree, hyp) {
+	degree %= 90;
 	return hyp * (Math.cos(degree));
 } // end of getAdj
 
 
 // returns the length of the the opposite
-function getOpp(hyp, adj) {
+function getOpp(degree, hyp) {
+	degree %= 90;
 	return hyp * (Math.sin(degree));
 } // end of getOpp
 
@@ -410,6 +462,8 @@ function drawLines() {
 // the animate loop, draws in the new positions of objects
 const animateID = setInterval(() => {
 	resize();
+	// called here so collision still works
+	moveLines();
 
 	propelPlayer();
 	friction(player);
