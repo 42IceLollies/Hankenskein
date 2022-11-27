@@ -88,6 +88,26 @@ class Line {
 
 } // end of Line
 
+// ===============
+// POINT CLASS (for testing)
+// ===============
+
+class Point {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	moveTo(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	draw(ctx) {
+		ctx.fillRect(this.x, this.y, 2, 2);
+	}
+} // end of Point
+
 
 // ==================
 // DATA OBJECTS
@@ -118,11 +138,12 @@ const player = {
 
 const lines = [];
 
-const testLine = new Line(500, 800, 200000, 0);
+const testLine = new Line(800, 500, 310, 0);
 const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
 lines.push(ground);
 
+// const collidePoint = new Point(0, 0);
 
 // ====================
 // SPEED CHANGES
@@ -199,6 +220,7 @@ function collideWithLines() {
 			}
 		} else {
 			console.log("angled collide");
+			// put bounce stuff here when we make it
 		}
 	}	
 }
@@ -230,10 +252,13 @@ function testForCollision(circle, line) {
 		const points = collisionPoints(circle, line);
 		const point1 = points[0];
 		const point2 = points[1];
-		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) &&
+
+		// collidePoint.moveTo(point2[0], point2[1]);
+
+		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
 		withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
 			return true;
-		} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) &&
+		} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) ||
 		withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
 			return true;
 		}
@@ -272,16 +297,16 @@ function collisionPoints(circle, line) {
 	for (let i = 0; i < 2; i++) {
 		switch (true) {
 			case withinRange(degrees[i], 0, 90):
-				points.push([circle.x + adjs[i], circle.y - opps[i]]);
+				points.push([circle.x + adjs[i], circle.y + opps[i]]);
 				break;
 			case withinRange(degrees[i], 90, 180):
-				points.push([circle.x - adjs[i], circle.y - opps[i]]);
-				break;
-			case withinRange(degrees[i], 180, 270):
 				points.push([circle.x - adjs[i], circle.y + opps[i]]);
 				break;
+			case withinRange(degrees[i], 180, 270):
+				points.push([circle.x - adjs[i], circle.y - opps[i]]);
+				break;
 			case withinRange(degrees[i], 270, 360):
-				points.push([circle.x + adjs[i], circle.y + opps[i]]);
+				points.push([circle.x + adjs[i], circle.y - opps[i]]);
 				break;
 		}
 	}
@@ -348,7 +373,8 @@ document.addEventListener("keydown", (e) => {
 			break;
 		// testing, feel free to remove it
 		case 32:
-			console.log(collisionDegree(player, testLine));
+			// console.log(collisionPoints(player, testLine));
+			// console.log(player.x + ", " + player.y);
 	}
 });
 
@@ -479,5 +505,6 @@ const animateID = setInterval(() => {
 	clearCanvas();
 	drawLines();
 	drawPlayer();
+	// collidePoint.draw(ctx);
 
 }, 1000 / game.fps); // 1000 is 1 second
