@@ -104,7 +104,7 @@ class Point {
 	}
 
 	draw(ctx) {
-		ctx.fillRect(this.x, this.y, 2, 2);
+		ctx.fillRect(this.x - 2, this.y - 2, 5, 5);
 	}
 } // end of Point
 
@@ -131,19 +131,15 @@ const player = {
 	fillColor: "#e2619f",
 };
 
-// const obstructions = {
-// 	ground: new Obstruction(0, canvas.height/2, canvas.width, 20),
-// 	testLine: new Obstruction(300,0,5,300)
-// }
-
 const lines = [];
 
-const testLine = new Line(800, 500, 310, 0);
+const testLine = new Line(800, 500, 1000, 0);
 const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
 lines.push(ground);
 
-// const collidePoint = new Point(0, 0);
+const collidePoint = new Point(0, 0);
+const collidePoint2 = new Point(0, 0);
 
 // ====================
 // SPEED CHANGES
@@ -219,11 +215,51 @@ function collideWithLines() {
 				player.y -= player.radius - (line.y1 - player.y);
 			}
 		} else {
-			console.log("angled collide");
-			// put bounce stuff here when we make it
+			const points = collisionPoints(player, line);
+			const point1 = points[0];
+			const point2 = points[1];
+			let collideDegree;
+
+			// // if it's the first point
+			// if (withinRange(line.yAt(point1[0]), player.y, point1[1]) ||
+			// withinRange(line.xAt(point1[1]), player.x, point1[0])) {
+
+			// 	collideDegree = collisionDegree(player, line);
+			// 	// player.y += line.yAt(point1[0]) - point1[1];
+			// 	// console.log(point1[0]);
+			// 	// player.y -= 1;
+
+			// } else if (withinRange(line.yAt(point2[0]), player.y, point2[1]) ||
+			// withinRange(line.xAt(point2[1]), player.x, point2[0])) {
+			// 	collideDegree = collisionDegree(player, line) + 180;
+			// 	// console.log(collideDegree);
+			// }
+			
+			// switch (true) {
+			// 	case withinRange(collideDegree, 0, 90):
+			// 		if (player.xSpeed > 0) {player.xSpeed = 0;}
+			// 		if (player.ySpeed < 0) {player.ySpeed = 0;}
+			// 		console.log("no up or right");
+			// 		break;
+			// 	case withinRange(collideDegree, 90, 180):
+			// 		if (player.xSpeed < 0) {player.xSpeed = 0;};
+			// 		if (player.ySpeed < 0) {player.ySpeed = 0;}
+			// 		console.log("no up or left");
+			// 		break;
+			// 	case withinRange(collideDegree, 180, 270):
+			// 		if (player.xSpeed < 0) {player.xSpeed = 0;}
+			// 		if (player.ySpeed > 0) {player.ySpeed = 0;}
+			// 		console.log("no down or left");
+			// 		break;
+			// 	case withinRange(collideDegree, 270, 360):
+			// 		if (player.xSpeed > 0) {player.xSpeed = 0;}
+			// 		if (player.ySpeed > 0) {player.ySpeed = 0;}
+			// 		console.log("no down or right");
+			// 		break;
+			// }
 		}
 	}	
-}
+} // end of collideWithLines
 
 
 // only works for horizontal and vertical lines
@@ -253,7 +289,8 @@ function testForCollision(circle, line) {
 		const point1 = points[0];
 		const point2 = points[1];
 
-		// collidePoint.moveTo(point2[0], point2[1]);
+		collidePoint.moveTo(point1[0], point1[1]);
+		collidePoint2.moveTo(point2[0], point2[1]);
 
 		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
 		withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
@@ -282,31 +319,48 @@ function collisionPoints(circle, line) {
 	const adjs = [];
 	const opps = [];
 
-	const degree1 = collisionDegree(circle, line);
-	adjs.push(getAdj(degree1, hyp));
-	opps.push(getOpp(degree1, hyp));
+	let degree1 = collisionDegree(circle, line);
+	// console.log(degree1);
+	if (degree1 < 0) {degree1 += 360;}
+	degree1 %= 360;
+	if (degree1 % 180 < 90) {
+		adjs.push(Math.abs(getAdj(degree1, hyp)));
+		opps.push(Math.abs(getOpp(degree1, hyp)));
+	} else {
+		opps.push(Math.abs(getAdj(degree1, hyp)));
+		adjs.push(Math.abs(getOpp(degree1, hyp)));
+	}
 
-	const degree2 = degree1 + 180;
-	adjs.push(getAdj(degree2, hyp));
-	opps.push(getOpp(degree2, hyp));
+	let degree2 = degree1 + 180;
+	if (degree2 < 0) {degree2 += 360;}
+	degree2 %= 360;
+	// console.log(degree1 + ", " + degree2);
+	if (degree2 % 180 < 90) {
+		adjs.push(Math.abs(getAdj(degree2, hyp)));
+		opps.push(Math.abs(getOpp(degree2, hyp)));
+	} else {
+		opps.push(Math.abs(getAdj(degree2, hyp)));
+		adjs.push(Math.abs(getOpp(degree2, hyp)));
+	}
 
 	// keep it in range of 0-360
-	const degrees = [degree1 % 360, degree2 % 360];
+	const degrees = [degree1, degree2];
 	const points = [];
 
 	for (let i = 0; i < 2; i++) {
 		switch (true) {
 			case withinRange(degrees[i], 0, 90):
-				points.push([circle.x + adjs[i], circle.y + opps[i]]);
+				// console.log(degrees[i]);
+				points.push([circle.x + adjs[i], circle.y - opps[i]]);
 				break;
 			case withinRange(degrees[i], 90, 180):
-				points.push([circle.x - adjs[i], circle.y + opps[i]]);
-				break;
-			case withinRange(degrees[i], 180, 270):
 				points.push([circle.x - adjs[i], circle.y - opps[i]]);
 				break;
+			case withinRange(degrees[i], 180, 270):
+				points.push([circle.x - adjs[i], circle.y + opps[i]]);
+				break;
 			case withinRange(degrees[i], 270, 360):
-				points.push([circle.x + adjs[i], circle.y - opps[i]]);
+				points.push([circle.x + adjs[i], circle.y + opps[i]]);
 				break;
 		}
 	}
@@ -505,6 +559,12 @@ const animateID = setInterval(() => {
 	clearCanvas();
 	drawLines();
 	drawPlayer();
-	// collidePoint.draw(ctx);
+	collidePoint.draw(ctx);
+	collidePoint2.draw(ctx);
 
 }, 1000 / game.fps); // 1000 is 1 second
+
+// console.log(getAdj(45, 25));
+// console.log(getOpp(45, 25));
+
+
