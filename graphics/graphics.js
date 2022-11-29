@@ -586,7 +586,7 @@ function fall() {
 		// reversed because the negative direction is opposite of usual
 		player.ySpeed -= Physics.affectGravity(0, player.ySpeed, timer);
 	} else {
-		timer = 0;
+		timer = 1;
 	}
 }
 // this function kind of works as a jump type thing, it's not entirely accurate but it seems to work well enough idk

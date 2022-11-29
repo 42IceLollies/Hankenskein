@@ -17,8 +17,19 @@ class Physics{
         //v = v0 + at
         //new ySpeed = input ySpeed when jumps + g * secs since beginning of jump
         ySpeed = initYSpeed + (this.g* timeOffGround);
-        // console.log(ySpeed);
         return ySpeed;
+        //To Do: find a conversion between meters and pixels
+
+    }
+
+
+    static friction()//not static friction tho, just a static method for friction
+    {
+        //Equation for rolling friction: F = u * m/r
+        // or F=umg? 
+        //they're both equations but I'm not entirely clear what the difference between them is
+        //with the first one, the friction would be less towards the end of the level
+        //To Do: find the friction constant through experimentation, find mass/ radius and how it decays when it is unwound of ball of string
 
     }
 }
