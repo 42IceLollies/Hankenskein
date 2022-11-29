@@ -49,7 +49,7 @@ class Line {
 	}
 
 	get yChangeRate() {
-		const xChange = this.x2 - this.x1;
+		const xChange = this.x2Start - this.x1Start;
 		const yChange = this.y2 - this.y1;
 		if (xChange == 0) {
 			console.log("ERROR: 0 value in xChange");
@@ -68,7 +68,7 @@ class Line {
 	}
 
 	get xChangeRate() {
-		const xChange = this.x2 - this.x1;
+		const xChange = this.x2Start - this.x1Start;
 		const yChange = this.y2 - this.y1;
 		if (yChange == 0) {
 			console.log("ERROR: 0 value in yChange");
@@ -133,7 +133,7 @@ const player = {
 
 const lines = [];
 
-const testLine = new Line(800, 500, 1000, 0);
+const testLine = new Line(500, 800, 1000, 0);
 const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
 lines.push(ground);
@@ -218,45 +218,54 @@ function collideWithLines() {
 			const points = collisionPoints(player, line);
 			const point1 = points[0];
 			const point2 = points[1];
+
+			// console.log(line.yChangeRate);
+
+
 			let collideDegree;
 
-			// // if it's the first point
-			// if (withinRange(line.yAt(point1[0]), player.y, point1[1]) ||
-			// withinRange(line.xAt(point1[1]), player.x, point1[0])) {
-
-			// 	collideDegree = collisionDegree(player, line);
-			// 	// player.y += line.yAt(point1[0]) - point1[1];
-			// 	// console.log(point1[0]);
-			// 	// player.y -= 1;
-
-			// } else if (withinRange(line.yAt(point2[0]), player.y, point2[1]) ||
-			// withinRange(line.xAt(point2[1]), player.x, point2[0])) {
-			// 	collideDegree = collisionDegree(player, line) + 180;
-			// 	// console.log(collideDegree);
-			// }
 			
-			// switch (true) {
-			// 	case withinRange(collideDegree, 0, 90):
-			// 		if (player.xSpeed > 0) {player.xSpeed = 0;}
-			// 		if (player.ySpeed < 0) {player.ySpeed = 0;}
-			// 		console.log("no up or right");
-			// 		break;
-			// 	case withinRange(collideDegree, 90, 180):
-			// 		if (player.xSpeed < 0) {player.xSpeed = 0;};
-			// 		if (player.ySpeed < 0) {player.ySpeed = 0;}
-			// 		console.log("no up or left");
-			// 		break;
-			// 	case withinRange(collideDegree, 180, 270):
-			// 		if (player.xSpeed < 0) {player.xSpeed = 0;}
-			// 		if (player.ySpeed > 0) {player.ySpeed = 0;}
-			// 		console.log("no down or left");
-			// 		break;
-			// 	case withinRange(collideDegree, 270, 360):
-			// 		if (player.xSpeed > 0) {player.xSpeed = 0;}
-			// 		if (player.ySpeed > 0) {player.ySpeed = 0;}
-			// 		console.log("no down or right");
-			// 		break;
-			// }
+			// console.log(`${line.yAt(point1[0])}, ${player.y}, ${point1[1]}`);
+
+			// if it's the first point
+			if (withinRange(line.yAt(point1[0]), player.y, point1[1]) ||
+		withinRange(line.xAt(point1[1]), player.x, point1[0])) {
+				console.log(1);
+				collideDegree = collisionDegree(-line.yChangeRate);
+				// console.log(collisionDegree(-line.yChangeRate));
+				// player.y += line.yAt(point1[0]) - point1[1];
+				// console.log(point1[0]);
+				// player.y -= 1;
+
+			} else if (withinRange(line.yAt(point2[0]), player.y, point2[1]) ||
+			withinRange(line.xAt(point2[1]), player.x, point2[0])) {
+				console.log(2);
+				collideDegree = collisionDegree(-line.yChangeRate) + 180;
+				// console.log(collideDegree);
+			}
+
+			switch (true) {
+				case withinRange(collideDegree, 0, 90):
+					if (player.xSpeed > 0) {player.xSpeed = 0;}
+					if (player.ySpeed < 0) {player.ySpeed = 0;}
+					// console.log("no up or right");
+					break;
+				case withinRange(collideDegree, 90, 180):
+					if (player.xSpeed < 0) {player.xSpeed = 0;};
+					if (player.ySpeed < 0) {player.ySpeed = 0;}
+					// console.log("no up or left");
+					break;
+				case withinRange(collideDegree, 180, 270):
+					if (player.xSpeed < 0) {player.xSpeed = 0;}
+					if (player.ySpeed > 0) {player.ySpeed = 0;}
+					// console.log("no down or left");
+					break;
+				case withinRange(collideDegree, 270, 360):
+					if (player.xSpeed > 0) {player.xSpeed = 0;}
+					if (player.ySpeed > 0) {player.ySpeed = 0;}
+					// console.log("no down or right");
+					break;
+			}
 		}
 	}	
 } // end of collideWithLines
@@ -304,12 +313,13 @@ function testForCollision(circle, line) {
 } // end of testForCollision
 
 
-// returns the degree of the point on a circle
-// where it would collide with the specified line
-function collisionDegree(circle, line) {
-	const degree = (-45 * line.yChangeRate) + 90;
+function collisionDegree(slope) {
+	let degree = radiansToDegrees(Math.atan(inverseSlope(slope)));
+	if (slope >= 0) {
+		degree = 180 - Math.abs(degree);
+	}
 	return degree;
-} // end of getCollisionDegree
+} // end of collisionDegree
 
 
 // don't input vertical or horizontal lines (not sure what'll happen though)
@@ -319,10 +329,7 @@ function collisionPoints(circle, line) {
 	const adjs = [];
 	const opps = [];
 
-	let degree1 = collisionDegree(circle, line);
-	// console.log(degree1);
-	if (degree1 < 0) {degree1 += 360;}
-	degree1 %= 360;
+	let degree1 = collisionDegree(-line.yChangeRate);
 	if (degree1 % 180 < 90) {
 		adjs.push(Math.abs(getAdj(degree1, hyp)));
 		opps.push(Math.abs(getOpp(degree1, hyp)));
@@ -332,9 +339,6 @@ function collisionPoints(circle, line) {
 	}
 
 	let degree2 = degree1 + 180;
-	if (degree2 < 0) {degree2 += 360;}
-	degree2 %= 360;
-	// console.log(degree1 + ", " + degree2);
 	if (degree2 % 180 < 90) {
 		adjs.push(Math.abs(getAdj(degree2, hyp)));
 		opps.push(Math.abs(getOpp(degree2, hyp)));
@@ -376,6 +380,7 @@ function collisionPoints(circle, line) {
 // returns the length of the adjacent
 function getAdj(degree, hyp) {
 	degree %= 90;
+	degree = degreesToRadians(degree);
 	return hyp * (Math.cos(degree));
 } // end of getAdj
 
@@ -383,8 +388,24 @@ function getAdj(degree, hyp) {
 // returns the length of the the opposite
 function getOpp(degree, hyp) {
 	degree %= 90;
+	degree = degreesToRadians(degree);
 	return hyp * (Math.sin(degree));
 } // end of getOpp
+
+
+function inverseSlope(x) {
+	return -(1 / x);
+} // end of invertSlope
+
+
+function radiansToDegrees(x) {
+	return x * (180 / Math.PI);
+} // end of RadiansToDegrees
+
+
+function degreesToRadians(x) {
+	return x / (180 / Math.PI);
+} // end of degreesToRadians
 
 
 function withinRange(num, rangeStart, rangeEnd) {
