@@ -129,6 +129,7 @@ const player = {
 	ySpeed: 0,
 	acceleration: 150,
 	fillColor: "#e2619f",
+	screenPercent: 0.035,
 };
 
 const lines = [];
@@ -138,8 +139,8 @@ const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
 lines.push(ground);
 
-const collidePoint = new Point(0, 0);
-const collidePoint2 = new Point(0, 0);
+// const collidePoint = new Point(0, 0);
+// const collidePoint2 = new Point(0, 0);
 
 // ====================
 // SPEED CHANGES
@@ -211,10 +212,12 @@ function collideWithLines() {
 			if (player.y > line.y1 && player.ySpeed < 0) {
 				player.ySpeed = 0;
 				player.y += player.radius - (player.y - line.y1);
+				player.y--;
 			// if player's higher, stop moving down
 			} else if (player.y < line.y1 && player.ySpeed > 0) {
 				player.ySpeed = 0;
 				player.y -= player.radius - (line.y1 - player.y);
+				player.y++;
 			}
 		} else {
 			const points = collisionPoints(player, line);
@@ -316,8 +319,8 @@ function testForCollision(circle, line) {
 		const point1 = points[0];
 		const point2 = points[1];
 
-		collidePoint.moveTo(point1[0], point1[1]);
-		collidePoint2.moveTo(point2[0], point2[1]);
+		// collidePoint.moveTo(point1[0], point1[1]);
+		// collidePoint2.moveTo(point2[0], point2[1]);
 
 		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
 		withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
@@ -408,8 +411,8 @@ function angledCollisionAbove(circle, line) {
 		const point1 = points[0];
 		const point2 = points[1];
 
-		collidePoint.moveTo(point1[0], point1[1]);
-		collidePoint2.moveTo(point2[0], point2[1]);
+		// collidePoint.moveTo(point1[0], point1[1]);
+		// collidePoint2.moveTo(point2[0], point2[1]);
 
 		// first point
 		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
@@ -529,8 +532,62 @@ document.addEventListener("keyup", (e) => {
 
 
 function resize() {
+	// saves the canvas dimensions for comparison after
+	const prevCanvas = canvas.width + " " + canvas.height;
+	// saves what fraction of canvas height player.y is
+	const playerHeight = player.y / canvas.height;
+
+	// holds the fractions representing lines' x's and y's
+	const lineYs = [];
+	const lineXs = [];
+	// save for all the lines
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		// for y's, a fraction of the canvas height
+		lineYs.push([line.y1 / canvas.height, line.y2 / canvas.height]);
+		// for x's, the distance from player to line-point, divided by player.radius
+		lineXs.push([(line.x1 - player.x) / player.radius, (line.x2 - player.x) / player.radius]);
+	}
+
+	// resize the canvas to fill the whole window
 	resizeCanvas();
+
+	// compare the new and old dimensions
+	// if no change, end it now
+	const currCanvas = canvas.width + " " + canvas.height;
+	if (prevCanvas == currCanvas) {
+		return;
+	}
+
+	// center player horizontally
 	player.x = canvas.width / 2;
+	player.radius = canvas.height * player.screenPercent;
+	player.y = canvas.height * playerHeight;
+
+	// resizes the lines
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+
+		line.y1 = lineYs[i][0] * canvas.height;
+		line.y2 = lineYs[i][1] * canvas.height;
+
+		const x1Distance = lineXs[i][0] * player.radius;
+		const x2Distance = lineXs[i][1] * player.radius;
+		line.x1Start = (player.x - game.xOffset) + x1Distance;
+		line.x2Start = (player.x - game.xOffset) + x2Distance;
+	}
+
+	moveLines();
+
+	// ground.y1 = canvas.height / 3;
+	// ground.y2 = canvas.height / 3;
+
+
+	// const xRate = testLine.xChangeRate;
+	// testLine.y1 = canvas.height;
+	// testLine.x2 = testLine.x1 + ((testLine.y1 - testLine.y2) * xRate);
+	
+	//
 } // end of resize
 
 
@@ -630,7 +687,10 @@ function drawLines() {
 	}
 } // end of drawLines
 
-
+// resize it before starting
+resizeCanvas();
+player.x = canvas.width / 2;
+player.radius = canvas.height / 30;
 // the animate loop, draws in the new positions of objects
 const animateID = setInterval(() => {
 	resize();
@@ -651,8 +711,8 @@ const animateID = setInterval(() => {
 	clearCanvas();
 	drawLines();
 	drawPlayer();
-	collidePoint.draw(ctx);
-	collidePoint2.draw(ctx);
+	// collidePoint.draw(ctx);
+	// collidePoint2.draw(ctx);
 
 }, 1000 / game.fps); // 1000 is 1 second
 
