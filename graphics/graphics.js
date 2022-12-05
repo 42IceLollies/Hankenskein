@@ -134,9 +134,11 @@ const player = {
 
 const lines = [];
 
-const testLine = new Line(500, 800, 1000, 0);
+const testLine = new Line(500, 500, 1000, 0);
+// const testLine2 = new Line(500, 700, 200, 0);
 const ground = new Line(0, 1000, 300, 300);
 lines.push(testLine);
+// lines.push(testLine2);
 lines.push(ground);
 
 // const collidePoint = new Point(0, 0);
@@ -199,23 +201,29 @@ function collideWithLines() {
 		if (line.isVertical()) {
 			// if player's to the left, stop moving right
 			if (player.x < line.x1 && player.xSpeed > 0) {
-				player.xSpeed = 0;
+				// player.xSpeed = 0;
+				player.xSpeed = -Physics.bounceMomentumLoss(player.xSpeed);
 				game.xOffset += player.radius - (line.x1 - player.x);
+				// console.log(player.xSpeed);
 			// if player's to the right, stop moving left
 			} else if (player.x > line.x1 && player.xSpeed < 0) {
-				player.xSpeed = 0;
+				// player.xSpeed = 0;
+				player.xSpeed = -Physics.bounceMomentumLoss(player.xSpeed);
 				game.xOffset -= player.radius - (player.x - line.x1);
+				// console.log(player.xSpeed);
 			}
 		// if the line's horizontal
 		} else if (line.isHorizontal()) {
 			// if player's lower, stop moving up
 			if (player.y > line.y1 && player.ySpeed < 0) {
-				player.ySpeed = 0;
+				// player.ySpeed = 0;
+				player.ySpeed = -Physics.bounceMomentumLoss(player.ySpeed);
 				player.y += player.radius - (player.y - line.y1);
 				player.y--;
 			// if player's higher, stop moving down
 			} else if (player.y < line.y1 && player.ySpeed > 0) {
-				player.ySpeed = 0;
+				// player.ySpeed = 0;
+				player.ySpeed = -Physics.bounceMomentumLoss(player.ySpeed);
 				player.y -= player.radius - (line.y1 - player.y);
 				player.y++;
 			}
@@ -230,11 +238,9 @@ function collideWithLines() {
 			if (withinRange(line.yAt(point1[0]), player.y, point1[1]) ||
 		withinRange(line.xAt(point1[1]), player.x, point1[0])) {
 				collideDegree = collisionDegree(-line.yChangeRate);
-				// player.x += line.xAt(point1[1]) - point1[0];
 			} else if (withinRange(line.yAt(point2[0]), player.y, point2[1]) ||
 			withinRange(line.xAt(point2[1]), player.x, point2[0])) {
 				collideDegree = collisionDegree(-line.yChangeRate) + 180;
-				// player.x += line.xAt(point2[1]) - point2[0];
 			}
 			// console.log(collideDegree);
 			switch (true) {
@@ -292,6 +298,48 @@ function collideWithLines() {
 } // end of collideWithLines
 
 
+// // only works for horizontal and vertical lines
+// function testForCollision(circle, line) {
+// 	const circleLeft = circle.x - circle.radius;
+// 	const circleRight = circle.x + circle.radius;
+// 	const circleUp = circle.y - circle.radius;
+// 	const circleDown = circle.x + circle.radius;
+
+// 	// vertical line
+// 	if (line.isVertical()) {
+// 		if (withinRange(circleUp, line.y1, line.y2) || withinRange(circleDown, line.y1, line.y2)) {
+// 			if (Math.abs(circle.x - line.x1) <= circle.radius) {
+// 				return true;
+// 			}
+// 		}
+// 	// horizontal line
+// 	} else if (line.isHorizontal()) {
+// 		if (withinRange(circleLeft, line.x1, line.x2) || withinRange(circleRight, line.x1, line.x2)) {
+// 			if (Math.abs(circle.y - line.y1) <= circle.radius) {
+// 				return true;
+// 			}
+// 		}
+// 	// angled line
+// 	} else {
+// 		const points = collisionPoints(circle, line);
+// 		const point1 = points[0];
+// 		const point2 = points[1];
+
+// 		// collidePoint.moveTo(point1[0], point1[1]);
+// 		// collidePoint2.moveTo(point2[0], point2[1]);
+
+// 		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
+// 		withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
+// 			return true;
+// 		} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) ||
+// 		withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
+// 			return true;
+// 		}
+// 	}
+// 	return false;
+// } // end of testForCollision
+
+
 // only works for horizontal and vertical lines
 function testForCollision(circle, line) {
 	const circleLeft = circle.x - circle.radius;
@@ -299,37 +347,21 @@ function testForCollision(circle, line) {
 	const circleUp = circle.y - circle.radius;
 	const circleDown = circle.x + circle.radius;
 
-	// vertical line
-	if (line.isVertical()) {
-		if (withinRange(circleUp, line.y1, line.y2) || withinRange(circleDown, line.y1, line.y2)) {
-			if (Math.abs(circle.x - line.x1) <= circle.radius) {
-				return true;
-			}
-		}
-	// horizontal line
-	} else if (line.isHorizontal()) {
-		if (withinRange(circleLeft, line.x1, line.x2) || withinRange(circleRight, line.x1, line.x2)) {
-			if (Math.abs(circle.y - line.y1) <= circle.radius) {
-				return true;
-			}
-		}
-	// angled line
-	} else {
-		const points = collisionPoints(circle, line);
-		const point1 = points[0];
-		const point2 = points[1];
+	const points = collisionPoints(circle, line);
+	const point1 = points[0];
+	const point2 = points[1];
 
-		// collidePoint.moveTo(point1[0], point1[1]);
-		// collidePoint2.moveTo(point2[0], point2[1]);
+	// collidePoint.moveTo(point1[0], point1[1]);
+	// collidePoint2.moveTo(point2[0], point2[1]);
 
-		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
-		withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
-			return true;
-		} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) ||
-		withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
-			return true;
-		}
+	if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
+	withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
+		return true;
+	} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) ||
+	withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
+		return true;
 	}
+
 	return false;
 } // end of testForCollision
 
@@ -343,14 +375,18 @@ function collisionDegree(slope) {
 } // end of collisionDegree
 
 
-// don't input vertical or horizontal lines (not sure what'll happen though)
 // returns the (x, y) of the point on the circle that would collide with the line
 function collisionPoints(circle, line) {
 	const hyp = circle.radius;
 	const adjs = [];
 	const opps = [];
 
-	let degree1 = collisionDegree(-line.yChangeRate);
+	let degree1;
+	if (line.isVertical()) {
+		degree1 = 0;
+	} else {
+		degree1 = collisionDegree(-line.yChangeRate);
+	}
 	if (degree1 % 180 < 90) {
 		adjs.push(Math.abs(getAdj(degree1, hyp)));
 		opps.push(Math.abs(getOpp(degree1, hyp)));
@@ -617,7 +653,8 @@ setInterval(()=>{
 	timer++;
 }, 1000);
 
-function fall() {
+
+function atRest() {
 	let atRest = false;
 
 	for (let i = 0; i < lines.length; i++) {
@@ -635,11 +672,12 @@ function fall() {
 			}
 		}
 	}
+	return atRest;
+}
 
 
-	// if (player.y + player.radius <= obstructions.ground.y) {
-	// if (!testForCollision(player, ground)) {
-	if (!atRest) {
+function fall() {
+	if (!atRest()) {
 		// reversed because the negative direction is opposite of usual
 		player.ySpeed -= Physics.affectGravity(0, player.ySpeed, timer);
 	} else {
@@ -690,7 +728,7 @@ function drawLines() {
 // resize it before starting
 resizeCanvas();
 player.x = canvas.width / 2;
-player.radius = canvas.height / 30;
+player.radius = canvas.height * player.screenPercent;
 // the animate loop, draws in the new positions of objects
 const animateID = setInterval(() => {
 	resize();
@@ -715,8 +753,5 @@ const animateID = setInterval(() => {
 	// collidePoint2.draw(ctx);
 
 }, 1000 / game.fps); // 1000 is 1 second
-
-// console.log(getAdj(45, 25));
-// console.log(getOpp(45, 25));
 
 

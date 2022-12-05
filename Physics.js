@@ -32,6 +32,16 @@ class Physics{
         //To Do: find the friction constant through experimentation, find mass/ radius and how it decays when it is unwound of ball of string
 
     }
+
+    // when it bounces, it loses most of it's momentum
+    // arbitrary #'s, feel free to change
+    static bounceMomentumLoss(speed) {
+        speed -= speed * .7;
+        if (speed < 1 && speed > -1) {
+            speed = 0;
+        }
+        return speed;
+    }
 }
 
 
