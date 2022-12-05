@@ -1,5 +1,6 @@
 * {
 	box-sizing: border-box;
+/*	border: black solid 2px;*/
 }
 
 body {
@@ -9,4 +10,5 @@ body {
 
 canvas {
 	border: black solid 2px;
+	margin: auto;
 }
