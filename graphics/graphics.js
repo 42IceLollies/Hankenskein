@@ -104,6 +104,7 @@ class Point {
 	}
 
 	draw(ctx) {
+		ctx.fillStyle = "purple";
 		ctx.fillRect(this.x - 2, this.y - 2, 5, 5);
 	}
 } // end of Point
@@ -137,6 +138,8 @@ const lines = [];
 const testLine = new Line(500, 700, 1000, 0);
 // const testLine2 = new Line(500, 700, 200, 0);
 const ground = new Line(0, 1000, 300, 300);
+
+const collidePoint = new Point(0, 0);
 
 lines.push(testLine);
 // lines.push(testLine2);
@@ -182,7 +185,7 @@ function collideWithLines() {
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		// if they aren't colliding, skip this one
-		if (!testForCollision(player, line)) {
+		if (!testForLineCollision(player, line)) {
 			continue;
 		}
 		// if the line's vertical
@@ -240,7 +243,7 @@ function collideWithLines() {
 					if (player.xSpeed > 0) {player.xSpeed = 0;}
 					if (player.ySpeed < 0) {player.ySpeed = 0;}
 					// move diagonally away from the line until not touching anymore
-					while (testForCollision(player, line)) {
+					while (testForLineCollision(player, line)) {
 						game.xOffset++; // reverse
 						line.adjustX(game.xOffset);
 						player.y++;
@@ -253,7 +256,7 @@ function collideWithLines() {
 					if (player.xSpeed < 0) {player.xSpeed = 0;};
 					if (player.ySpeed < 0) {player.ySpeed = 0;}
 					// move diagonally away from the line until not touching anymore
-					while (testForCollision(player, line)) {
+					while (testForLineCollision(player, line)) {
 						game.xOffset--; // reverse
 						line.adjustX(game.xOffset);
 						player.y++;
@@ -266,7 +269,7 @@ function collideWithLines() {
 					if (player.xSpeed < 0) {player.xSpeed = 0;}
 					if (player.ySpeed > 0) {player.ySpeed = 0;}
 					// move diagonally away from the line until not touching anymore
-					while (testForCollision(player, line)) {
+					while (testForLineCollision(player, line)) {
 						game.xOffset--; // reverse
 						line.adjustX(game.xOffset);
 						player.y--;
@@ -279,7 +282,7 @@ function collideWithLines() {
 					if (player.xSpeed > 0) {player.xSpeed = 0;}
 					if (player.ySpeed > 0) {player.ySpeed = 0;}
 					// move diagonally away from the line until not touching anymore
-					while (testForCollision(player, line)) {
+					while (testForLineCollision(player, line)) {
 						game.xOffset++; // reverse
 						line.adjustX(game.xOffset);
 						player.y--;
@@ -295,7 +298,7 @@ function collideWithLines() {
 
 
 
-function testForCollision(circle, line) {
+function testForLineCollision(circle, line) {
 	const points = collisionPoints(circle, line);
 	const point1 = points[0];
 	const point2 = points[1];
@@ -309,7 +312,7 @@ function testForCollision(circle, line) {
 	}
 
 	return false;
-} // end of testForCollision
+} // end of testForLineCollision
 
 
 function collisionDegree(slope) {
@@ -413,6 +416,59 @@ function angledCollisionAbove(circle, line) {
 } // end of angledCollisionAbove
 
 
+// handles player collision with points
+function collideWithPoints() {
+	const points = [];
+	// every end of a line is a point to collide with
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i]
+		points.push(new Point(line.x1, line.y1));
+		points.push(new Point(line.x2, line.y2));
+	}
+	// for every point
+	for (let i = 0; i < points.length; i++) {
+		const point = points[i];
+		if (!testForPointCollision(player, point)) {
+			continue;
+		}
+
+		// collidePoint.moveTo(point.x, point.y);	
+
+		const side1 = point.x - player.x;
+		const side2 = point.y - player.y;
+		// insert bounce here below
+		// don't count it if it's on the very edge
+		if (Math.abs(side2) < (player.radius / 12) * 11) {
+			// if player's moving toward collision, stop them
+			if (side1 > 0 && player.xSpeed > 0) {
+				player.xSpeed = 0;
+			} else if (side1 < 0 && player.xSpeed < 0) {
+				player.xSpeed = 0;
+			}
+		}
+		// don't count it if it's on the very edge
+		if (Math.abs(side1 < (player.radius / 12) * 11)) {
+			// if player's moving toward collision, stop them
+			if (side2 > 0 && player.ySpeed > 0) {
+				player.ySpeed = 0;
+			} else if (side2 < 0 && player.ySpeed < 0) {
+				player.ySpeed = 0;
+			}
+		}
+	}
+} // end of collideWithPoints
+
+
+// tests for collision of a circle with a point
+function testForPointCollision(circle, point) {
+	const side1 = point.x - circle.x;
+	const side2 = point.y - circle.y;
+	const hyp = getHyp(side1, side2);
+  
+	return hyp < circle.radius;
+} // end of testForPointCollision
+
+
 // ==============
 // MISC. MATH
 // ==============
@@ -434,6 +490,14 @@ function getOpp(degree, hyp) {
 	degree = degreesToRadians(degree);
 	return hyp * (Math.sin(degree));
 } // end of getOpp
+
+
+// returns length of hypotenuse off other 2 side lengths
+function getHyp(side1, side2) {
+	adj = Math.abs(side1);
+  opp = Math.abs(side2);
+	return Math.sqrt(Math.pow(adj, 2) + Math.pow(opp, 2));
+} // end of getHyp
 
 
 // returns the slope of the line perpindicular to the given slope
@@ -633,7 +697,7 @@ function atRest() {
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		// if the line's vertical or there's no collision, skip this one
-		if (line.isVertical() || !testForCollision(player, line)) {
+		if (line.isVertical() || !testForLineCollision(player, line)) {
 			continue;
 		// if the line's horizontal (implied collision)
 		} else if (line.isHorizontal()) {
@@ -722,6 +786,7 @@ const animateID = setInterval(() => {
 	propelPlayer();
 	friction(player);
 	collideWithLines();
+	collideWithPoints();
 	
 	game.xOffset -= player.xSpeed / game.fps;
 
@@ -733,6 +798,8 @@ const animateID = setInterval(() => {
 	clearCanvas(ctx);
 	drawLines();
 	drawPlayer(ctx);
+
+	// collidePoint.draw(ctx);
 
 }, 1000 / game.fps); // 1000 is 1 second
 
