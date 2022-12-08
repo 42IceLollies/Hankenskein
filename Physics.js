@@ -25,10 +25,14 @@ class Physics{
 
     static friction()//not static friction tho, just a static method for friction
     {
-        //Equation for rolling friction: F = u * m/r
+        //Equation for rolling friction:
         // or F=umg? 
-        //they're both equations but I'm not entirely clear what the difference between them is
-        //with the first one, the friction would be less towards the end of the level
+        //F = force
+        //u = coefficient of friction - around .3-.5
+        //m = mass of yarn
+        //r = rad 
+        //g = gravity
+        
         //To Do: find the friction constant through experimentation, find mass/ radius and how it decays when it is unwound of ball of string
 
     }
