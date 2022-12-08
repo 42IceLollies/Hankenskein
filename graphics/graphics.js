@@ -131,6 +131,8 @@ const player = {
 	acceleration: 150,
 	fillColor: "#e2619f",
 	screenPercent: 0.035,
+	radiusActual: 0.1016, // 4 inches in meters
+	weightActual: "idk", // in kilograms?
 };
 
 const lines = [];
@@ -640,6 +642,7 @@ function resize() {
 	// make radius the set fraction of the height
 	player.radius = canvas.height * player.screenPercent;
 	player.y = canvas.height * playerHeight;
+	player.acceleration = player.radius * 6;
 
 	// resizes the lines
 	for (let i = 0; i < lines.length; i++) {
