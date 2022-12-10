@@ -86,10 +86,20 @@ class Line {
 		return x;
 	}
 
+	get degree() {
+		if (this.isVertical()) {
+			return 90;
+		}
+		let degree = Math.atan(-this.yChangeRate) * (180 / Math.PI);
+		if (degree < 0) {
+			degree = 180 + degree;
+		}
+		return degree;
+	}
 } // end of Line
 
 // ===============
-// POINT CLASS (for testing)
+// POINT CLASS
 // ===============
 
 class Point {
@@ -137,7 +147,7 @@ const player = {
 
 const lines = [];
 
-const testLine = new Line(500, 700, 1000, 0);
+const testLine = new Line(1500, 500, 0, 1000);
 // const testLine2 = new Line(500, 700, 200, 0);
 const ground = new Line(0, 1000, 300, 300);
 
@@ -565,6 +575,7 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 32:
 			keydown.space = true;
+			console.log(testLine.degree);
 			break;
 		case 87:
 			keydown.w = true;
@@ -688,8 +699,8 @@ function movePlayer() {
 var timer = 1;
 
 setInterval(()=>{
-	timer++;
-}, 1000);
+	timer += 0.5;
+}, 500);
 
 
 // returns if the player is on top of a line
@@ -702,13 +713,13 @@ function atRest() {
 		// if the line's vertical or there's no collision, skip this one
 		if (line.isVertical() || !testForLineCollision(player, line)) {
 			continue;
-		// if the line's horizontal (implied collision)
+		// if the line's horizontal (and collision)
 		} else if (line.isHorizontal()) {
 			// at rest if player is above the line
 			if (player.y < line.y1) {
 				atRest = true;
 			}
-		// if angled (implied colliding)
+		// if angled (and colliding)
 		} else {
 			// if the angled collision's below, it's at rest
 			if (!angledCollisionAbove(player, line)) {
@@ -717,7 +728,7 @@ function atRest() {
 		}
 	}
 	return atRest;
-}
+} // end of atRest
 
 
 // adds gravity to the player's speed when applicable
@@ -733,6 +744,21 @@ function fall() {
 		timer = 1;
 	}
 } // end of fall
+
+
+function roll() {
+	if (!atRest()) {return;}
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		// only keep going if it's an angled line, collided on the bottom half of the player
+		if (line.isVertical() || line.isHorizontal() 
+		|| !testForLineCollision(player, line) || angledCollisionAbove(player, line)) {
+			continue;
+		}
+		// insert roll here
+	}
+} // end of roll
 
 
 // moves the lines (based on player.xSpeed movement)
