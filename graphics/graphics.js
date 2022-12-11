@@ -120,6 +120,15 @@ class Point {
 } // end of Point
 
 
+function fillPoints() {
+	points = [];
+	for (let i = 0; i < lines.length; i++) {
+		points.push(new Point(lines[i].x1, lines[i].y1));
+		points.push(new Point(lines[i].x2, lines[i].y2))
+	}
+} // end of fillPoints
+
+
 // ==================
 // DATA OBJECTS
 // ==================
@@ -146,10 +155,11 @@ const player = {
 };
 
 const lines = [];
+let points = [];
 
-const testLine = new Line(1500, 500, 0, 1000);
+const testLine = new Line(1500, 500, 0, 1000, game.xOffset);
 // const testLine2 = new Line(500, 700, 200, 0);
-const ground = new Line(0, 1000, 300, 300);
+const ground = new Line(0, 1000, 300, 400, game.xOffset);
 
 const collidePoint = new Point(0, 0);
 
@@ -444,8 +454,6 @@ function collideWithPoints() {
 			continue;
 		}
 
-		// collidePoint.moveTo(point.x, point.y);	
-
 		const side1 = point.x - player.x;
 		const side2 = point.y - player.y;
 		// insert bounce here below
@@ -479,6 +487,16 @@ function testForPointCollision(circle, point) {
   
 	return hyp < circle.radius;
 } // end of testForPointCollision
+
+
+function pointCollisionBelow(circle, point) {
+	if (!testForPointCollision(circle, point)) {
+		console.log("here");
+		return false;
+	}
+	
+	return point.y > circle.y;
+}
 
 
 // ==============
@@ -575,7 +593,6 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 32:
 			keydown.space = true;
-			console.log(testLine.degree);
 			break;
 		case 87:
 			keydown.w = true;
@@ -671,6 +688,8 @@ function resize() {
 	}
 	// move the lines, so anything after this still works
 	moveLines();
+	points = [];
+	fillPoints();
 } // end of resize
 
 
@@ -680,6 +699,12 @@ function resizeCanvas() {
 	canvas.width = window.innerWidth - 20; 
 	canvas.height = window.innerHeight - 20;
 } // end of resizeCanvas
+
+
+function meterPixelRate() {
+	// console.log(player.radius, player.radiusActual, player.radius / player.radiusActual);
+	return player.radius / player.radiusActual;
+} // end of meterPixelRate
 
 
 // =====================
@@ -727,6 +752,17 @@ function atRest() {
 			}
 		}
 	}
+
+	// collidePoint.moveTo(points[0].x, points[0].y);
+
+	for (let i = 0; i < points.length; i++) {
+		const point = points[i];
+		// console.log(testForPointCollision(player, point));
+		if (testForPointCollision(player, point) && pointCollisionBelow(player, point)) {
+			atRest = true;
+		}
+	}
+
 	return atRest;
 } // end of atRest
 
@@ -737,13 +773,30 @@ function fall() {
 	if (!atRest()) {
 		// apply gravity
 		// reversed because the negative direction is opposite of usual
-		player.ySpeed -= Physics.affectGravity(0, player.ySpeed, timer);
+		// console.log(Physics.affectGravity(0, timer, meterPixelRate()) / game.fps);
+		
+		// player.ySpeed += Physics.affectGravity(0, timer, meterPixelRate()) / game.fps;
+
+		player.ySpeed += Physics.affectGravity(0, timer);
+		// console.log(Physics.affectGravity(0, timer));
 	// if it's at rest
 	} else {
 		// reset to 1 to avoid a second of no gravity
 		timer = 1;
 	}
 } // end of fall
+
+
+function horizontalRollEnergy(energy, degree) {
+	let x = degree;
+	if (withinRange(x, 0, 90)) {
+		return (x * (x - 90)) / (2025 / (0.5 * energy));
+	} else {
+		x -= 90;
+		return -(x * (x - 90)) / (2025 / (0.5 * energy));
+	}
+	
+} // end of horizontalRollEnergy
 
 
 function roll() {
@@ -756,7 +809,19 @@ function roll() {
 		|| !testForLineCollision(player, line) || angledCollisionAbove(player, line)) {
 			continue;
 		}
-		// insert roll here
+		let vForce = Physics.affectGravity(0, 1);
+		const hForce = horizontalRollEnergy(vForce, line.degree % 180);
+		vForce -= Math.abs(hForce);
+		// player.ySpeed += vForce;
+		// player.xSpeed += hForce;
+		// player.y += vForce;
+		game.xOffset -= hForce;
+		player.y += -(line.yChangeRate * hForce);
+		while (testForLineCollision(player, line)) {
+			player.y--;
+		}
+		player.y++;
+		// console.log(vForce, hForce);
 	}
 } // end of roll
 
@@ -798,7 +863,6 @@ function drawLines() {
 	}
 } // end of drawLines
 
-
 // resize it before starting
 resizeCanvas();
 // center player
@@ -821,13 +885,15 @@ const animateID = setInterval(() => {
 
 	movePlayer();
 	moveLines();
+	fillPoints();
 
 	fall();
+	// console.log(atRest());
+	roll();
 
 	clearCanvas(ctx);
 	drawLines();
 	drawPlayer(ctx);
-
 	// collidePoint.draw(ctx);
 
 }, 1000 / game.fps); // 1000 is 1 second

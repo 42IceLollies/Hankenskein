@@ -1,6 +1,6 @@
 class Physics{
     //gravity is -9.8 m/s^2 but I'm not entirely sure what a meter is in this game so feel free to change it
-    static g = -9.8;
+    static g = 9.8;
     static seconds = 0;
     static frameCount = 0;
 
@@ -11,14 +11,25 @@ class Physics{
         return this.seconds;
     }
 
-    //pulls down player with gravitational accelleration
-    static affectGravity(initYSpeed, ySpeed, timeOffGround)
+    // // pulls down player with gravitational accelleration
+    // static affectGravity(initYSpeed, timeOffGround, metersToPixels)
+    // {
+    //     // v = v0 + at
+    //     // new ySpeed = input ySpeed when jumps + g * secs since beginning of jump
+    //     const ySpeed = initYSpeed + (this.g * timeOffGround);
+    //     return ySpeed * metersToPixels;
+    //     // To Do: find a conversion between meters and pixels
+
+    // }
+
+    // pulls down player with gravitational accelleration
+    static affectGravity(initYSpeed, timeOffGround)
     {
-        //v = v0 + at
-        //new ySpeed = input ySpeed when jumps + g * secs since beginning of jump
-        ySpeed = initYSpeed + (this.g* timeOffGround);
+        // v = v0 + at
+        // new ySpeed = input ySpeed when jumps + g * secs since beginning of jump
+        const ySpeed = initYSpeed + (this.g * timeOffGround);
         return ySpeed;
-        //To Do: find a conversion between meters and pixels
+        // To Do: find a conversion between meters and pixels
 
     }
 
