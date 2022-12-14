@@ -59,5 +59,25 @@ class Physics{
     }
 }
 
+class Lasso{
+    //method to calculate direction and force of throw, updates every few milliseconds if cursor is held down
+    //based on mousex & mousey, time 
+    static lassoForce(x, y, timer)
+    {
+
+        
+        //returns magnitude of force and x2, y2
+        //return();
+    }
+    
+    //draw line method
+
+
+    //method to release lasso when space bar is pressed with animation, falls and pulls in until catches on something 
+
+
+    //can probably put in main class but a reels in and d adds slack
+}
+
 
 
