@@ -1,9 +1,6 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-// it reaches a natural speed cap, where friction is equal to acceleration
-// we can still add an additional speed cap though
-
 
 // ==================
 // LINE CLASS
@@ -238,19 +235,20 @@ function collideWithLines() {
 		// if the line's horizontal
 		} else if (line.isHorizontal()) {
 
-			// if player's lower, stop moving up
+			// if player's lower, bounce back
 			if (player.y > line.y1 && player.ySpeed < 0) {
 				player.y += player.radius - (player.y - line.y1);
 				player.y--;
 				player.blocked.up = true;
-			// if player's higher, stop moving down
+			// if player's higher, bounce back
 			} else if (player.y < line.y1 && player.ySpeed > 0) {
 				player.y -= player.radius - (line.y1 - player.y);
 				player.y++;
 				player.blocked.down = true;
 			}
 			// reverse vertical speed, with less speed
-			player.ySpeed = -Physics.bounceMomentumLoss(player.ySpeed);
+			// player.ySpeed = -Physics.bounceMomentumLoss(player.ySpeed);
+			game.gravityForce = -Physics.bounceMomentumLoss(game.gravityForce);
 
 		// if the line's angled
 		} else {
@@ -283,7 +281,7 @@ function collideWithLines() {
 					// if (player.xSpeed > 0) {player.xSpeed = 0;}
 					// if (player.ySpeed < 0) {player.ySpeed = 0;}
 					if (player.xSpeed > 0) {player.xSpeed = -Physics.bounceMomentumLoss(player.xSpeed);}
-					if (player.ySpeed < 0) {player.ySpeed = -Physics.bounceMomentumLoss(player.ySpeed);}
+					if (game.gravityForce < 0) {game.gravityForce = -Physics.bounceMomentumLoss(game.gravityForce);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
 						game.xOffset++; // reverse
@@ -300,7 +298,7 @@ function collideWithLines() {
 					// if (player.xSpeed < 0) {player.xSpeed = 0;}
 					// if (player.ySpeed < 0) {player.ySpeed = 0;}
 					if (player.xSpeed < 0) {player.xSpeed = -Physics.bounceMomentumLoss(player.xSpeed);}
-					if (player.ySpeed < 0) {player.ySpeed = -Physics.bounceMomentumLoss(player.ySpeed);}
+					if (game.gravityForce < 0) {game.gravityForce = -Physics.bounceMomentumLoss(game.gravityForce);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
 						game.xOffset--; // reverse
@@ -317,7 +315,7 @@ function collideWithLines() {
 					// if (player.xSpeed < 0) {player.xSpeed = 0;}
 					// if (player.ySpeed > 0) {player.ySpeed = 0;}
 					if (player.xSpeed < 0) {player.xSpeed = -Physics.bounceMomentumLoss(player.xSpeed);}
-					if (player.ySpeed > 0) {player.ySpeed = -Physics.bounceMomentumLoss(player.ySpeed);}
+					if (game.gravityForce > 0) {game.gravityForce = -Physics.bounceMomentumLoss(game.gravityForce);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
 						game.xOffset--; // reverse
@@ -334,7 +332,7 @@ function collideWithLines() {
 					// if (player.xSpeed > 0) {player.xSpeed = 0;}
 					// if (player.ySpeed > 0) {player.ySpeed = 0;}
 					if (player.xSpeed > 0) {player.xSpeed = -Physics.bounceMomentumLoss(player.xSpeed);}
-					if (player.ySpeed > 0) {player.ySpeed = -Physics.bounceMomentumLoss(player.ySpeed);}
+					if (game.gravityForce > 0) {game.gravityForce = -Physics.bounceMomentumLoss(player.ySpeed);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
 						game.xOffset++; // reverse
@@ -487,6 +485,7 @@ function collideWithPoints() {
 		if (!testForPointCollision(player, point)) {
 			continue;
 		}
+		// console.log("point collision");
 
 		const side1 = point.x - player.x;
 		const side2 = point.y - player.y;
@@ -630,8 +629,9 @@ document.addEventListener("keydown", (e) => {
 			// movePlayer();
 			// moveLines();
 			// fall();
+			// console.log(atRest());
 			// console.log(Math.round(player.xSpeed), Math.round(player.ySpeed), Math.round(game.gravityForce));
-			// break;
+			break;
 		case 87:
 			keydown.w = true;
 			break;
@@ -758,7 +758,7 @@ function movePlayer() {
 		// collideWithLines();
 		// moveLines();
 
-		const netYSpeed = player.ySpeed;
+		const netYSpeed = player.ySpeed + game.gravityForce;
 
 		// speeds are pixels/second, so it's reduced for how frequently it's happening
 		// if (!xMoved) {
@@ -842,14 +842,17 @@ function fall() {
 		// player.ySpeed += Physics.affectGravity(0, timer, meterPixelRate()) / game.fps;
 
 		// player.ySpeed += Physics.affectGravity(0, timer);
-		player.ySpeed += Physics.affectGravity(0, timer);
+		game.gravityForce += Physics.affectGravity(0, timer);
 		// console.log(Physics.affectGravity(0, timer));
 	// if it's at rest
 	} else {
+		// only reset the second time it's checked while at rest
+		if (timer == 1) {
+			game.gravityForce = 0;
+		}
 		// reset to 1 to avoid a second of no gravity
 		timer = 1;
 		// reset gravity so it's not still building
-		// game.gravityForce = 0;
 	}
 } // end of fall
 
@@ -917,11 +920,20 @@ function drawPlayer(ctx) {
 
 
 // draws in the lines
-function drawLines() {
+function drawLines(ctx) {
 	for (let i = 0; i < lines.length; i++) {
 		lines[i].draw(ctx);
 	}
 } // end of drawLines
+
+
+function draw(ctx) {
+	clearCanvas(ctx);
+	drawLines(ctx);
+	drawPlayer(ctx);
+	// collidePoint.draw(ctx);
+} // end of ctx
+
 
 // resize it before starting
 resizeCanvas();
@@ -937,7 +949,9 @@ const animateID = setInterval(() => {
 	moveLines();
 
 	propelPlayer();
-	friction(player);
+	if (atRest()) {
+		friction(player);
+	}
 	collideWithLines();
 	collideWithPoints();
 
@@ -949,11 +963,8 @@ const animateID = setInterval(() => {
 	// console.log(atRest());
 	roll();
 
-	clearCanvas(ctx);
-	drawLines();
-	drawPlayer(ctx);
-	// collidePoint.draw(ctx);
-	// console.log(Math.round(player.xSpeed), Math.round(player.ySpeed));
+	draw(ctx);
+	// console.log(Math.round(player.xSpeed), Math.round(player.ySpeed), Math.round(game.gravityForce));
 
 }, 1000 / game.fps); // 1000 is 1 second
 
