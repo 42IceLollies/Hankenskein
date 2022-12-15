@@ -3,7 +3,6 @@ class Physics{
     static g = 9.8;
     static seconds = 0;
     static frameCount = 0;
-    static speed;
      
     static getSeconds()
     {
@@ -56,13 +55,10 @@ class Physics{
         }
         return speed;
     }
+
     static bounce(theSpeed){
-        speed = theSpeed;
-        speed =-speed;
-        return speed;
+        return -theSpeed;
     }
-    
-    
 }
 
 
