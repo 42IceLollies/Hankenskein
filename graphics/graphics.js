@@ -163,7 +163,7 @@ let points = [];
 
 const testLine = new Line(1000, 1000, 0, 1000, game.xOffset);
 // const testLine2 = new Line(500, 700, 200, 0);
-const ground = new Line(0, 1000, 200, 500, game.xOffset);
+const ground = new Line(0, 1000, 0, 500, game.xOffset);
 
 const collidePoint = new Point(0, 0);
 
@@ -883,8 +883,15 @@ function roll() {
 		const hForce = horizontalRollEnergy(vForce, line.degree % 180);
 		vForce -= Math.abs(hForce);
 
+		if (hForce > 0 && player.blocked.right) {
+			if (player.ySpeed > 0) {player.ySpeed = 0;}
+			return;
+		} else if (hForce < 0 && player.blocked.left) {
+			if (player.ySpeed > 0) {player.ySpeed = 0;}
+			return;
+		}
 		player.xSpeed += hForce;
-		player.ySpeed += line.yChangeRate * hForce;// (hForce - (hForce * game.frictionRate) / game.fps)
+		player.ySpeed += line.yChangeRate * hForce;
 	}
 } // end of roll
 
@@ -964,8 +971,7 @@ const animateID = setInterval(() => {
 	roll();
 
 	draw(ctx);
-	// console.log(Math.round(player.xSpeed), Math.round(player.ySpeed), Math.round(game.gravityForce));
-
+	console.log(Math.round(player.xSpeed), Math.round(player.ySpeed), Math.round(game.gravityForce));
 }, 1000 / game.fps); // 1000 is 1 second
 
 
