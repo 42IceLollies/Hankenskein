@@ -48,6 +48,7 @@ class Line {
 	get yChangeRate() {
 		const xChange = this.x2Start - this.x1Start;
 		const yChange = this.y2 - this.y1;
+		//is this bit of code stil in use for redundancy or was it just for testing?
 		if (xChange == 0) {
 			console.log("ERROR: 0 value in xChange");
 			return;
@@ -186,10 +187,11 @@ lines.push(testLine);
 // lines.push(testLine2);
 lines.push(ground);
 
+
+//can be moved to physics
 // ====================
 // SPEED CHANGES
 // ====================
-
 
 // reduces player's speed
 function frictionPlayer() {
@@ -246,6 +248,7 @@ function propelPlayer() {
 		player.xSpeeds.normal = 0;
 	}
 } // end of propelPlayer
+
 
 
 // ==================
@@ -575,7 +578,7 @@ function pointCollisionBelow(circle, point) {
 	return point.y > circle.y;
 }
 
-
+//can be moved to physics
 // ==============
 // BOUNCE
 // ==============
@@ -729,6 +732,26 @@ document.addEventListener("keyup", (e) => {
 			break;
 	}
 });
+
+//================
+//LASSOING
+//================
+	
+	//***btw I haven't tested this yet, just committing it so that it doesn't get overwritten by github later
+	var intervalId; 
+	var forceX = 0;
+	var forceY = 0;
+	addEventListener('mousedown', (e)=>{intervalId= setInterval(()=>
+		{
+			//adds fraction of x component and y component of slope to cursor point each time
+			forceX+= (e.clientX-player.x)/100;//100 is a random number, will figure out something better later
+			forceY+= (e.clientY-player.y)/100;
+			Lasso.drawPreLasso(player.x, player.y, forceX, forceY, ctx);
+		}
+	)});
+	addEventListenter('mouseUp', (e)=>{clearInterval(intervalId)});
+	//clears interval afterwards
+	//there's got to be a better way to do this so that it doesn't repeat every time
 
 
 // ================
@@ -1080,6 +1103,12 @@ resizeCanvas();
 player.x = canvas.width / 2;
 // size the player correctly
 player.radius = canvas.height * player.screenPercent;
+
+
+
+//==================================
+//ANIMATE LOOP
+//==================================
 
 // the animate loop, cycles everything
 const animateID = setInterval(() => {

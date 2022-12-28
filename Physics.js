@@ -66,7 +66,7 @@ class Physics{
 
 class Lasso{
     //method to calculate direction and force of throw, 
-    //pointX and pointY incremented while cursor is held down, and function is called, reset when spacebar pressed
+    //pointX and pointY incremented while cursor is held down, and function is called
     //also returns distance of line
     static getLassoForce(hankX, hankY, pointX, pointY)
     {
@@ -78,6 +78,7 @@ class Lasso{
     }
         
     //draw line method
+    //called when cursor is being held down
     static drawPreLasso(hankX, hankY, pointX, pointY, ctx)
     {
         ctx.lineWidth = 10;
@@ -87,6 +88,7 @@ class Lasso{
     }
 
     //method to release lasso when space bar is pressed with animation, falls and pulls in until catches on something 
+    //called when spacebar is pressed
     static lassoRelease(){
         
     }
