@@ -144,6 +144,7 @@ const player = {
 	y: 100,
 	radius: 25,
 	xSpeed: 0,
+	// the above is updated with the sum of the below
 	xSpeeds: {
 		rollDown: 0,
 		rollUp: 0,
@@ -151,16 +152,18 @@ const player = {
 		normal: 0,
 	},
 	ySpeed: 0,
+	// the above is updated with the sum of the below
 	ySpeeds: {
 		gravity: 0,
 		rollDown: 0,
 		rollUp: 0,
 	},
 	acceleration: 150,
-	fillColor: "#e2619f",
-	screenPercent: 0.035,
+	fillColor: "#e2619f", // pink
+	screenPercent: 0.035, // 3.5% of the height
 	radiusActual: 0.1016, // 4 inches in meters
 	weightActual: "idk", // in kilograms?
+	// tracks which directions it's blocked by something
 	blocked: {
 		up: false,
 		down: false,
@@ -169,12 +172,13 @@ const player = {
 	},
 };
 
+// holds all the lines and points the player can collide with
 const lines = [];
 let points = [];
 
-const testLine = new Line(1000, 1000, 0, 1000, game.xOffset);
+const testLine = new Line(1000, 2000, 500, 0, game.xOffset);
 // const testLine2 = new Line(500, 700, 200, 0);
-const ground = new Line(0, 1000, 200, 500, game.xOffset);
+const ground = new Line(0, 1000, 300, 500, game.xOffset);
 
 const collidePoint = new Point(0, 0);
 
@@ -189,17 +193,21 @@ lines.push(ground);
 
 // reduces player's speed
 function frictionPlayer() {
+	// for every ySpeed
 	for (key in player.ySpeeds) {
+		// apply friction to rollDown and rollUp only
 		if (key == "rollDown" || key == "rollUp") {
 			player.ySpeeds[`${key}`] -= (player.ySpeeds[`${key}`] * game.frictionRate) / game.fps;
 		}
+		// round to zero if it's tiny
 		if (Math.abs(player.ySpeeds[`${key}`]) < 1) {player.ySpeeds[`${key}`] = 0;}
 	}
 
-	// console.log(player.xSpeeds.rollUp, player.xSpeeds.rollUp * game.frictionRate / game.fps);
-
+	// for every xSpeed
 	for (key in player.xSpeeds) {
+		// apply friction
 		player.xSpeeds[`${key}`] -= (player.xSpeeds[`${key}`] * game.frictionRate) / game.fps;
+		// round to 0 if it's tiny
 		if (Math.abs(player.xSpeeds[`${key}`]) < 1) {player.xSpeeds[`${key}`] = 0;}
 	}
 } // end of frictionPlayer
@@ -210,26 +218,33 @@ function propelPlayer() {
 	updatePlayerSpeeds();
 	// hold the speed seperately for testing
 	let xSpeed = player.xSpeeds.normal;
-	// add the new speed
+	// add the new input speed
 	if (keydown.left) {
 		xSpeed -= player.acceleration / game.fps;
 	}
 	if (keydown.right) {
 		xSpeed += player.acceleration / game.fps;
 	}
-	// decide if it needs to roll up a line
-	let rollUpSignal = false;
+	// avoids dividing by zero in rollUp()
+	if (xSpeed == 0) {
+		player.xSpeeds.normal = xSpeed;
+		return;
+	}
 
+	// keep track of if the energy's been used
+	let rollUpSignal = false;
 	for (let i = 0; i < lines.length; i++) {
 		if (rollUp(lines[i], xSpeed)) {
 			rollUpSignal = true;
 		}
 	}
-
+	// if it hasn't been used in rollUp, put it into the normal speed
 	if (!rollUpSignal) {
 		player.xSpeeds.normal = xSpeed;
+	// if it's been used, zero out normal speed
+	} else {
+		player.xSpeeds.normal = 0;
 	}
-
 } // end of propelPlayer
 
 
@@ -315,8 +330,8 @@ function collideWithLines() {
 			switch (true) {
 				case withinRange(collideDegree, 0, 90):
 					// insert bounce here in place of next 2 lines (and in the other cases)
+					// bounce all the x speeds, and gravity
 					if (player.xSpeed > 0) {playerXBounce();}
-					// if (game.gravityForce < 0) {game.gravityForce = -Physics.bounceMomentumLoss(game.gravityForce);}
 					if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
@@ -332,7 +347,6 @@ function collideWithLines() {
 					break;
 				case withinRange(collideDegree, 90, 180):
 					if (player.xSpeed < 0) {playerXBounce();}
-					// if (game.gravityForce < 0) {game.gravityForce = -Physics.bounceMomentumLoss(game.gravityForce);}
 					if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
@@ -348,7 +362,6 @@ function collideWithLines() {
 					break;
 				case withinRange(collideDegree, 180, 270):
 					if (player.xSpeed < 0) {playerXBounce();}
-					// if (game.gravityForce > 0) {game.gravityForce = -Physics.bounceMomentumLoss(game.gravityForce);}
 					if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
@@ -383,11 +396,15 @@ function collideWithLines() {
 } // end of collideWithLines
 
 
+// returns whether a circle is colliding with a line
 function testForLineCollision(circle, line) {
+	// gets the points where they would collide
 	const points = collisionPoints(circle, line);
 	const point1 = points[0];
 	const point2 = points[1];
 
+	// if the point on the line is between a collision point and the 
+	// center of the circle, (on the x or y), they're colliding
 	if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
 	withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
 		return true;
@@ -395,13 +412,15 @@ function testForLineCollision(circle, line) {
 	withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
 		return true;
 	}
-
+	// otherwise, they're not
 	return false;
 } // end of testForLineCollision
 
 
+// returns the degree of the point on a circle that would collide with a line of given slope
 function collisionDegree(slope) {
 	let degree = radiansToDegrees(Math.atan(inverseSlope(slope)));
+	// it's a weird kind of opposite from normal graphs, so subtract it from 180
 	if (slope >= 0) {
 		degree = 180 - Math.abs(degree);
 	}
@@ -409,7 +428,7 @@ function collisionDegree(slope) {
 } // end of collisionDegree
 
 
-// returns the (x, y) of the point on the circle that would collide with the line
+// returns the (x, y)'s of the points on a circle that would collide with a line
 function collisionPoints(circle, line) {
 	const hyp = circle.radius;
 	const adjs = [];
@@ -473,36 +492,30 @@ function collisionPoints(circle, line) {
 
 
 // for angled lines only
-// tests if 
+// tests if a collision between the circle and line is on top of the circle
+// gives false negatives, a false could be bottom collision or no collision so be careful
 function angledCollisionAbove(circle, line) {
-	const circleLeft = circle.x - circle.radius;
-	const circleRight = circle.x + circle.radius;
-	const circleUp = circle.y - circle.radius;
-	const circleDown = circle.x + circle.radius;
+	// no vertical or horizontal
+	if (line.isVertical || line.isHorizontal) {return;}
 
-	// vertical line
-	if (line.isVertical || line.isHorizontal) {
-		return;
-	} else {
-		const points = collisionPoints(circle, line);
-		const point1 = points[0];
-		const point2 = points[1];
+	const points = collisionPoints(circle, line);
+	const point1 = points[0];
+	const point2 = points[1];
 
-		// if it's the first (upper) point
-		if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
-		withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
-			return true;
-		// if it's the second (lower) point
-		} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) ||
-		withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
-			return false;
-		}
+	// if it's the first (upper) point
+	if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
+	withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
+		return true;
+	// if it's the second (lower) point
+	} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) ||
+	withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
+		return false;
 	}
 } // end of angledCollisionAbove
 
 
 // handles player collision with points
-// == currently does nothing, (changing xSpeed is outdated), awaiting updating ==
+// == currently does nothing, (changing xSpeed directly is outdated), awaiting updating ==
 function collideWithPoints() {
 	updatePlayerSpeeds();
 	const points = [];
@@ -569,9 +582,7 @@ function pointCollisionBelow(circle, point) {
 
 // called only with confirmed collision
 function playerXBounce() {
-	// for (key in player.xSpeeds) {
-	// 	player.xSpeeds[`${key}`] = -Physics.bounceMomentumLoss(player.xSpeeds[`${key}`]);
-	// }
+	// only bounces the normal currently
 	player.xSpeeds.normal = -Physics.bounceMomentumLoss(player.xSpeeds.normal);
 } // end of playerXBounce
 
@@ -899,7 +910,9 @@ function moveLines() {
 } // end of moveLines
 
 
+// updates the main speeds in player
 function updatePlayerSpeeds() {
+	// add up all the speeds in xSpeeds and ySpeeds sub-objects of player
 	let ySpeed = 0;
 	let xSpeed = 0;
 	for (key in player.ySpeeds) {
@@ -908,7 +921,7 @@ function updatePlayerSpeeds() {
 	for (key in player.xSpeeds) {
 		xSpeed += player.xSpeeds[`${key}`];
 	}
-
+	// and set them
 	player.ySpeed = ySpeed;
 	player.xSpeed = xSpeed;
 } // end of updatePlayerSpeeds
@@ -933,18 +946,23 @@ function roll() {
 } // end of roll
 
 
-function horizontalRollEnergy(energy, degree) {
-	let x = degree;
+// returns the amount of energy of the input should go into moving horizontally,
+// based on the given line slope
+// (insert roll) replace this with actual roll physics at some point
+function horizontalRollDownEnergy(energy, degree) {
+	let x = degree; // for simple reference
+	// if it's from 0-90, return the positive
 	if (withinRange(x, 0, 90)) {
 		return (x * (x - 90)) / (2025 / (0.5 * energy));
+	// else: subtract 90, and make the result negative
 	} else {
 		x -= 90;
 		return -(x * (x - 90)) / (2025 / (0.5 * energy));
 	}
-	
 } // end of horizontalRollEnergy
 
 
+// adds speed to roll player down the given line
 function rollDownNatural(line) {
 	updatePlayerSpeeds();
 	// only keep going if it's an angled line, collided on the bottom half of the player
@@ -957,12 +975,11 @@ function rollDownNatural(line) {
 	let vForce = Physics.affectGravity(0, 1);
 	// get the horizontal energy based on the downward force and how steep the line is
 	// (moduloed by 180 cause 30 degrees and 210 degrees are the same line)
-	const hForce = horizontalRollEnergy(vForce, line.degree % 180);
+	const hForce = horizontalRollDownEnergy(vForce, line.degree % 180);
 	vForce -= Math.abs(hForce);
 
 	// if moving right and blocked
 	if (hForce > 0 && player.blocked.right) {
-		console.log("riht blocked0");
 		// zero the speed, and return
 		if (player.ySpeeds.rollDown > 0) {player.ySpeeds.rollDown = 0;}
 		if (player.xSpeeds.rollDown > 0) {player.xSpeeds.rollDown = 0;}
@@ -981,6 +998,7 @@ function rollDownNatural(line) {
 } // end of rollDownNatural
 
 
+// rolls player up the line given, based on force given
 function rollUp(line, force) {
 	// only keep going if it's an angled line, collided on the bottom half of the player
 	if (line.isVertical || !testForLineCollision(player, line)
@@ -989,22 +1007,33 @@ function rollUp(line, force) {
 	}
 
 	let yChange = line.yChangeRate;
-	// if this line doesn't block in the direction it's moving, return
+	// if this line doesn't block in the direction it's moving
 	if ((yChange > 0 && force > 0) || (yChange < 0 && force < 0)) {
-		return false;
+		// if it's not currently rolling up, don't bother
+		if (player.xSpeeds.rollUp == 0) {return false;}
+		// if it's not being blocked, but pushing in the direction it's already rolling, don't bother
+		if (getSign(player.xSpeeds.rollUp) == getSign(force)) {
+			return false;
+		}
 	}
-	// console.log("hey there");
+	// finds the fraction of the energy to give to each part based on yChange
+	// adds enough speed to get to a point higher on the line
+
+	// if the push is going downhill, the rollUp code below works for taking away from
+	// rollUp speed as well
+
+	// add yChange and 1 to find the total
 	const totalEnergy = Math.abs(yChange) + 1;
+	// put it in a ratio with the amount of the total that's horizontal
 	const vFraction = yChange / totalEnergy;
+	// or vertical
 	let hFraction = (1 / totalEnergy);
 
+	// add to the rollUp xSpeed
 	player.xSpeeds.rollUp += hFraction * force;
-	// console.log(hFraction * force, player.xSpeeds.rollUp);
+	// set the rollUp ySpeed to match the current xSpeed
 	player.ySpeeds.rollUp = (player.xSpeeds.rollUp / hFraction) * vFraction;
-
-	// player.ySpeeds.rollUp += vFraction * force;
-
-
+	// send a message that the energy's been used
 	return true;
 } // end of rollUp
 
