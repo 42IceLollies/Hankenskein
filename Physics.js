@@ -3,6 +3,8 @@ class Physics{
     static g = 9.8;
     static seconds = 0;
     static frameCount = 0;
+    static lassoX = 0;
+    static lassoY = 0;
      
     static getSeconds()
     {
@@ -63,20 +65,31 @@ class Physics{
 
 
 class Lasso{
-    //method to calculate direction and force of throw, updates every few milliseconds if cursor is held down
-    //based on mousex & mousey, time 
-    static lassoForce(x, y, timer)
+    //method to calculate direction and force of throw, 
+    //pointX and pointY incremented while cursor is held down, and function is called, reset when spacebar pressed
+    //also returns distance of line
+    static getLassoForce(hankX, hankY, pointX, pointY)
     {
+        lassoX = pointX<hankX ? -(hankX-pointX) : pointX-hankX;
+        lassoY = pointY<hankY ? -(hankY-pointY) : pointY-hankY;
 
-        
-        //returns magnitude of force and x2, y2
-        //return();
+        //uses pythagorean theorum to find length of line from hankenskein to point location
+        return Math.sqrt((lassoX * lassoX) + (lassoY * lassoY));
     }
-    
+        
     //draw line method
-
+    static drawPreLasso(hankX, hankY, pointX, pointY, ctx)
+    {
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.moveTo(hankX, hankY);
+        ctx.lineTo(pointX, pointY);
+    }
 
     //method to release lasso when space bar is pressed with animation, falls and pulls in until catches on something 
+    static lassoRelease(){
+        
+    }
 
 
     //can probably put in main class but a reels in and d adds slack
