@@ -749,7 +749,7 @@ document.addEventListener("keyup", (e) => {
 			Lasso.drawPreLasso(player.x, player.y, forceX, forceY, ctx);
 		}
 	)});
-	addEventListenter('mouseUp', (e)=>{clearInterval(intervalId)});
+	addEventListener('mouseUp', (e)=>{clearInterval(intervalId)});
 	//clears interval afterwards
 	//there's got to be a better way to do this so that it doesn't repeat every time
 
