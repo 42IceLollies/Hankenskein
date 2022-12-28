@@ -57,7 +57,8 @@ class Physics{
         }
         return speed;
     }
-
+    
+    //This returns the speed when it is slowing down
     static bounce(theSpeed){
         return -theSpeed;
     }
