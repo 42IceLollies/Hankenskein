@@ -66,26 +66,48 @@ class Physics{
 
 
 class Lasso{
+    static hankX;
+    static hankY;
+    static pointX;
+    static pointY;
+    static lassoX;
+    static lassoY;
+
+    static setLassoProperties(hankX, hankY, pointX, pointY)
+    {
+        this.hankX = hankX;
+        this.hankY = hankY;
+        this.pointX = pointX;
+        this.pointY = pointY;
+        console.log(pointX + ", " + pointY);
+    }
+
+
     //method to calculate direction and force of throw, 
     //pointX and pointY incremented while cursor is held down, and function is called
     //also returns distance of line
-    static getLassoForce(hankX, hankY, pointX, pointY)
+    static getLassoForce()
     {
-        lassoX = pointX<hankX ? -(hankX-pointX) : pointX-hankX;
-        lassoY = pointY<hankY ? -(hankY-pointY) : pointY-hankY;
+        this.lassoX = this.pointX<this.hankX ? -(this.hankX-this.pointX) : this.pointX-this.hankX;
+        this.lassoY = this.pointY<this.hankY ? -(this.hankY-this.pointY) : this.pointY-this.hankY;
 
         //uses pythagorean theorum to find length of line from hankenskein to point location
-        return Math.sqrt((lassoX * lassoX) + (lassoY * lassoY));
+        return Math.sqrt((this.lassoX * this.lassoX) + (this.lassoY * this.lassoY));
     }
+
         
     //draw line method
     //called when cursor is being held down
-    static drawPreLasso(hankX, hankY, pointX, pointY, ctx)
+    static drawPreLasso(ctx)
     {
-        ctx.lineWidth = 10;
+        const tempLineWidth = ctx.lineWidth;
+        ctx.lineWidth = 5;
         ctx.beginPath();
-        ctx.moveTo(hankX, hankY);
-        ctx.lineTo(pointX, pointY);
+        ctx.moveTo(this.hankX, this.hankY);
+        ctx.lineTo(this.pointX, this.pointY);
+        ctx.stroke();
+
+        ctx.lineWidth = tempLineWidth;
     }
 
     //method to release lasso when space bar is pressed with animation, falls and pulls in until catches on something 

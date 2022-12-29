@@ -656,6 +656,44 @@ function getSign(num) {
 } // end of getSign
 
 
+//================
+//LASSOING
+//================
+	
+	//***btw I haven't tested this yet, just committing it so that it doesn't get overwritten by github later
+	var intervalId; 
+	var forceX = player.x;
+	var forceY = player.y;
+	//thinking there's probbaly a better place to put these for organization
+	var mouseX;
+	var mouseY;
+
+	function setMouseCoordinates(x, y)
+	{
+		mouseX = x;
+		mouseY = y;
+	}
+
+	function resetForceBase()
+	{
+		forceX = player.x;
+		forceY = player.y;
+	}
+
+	function incrementForce()
+	{	
+		//this bit isn't working but also my brain isn't working rn so gonna come back in a bit 
+		//adds fraction of x component and y component of slope to cursor point each time
+		forceX+=(mouseX/100);//100 is a random number, will figure out something better later
+		forceY+=(mouseY/100);
+		console.log(mouseX+ " " + mouseY);
+		//console.log(forceX + " " + forceY);
+		Lasso.setLassoProperties(player.x, player.y, forceX, forceY);
+	}
+	
+
+
+
 // ====================
 // KEY TRACKING
 // ====================
@@ -670,6 +708,7 @@ const keydown = {
 	space: false,
 	w: false,
 	s: false,
+	mouse:false,
 };
 
 
@@ -706,6 +745,14 @@ document.addEventListener("keydown", (e) => {
 	}
 });
 
+document.addEventListener("mousedown", (e)=>{
+	keydown.mouse=true;
+	setMouseCoordinates(e.clientX, e.clientY);
+	resetForceBase();
+	intervalId = setInterval(incrementForce, 100);
+});
+
+
 // logs when keys are released
 document.addEventListener("keyup", (e) => {
 	switch(e.keyCode) {
@@ -731,27 +778,12 @@ document.addEventListener("keyup", (e) => {
 			keydown.s = false;
 			break;
 	}
-});
 
-//================
-//LASSOING
-//================
-	
-	//***btw I haven't tested this yet, just committing it so that it doesn't get overwritten by github later
-	var intervalId; 
-	var forceX = 0;
-	var forceY = 0;
-	addEventListener('mousedown', (e)=>{intervalId= setInterval(()=>
-		{
-			//adds fraction of x component and y component of slope to cursor point each time
-			forceX+= (e.clientX-player.x)/100;//100 is a random number, will figure out something better later
-			forceY+= (e.clientY-player.y)/100;
-			Lasso.drawPreLasso(player.x, player.y, forceX, forceY, ctx);
-		}
-	)});
-	addEventListener('mouseUp', (e)=>{clearInterval(intervalId)});
-	//clears interval afterwards
-	//there's got to be a better way to do this so that it doesn't repeat every time
+
+});
+//might need to change something so that it doesn't clear the line until space is pressed
+document.addEventListener("mouseup", (e)=>{keydown.mouse=false; clearInterval(intervalId);});
+
 
 
 // ================
@@ -1133,9 +1165,11 @@ const animateID = setInterval(() => {
 	roll();
 
 	draw(ctx);
+	
+	if(keydown.mouse){Lasso.drawPreLasso(ctx);}
 	// updatePlayerSpeeds();
 	// console.log(Math.round(player.xSpeed), Math.round(player.ySpeed));
-	console.log(player.xSpeeds, player.ySpeeds);
+	//console.log(player.xSpeeds, player.ySpeeds);
 }, 1000 / game.fps); // 1000 is 1 second
 
 
