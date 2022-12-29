@@ -79,7 +79,13 @@ class Lasso{
         this.hankY = hankY;
         this.pointX = pointX;
         this.pointY = pointY;
-        console.log(pointX + ", " + pointY);
+       // console.log(pointX + ", " + pointY);
+    }
+
+    static setHankProperties(hankX, hankY)
+    {
+        this.hankX = hankX;
+        this.hankY = hankY;
     }
 
 
@@ -102,12 +108,17 @@ class Lasso{
     {
         const tempLineWidth = ctx.lineWidth;
         ctx.lineWidth = 5;
+        ctx.strokeStyle = "#8CA231";
+        ctx.globalAlpha = 0.5;
         ctx.beginPath();
         ctx.moveTo(this.hankX, this.hankY);
         ctx.lineTo(this.pointX, this.pointY);
         ctx.stroke();
 
+        //resetting everything for the rest of the code to work
         ctx.lineWidth = tempLineWidth;
+        ctx.strokeStyle = "#000000"
+        ctx.globalAlpha = 1;
     }
 
     //method to release lasso when space bar is pressed with animation, falls and pulls in until catches on something 
