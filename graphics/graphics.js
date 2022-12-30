@@ -3,12 +3,12 @@ const ctx = canvas.getContext('2d');
 
 
 // ==================
-// LINE CLASS
+// =LINE CLASS
 // ==================
 
 
 class Line {
-	constructor(x1Start, x2Start, y1, y2, xOffset) {
+	constructor(x1Start, y1, x2Start, y2, xOffset) {
 		this.x1Start = x1Start;
 		this.x2Start = x2Start;
 		this.y1 = y1;
@@ -97,7 +97,7 @@ class Line {
 } // end of Line
 
 // ===============
-// POINT CLASS
+// =POINT CLASS
 // ===============
 
 class Point {
@@ -128,7 +128,21 @@ function fillPoints() {
 
 
 // ==================
-// DATA OBJECTS
+// =CIRCLE CLASS
+// ==================
+
+
+class Circle {
+	constructor(x, y, radius) {
+		this.x = x;
+		this.y = y;
+		this.radius = radius;
+	}
+} // end of Circle
+
+
+// ==================
+// =DATA OBJECTS
 // ==================
 
 
@@ -141,9 +155,9 @@ const game = {
 
 
 const player = {
-	x: 100,
-	y: 100,
-	radius: 25,
+	shape: new Circle(100, 100, 25),
+	prevX: 100,
+	prevY: 100,
 	xSpeed: 0,
 	// the above is updated with the sum of the below
 	xSpeeds: {
@@ -177,20 +191,18 @@ const player = {
 const lines = [];
 let points = [];
 
-const testLine = new Line(1000, 2000, 500, 0, game.xOffset);
-// const testLine2 = new Line(500, 700, 200, 0);
-const ground = new Line(0, 1000, 300, 500, game.xOffset);
+const testLine = new Line(1000, 500, 2000, 0, game.xOffset);
+const ground = new Line(0, 300, 1000, 500, game.xOffset);
 
 const collidePoint = new Point(0, 0);
 
 lines.push(testLine);
-// lines.push(testLine2);
 lines.push(ground);
 
 
 //can be moved to physics
 // ====================
-// SPEED CHANGES
+// =SPEED CHANGES
 // ====================
 
 // reduces player's speed
@@ -252,7 +264,7 @@ function propelPlayer() {
 
 
 // ==================
-// COLLISION
+// =COLLISION
 // ==================
 
 
@@ -268,7 +280,7 @@ function collideWithLines() {
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		// if they aren't colliding, skip this one
-		if (!testForLineCollision(player, line)) {
+		if (!testForLineCollision(player.shape, line)) {
 			continue;
 		}
 		// ========== VERTICAL ===========
@@ -276,13 +288,13 @@ function collideWithLines() {
 		if (line.isVertical) {
 
 			// if player's to the left, stop moving right
-			if (player.x < line.x1 && player.xSpeed > 0) {
-				game.xOffset += player.radius - (line.x1 - player.x);
+			if (player.shape.x < line.x1 && player.xSpeed > 0) {
+				game.xOffset += player.shape.radius - (line.x1 - player.shape.x);
 				game.xOffset--;
 				player.blocked.right = true;
 			// if player's to the right, stop moving left
-			} else if (player.x > line.x1 && player.xSpeed < 0) {
-				game.xOffset -= player.radius - (player.x - line.x1);
+			} else if (player.shape.x > line.x1 && player.xSpeed < 0) {
+				game.xOffset -= player.shape.radius - (player.shape.x - line.x1);
 				game.xOffset++;
 				player.blocked.left = true;
 			}
@@ -294,14 +306,14 @@ function collideWithLines() {
 		} else if (line.isHorizontal) {
 
 			// if player's lower, bounce back
-			if (player.y > line.y1 && player.ySpeed < 0) {
-				player.y += player.radius - (player.y - line.y1);
-				player.y--;
+			if (player.shape.y > line.y1 && player.ySpeed < 0) {
+				player.shape.y += player.shape.radius - (player.shape.y - line.y1);
+				player.shape.y--;
 				player.blocked.up = true;
 			// if player's higher, bounce back
-			} else if (player.y < line.y1 && player.ySpeed > 0) {
-				player.y -= player.radius - (line.y1 - player.y);
-				player.y++;
+			} else if (player.shape.y < line.y1 && player.ySpeed > 0) {
+				player.shape.y -= player.shape.radius - (line.y1 - player.shape.y);
+				player.shape.y++;
 				player.blocked.down = true;
 			}
 			// reverse vertical speed, with less speed
@@ -311,20 +323,20 @@ function collideWithLines() {
 		// ======== ANGLED ==========
 
 		} else {
-			const points = collisionPoints(player, line);
+			const points = collisionPoints(player.shape, line);
 			const point1 = points[0];
 			const point2 = points[1];
 
 			let collideDegree;
 
 			// if it's the first point (upper half)
-			if (withinRange(line.yAt(point1[0]), player.y, point1[1]) ||
-		withinRange(line.xAt(point1[1]), player.x, point1[0])) {
+			if (withinRange(line.yAt(point1[0]), player.shape.y, point1[1]) ||
+		withinRange(line.xAt(point1[1]), player.shape.x, point1[0])) {
 				// get the degree
 				collideDegree = collisionDegree(-line.yChangeRate);
 			// if it's the second point (lower half)
-			} else if (withinRange(line.yAt(point2[0]), player.y, point2[1]) ||
-			withinRange(line.xAt(point2[1]), player.x, point2[0])) {
+			} else if (withinRange(line.yAt(point2[0]), player.shape.y, point2[1]) ||
+			withinRange(line.xAt(point2[1]), player.shape.x, point2[0])) {
 				// get the degree, and add 180 to go to the other side
 				collideDegree = collisionDegree(-line.yChangeRate) + 180;
 			}
@@ -337,7 +349,7 @@ function collideWithLines() {
 					if (player.xSpeed > 0) {playerXBounce();}
 					if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
-					while (testForLineCollision(player, line)) {
+					while (testForLineCollision(player.shape, line)) {
 						game.xOffset++; // reverse
 						line.adjustX(game.xOffset);
 						player.y++;
@@ -352,7 +364,7 @@ function collideWithLines() {
 					if (player.xSpeed < 0) {playerXBounce();}
 					if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
-					while (testForLineCollision(player, line)) {
+					while (testForLineCollision(player.shape, line)) {
 						game.xOffset--; // reverse
 						line.adjustX(game.xOffset);
 						player.y++;
@@ -367,7 +379,7 @@ function collideWithLines() {
 					if (player.xSpeed < 0) {playerXBounce();}
 					if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
-					while (testForLineCollision(player, line)) {
+					while (testForLineCollision(player.shape, line)) {
 						game.xOffset--; // reverse
 						line.adjustX(game.xOffset);
 						player.y--;
@@ -382,7 +394,7 @@ function collideWithLines() {
 					if (player.xSpeed > 0) {playerXBounce();}
 					if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
-					while (testForLineCollision(player, line)) {
+					while (testForLineCollision(player.shape, line)) {
 						game.xOffset++; // reverse
 						line.adjustX(game.xOffset);
 						player.y--;
@@ -531,15 +543,15 @@ function collideWithPoints() {
 	// for every point
 	for (let i = 0; i < points.length; i++) {
 		const point = points[i];
-		if (!testForPointCollision(player, point)) {
+		if (!testForPointCollision(player.shape, point)) {
 			continue;
 		}
 
-		const side1 = point.x - player.x;
-		const side2 = point.y - player.y;
+		const side1 = point.x - player.shape.x;
+		const side2 = point.y - player.shape.y;
 		// insert bounce here below
 		// don't count it if it's on the very edge
-		if (Math.abs(side2) < (player.radius / 12) * 11) {
+		if (Math.abs(side2) < (player.shape.radius / 12) * 11) {
 			// if player's moving toward collision, stop them
 			if (side1 > 0 && player.xSpeed > 0) {
 				player.xSpeed = 0;
@@ -548,7 +560,7 @@ function collideWithPoints() {
 			}
 		}
 		// don't count it if it's on the very edge
-		if (Math.abs(side1 < (player.radius / 12) * 11)) {
+		if (Math.abs(side1 < (player.shape.radius / 12) * 11)) {
 			// if player's moving toward collision, stop them
 			if (side2 > 0 && player.ySpeed > 0) {
 				player.ySpeed = 0;
@@ -580,9 +592,10 @@ function pointCollisionBelow(circle, point) {
 
 //can be moved to physics
 // ==============
-// BOUNCE
+// =BOUNCE
 // ==============
 
+// filler until actual bouncing
 // called only with confirmed collision
 function playerXBounce() {
 	// only bounces the normal currently
@@ -590,8 +603,17 @@ function playerXBounce() {
 } // end of playerXBounce
 
 
+function getBounceDegree(circle, line) {
+	if (!testForLineCollision(circle, line)) {return;}
+
+	const prevPath = new Line(circle.prevX, circle.prevY, circle.x, circle.y);
+	const circleAbove = !angledCollisionAbove(circle, line);
+
+} // end of getBounceDegree
+
+
 // ==============
-// MISC. MATH
+// =MISC. MATH
 // ==============
 
 
@@ -657,15 +679,15 @@ function getSign(num) {
 
 
 //================
-//LASSOING
+// =LASSOING
 //================
 	
 	//maybe this should all be moved to lasso class?
-	//realy wanted to write lasso classo there
+	//realy wanted to write lasso classo there // do it!
 	const lasso = {
 		intervalId: null,
-		forceX: player.x,
-		forceY: player.y,
+		forceX: player.shape.x,
+		forceY: player.shape.y,
 		mouseX: 0,
 		mouseY:0,
 		aiming: false,
@@ -679,23 +701,23 @@ function getSign(num) {
 
 	function resetForceBase()
 	{
-		lasso.forceX = player.x;
-		lasso.forceY = player.y;
+		lasso.forceX = player.shape.x;
+		lasso.forceY = player.shape.y;
 	}
 
 	function incrementForce()
 	{	
 		//adds fraction of x component and y component of slope to cursor point each time
-		lasso.forceX+=(lasso.mouseX-player.x)/50;
-		lasso.forceY+=(lasso.mouseY-player.y)/50;
-		Lasso.setLassoProperties(player.x, player.y, lasso.forceX, lasso.forceY);
+		lasso.forceX+=(lasso.mouseX-player.shape.x)/50;
+		lasso.forceY+=(lasso.mouseY-player.shape.y)/50;
+		Lasso.setLassoProperties(player.shape.x, player.shape.y, lasso.forceX, lasso.forceY);
 	}
 	
 
 
 
 // ====================
-// KEY TRACKING
+// =KEY TRACKING
 // ====================
 
 
@@ -745,14 +767,6 @@ document.addEventListener("keydown", (e) => {
 	}
 });
 
-document.addEventListener("mousedown", (e)=>{
-	keydown.mouse=true;
-	setMouseCoordinates(e.clientX, e.clientY);
-	resetForceBase();
-	lasso.intervalId = setInterval(incrementForce, 100);
-	lasso.aiming = true;
-});
-
 
 // logs when keys are released
 document.addEventListener("keyup", (e) => {
@@ -781,20 +795,28 @@ document.addEventListener("keyup", (e) => {
 			keydown.s = false;
 			break;
 	}
-
-
 });
+
+
+document.addEventListener("mousedown", (e)=>{
+	keydown.mouse=true;
+	setMouseCoordinates(e.clientX, e.clientY);
+	resetForceBase();
+	lasso.intervalId = setInterval(incrementForce, 100);
+	lasso.aiming = true;
+});
+
+
 //might need to change something so that it doesn't clear the line until space is pressed
 document.addEventListener("mouseup", (e)=>{
 	keydown.mouse=false;
 	clearInterval(lasso.intervalId);
-	lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.x, player.y)}, 100);
-	});
-
+	lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y)}, 100);
+});
 
 
 // ================
-// RESIZING
+// =RESIZING
 // ================
 
 
@@ -802,8 +824,8 @@ document.addEventListener("mouseup", (e)=>{
 function resize() {
 	// saves the canvas dimensions for comparison after
 	const prevCanvas = canvas.width + " " + canvas.height;
-	// saves what fraction of canvas height player.y is
-	const playerHeight = player.y / canvas.height;
+	// saves what fraction of canvas height player.shape.y is
+	const playerHeight = player.shape.y / canvas.height;
 
 	// holds the fractions representing lines' x's and y's
 	const lineYs = [];
@@ -813,8 +835,8 @@ function resize() {
 		const line = lines[i];
 		// for y's, a fraction of the canvas height
 		lineYs.push([line.y1 / canvas.height, line.y2 / canvas.height]);
-		// for x's, the distance from player to line-point, divided by player.radius
-		lineXs.push([(line.x1 - player.x) / player.radius, (line.x2 - player.x) / player.radius]);
+		// for x's, the distance from player to line-point, divided by player.shape.radius
+		lineXs.push([(line.x1 - player.shape.x) / player.shape.radius, (line.x2 - player.shape.x) / player.shape.radius]);
 	}
 
 	// resize the canvas to fill the whole window
@@ -828,11 +850,11 @@ function resize() {
 	}
 
 	// center player horizontally
-	player.x = canvas.width / 2;
+	player.shape.x = canvas.width / 2;
 	// make radius the set fraction of the height
-	player.radius = canvas.height * player.screenPercent;
-	player.y = canvas.height * playerHeight;
-	player.acceleration = player.radius * 6;
+	player.shape.radius = canvas.height * player.screenPercent;
+	player.shape.y = canvas.height * playerHeight;
+	player.acceleration = player.shape.radius * 6;
 
 	// resizes the lines
 	for (let i = 0; i < lines.length; i++) {
@@ -842,11 +864,11 @@ function resize() {
 		line.y2 = lineYs[i][1] * canvas.height;
 
 		// multiplied by player radius so it stays on the same scale as player
-		const x1Distance = lineXs[i][0] * player.radius;
-		const x2Distance = lineXs[i][1] * player.radius;
+		const x1Distance = lineXs[i][0] * player.shape.radius;
+		const x2Distance = lineXs[i][1] * player.shape.radius;
 		// factor in xOffset when changing xStarts
-		line.x1Start = (player.x - game.xOffset) + x1Distance;
-		line.x2Start = (player.x - game.xOffset) + x2Distance;
+		line.x1Start = (player.shape.x - game.xOffset) + x1Distance;
+		line.x2Start = (player.shape.x - game.xOffset) + x2Distance;
 	}
 	// move the lines, so anything after this still works
 	moveLines();
@@ -864,31 +886,27 @@ function resizeCanvas() {
 
 
 function meterPixelRate() {
-	// console.log(player.radius, player.radiusActual, player.radius / player.radiusActual);
-	return player.radius / player.radiusActual;
+	// console.log(player.shape.radius, player.radiusActual, player.shape.radius / player.radiusActual);
+	return player.shape.radius / player.radiusActual;
 } // end of meterPixelRate
 
 
 // =====================
-// MOVING
+// =MOVING
 // =====================
 
 
 // moves the player vertically, everything else moves horizontally
 function movePlayer() {
-	let yMoved = false;
-	let xMoved = false;
-
 	updatePlayerSpeeds();
+	// cause it doesn't actually move horizontally
+	player.prevX = -game.xOffset;
+	player.prevY = player.shape.y;
 
 	// speeds are pixels/second, so it's reduced for how frequently it's happening
 	game.xOffset -= player.xSpeed / game.fps;
-	xMoved = true;
-
-	// console.log(player.xSpeeds.rollUp);
 	
-	player.y += player.ySpeed / game.fps;
-	yMoved = true;
+	player.shape.y += player.ySpeed / game.fps;
 } // end of movePlayer
 
 
@@ -909,18 +927,18 @@ function atRest() {
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		// if the line's vertical or there's no collision, skip this one
-		if (line.isVertical || !testForLineCollision(player, line)) {
+		if (line.isVertical || !testForLineCollision(player.shape, line)) {
 			continue;
 		// if the line's horizontal (and collision)
 		} else if (line.isHorizontal) {
 			// at rest if player is above the line
-			if (player.y < line.y1) {
+			if (player.shape.y < line.y1) {
 				atRest = true;
 			}
 		// if angled (and colliding)
 		} else {
 			// if the angled collision's below, it's at rest
-			if (!angledCollisionAbove(player, line)) {
+			if (!angledCollisionAbove(player.shape, line)) {
 				atRest = true;
 			}
 		}
@@ -930,8 +948,7 @@ function atRest() {
 
 	for (let i = 0; i < points.length; i++) {
 		const point = points[i];
-		// console.log(testForPointCollision(player, point));
-		if (testForPointCollision(player, point) && pointCollisionBelow(player, point)) {
+		if (testForPointCollision(player.shape, point) && pointCollisionBelow(player, point)) {
 			atRest = true;
 		}
 	}
@@ -990,7 +1007,7 @@ function updatePlayerSpeeds() {
 
 
 // =================
-// ROLLING
+// =ROLLING
 // =================
 
 
@@ -1029,7 +1046,7 @@ function rollDownNatural(line) {
 	updatePlayerSpeeds();
 	// only keep going if it's an angled line, collided on the bottom half of the player
 	if (line.isVertical || line.isHorizontal 
-	|| !testForLineCollision(player, line) || angledCollisionAbove(player, line)) {
+	|| !testForLineCollision(player.shape, line) || angledCollisionAbove(player.shape, line)) {
 		return;
 	}
 	// (insert actual rolling physics here if we have it) (insert roll)
@@ -1063,8 +1080,8 @@ function rollDownNatural(line) {
 // rolls player up the line given, based on force given
 function rollUp(line, force) {
 	// only keep going if it's an angled line, collided on the bottom half of the player
-	if (line.isVertical || !testForLineCollision(player, line)
-	|| angledCollisionAbove(player, line) || line.isHorizontal) {
+	if (line.isVertical || !testForLineCollision(player.shape, line)
+	|| angledCollisionAbove(player.shape, line) || line.isHorizontal) {
 		return false;
 	}
 
@@ -1101,7 +1118,7 @@ function rollUp(line, force) {
 
 
 // =================
-// DRAWING
+// =DRAWING
 // =================
 
 
@@ -1115,7 +1132,7 @@ function clearCanvas(ctx) {
 function drawPlayer(ctx) {
 	ctx.fillStyle = player.fillColor;
 	ctx.beginPath();
-	ctx.arc(player.x, player.y, player.radius, 0, 2 * Math.PI);
+	ctx.arc(player.shape.x, player.shape.y, player.shape.radius, 0, 2 * Math.PI);
 	ctx.fill();
 } // end of drawPlayer
 
@@ -1139,14 +1156,14 @@ function draw(ctx) {
 // resize it before starting
 resizeCanvas();
 // center player
-player.x = canvas.width / 2;
+player.shape.x = canvas.width / 2;
 // size the player correctly
-player.radius = canvas.height * player.screenPercent;
+player.shape.radius = canvas.height * player.screenPercent;
 
 
 
 //==================================
-//ANIMATE LOOP
+// =ANIMATE LOOP
 //==================================
 
 // the animate loop, cycles everything
@@ -1173,10 +1190,8 @@ const animateID = setInterval(() => {
 
 	draw(ctx);
 	
-	if(lasso.aiming){Lasso.drawPreLasso(ctx);}
-	// updatePlayerSpeeds();
-	// console.log(Math.round(player.xSpeed), Math.round(player.ySpeed));
-	//console.log(player.xSpeeds, player.ySpeeds);
+	if (lasso.aiming) {Lasso.drawPreLasso(ctx);}
+	// console.log(player.xSpeeds, player.ySpeeds);
 }, 1000 / game.fps); // 1000 is 1 second
 
 
