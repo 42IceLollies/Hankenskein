@@ -3,8 +3,6 @@ class Physics{
     static g = 9.8;
     static seconds = 0;
     static frameCount = 0;
-    static lassoX = 0;
-    static lassoY = 0;
      
     static getSeconds()
     {
@@ -72,6 +70,7 @@ class Lasso{
     static pointY;
     static lassoX;
     static lassoY;
+    static lassoPoints;
 
     static setLassoProperties(hankX, hankY, pointX, pointY)
     {
@@ -121,10 +120,37 @@ class Lasso{
         ctx.globalAlpha = 1;
     }
 
-    //method to release lasso when space bar is pressed with animation, falls and pulls in until catches on something 
+    //When space bar is pressed, lasso falls and pulls in until it catches on something 
     //called when spacebar is pressed
-    static lassoRelease(){
+    static dropLasso(){
+        //breaks lines into smaller line segments
         
+        //find length of line & divide by size of segments
+        //create array of objects to hold x1, y1, x2, y2 & boolean hasCollidedWithGround - can use testForLineCollision on line 415?
+
+        //decreases y of all points if hasCollidedWithGround = false & point is not in between two fallen sections
+
+        //if it is between two fallen sections, extra slope has to be turned into a curve
+
+        //curve is parabola- find how much longer section is than direct route between two objects
+        //greater the distance between heights of two fallen points, closer to the lower one, the bottom of the vertex is
+        //divide distance to halfway between two points by difference in heights and use that number to judge distance from the shorter that the vertex will fall at
+        //and uhhhh do some parabola stufffff
+        //i've been trying to figure this out for an hour now and have no idea how to do it so we'll just push that task onto future cordelia
+
+        //draws all points/segments
+    
+        
+    }
+
+    static pullInLasso()
+    {
+
+    }
+
+    static drawLasso()
+    {
+
     }
 
 
