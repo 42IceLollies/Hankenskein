@@ -245,10 +245,23 @@ function propelPlayer() {
 		return;
 	}
 
+	// not working \/
+	// if (player.xSpeeds.rollUp > 0 && player.blocked.left) {
+	// 	player.xSpeeds.rollUp = 0;
+	// 	player.ySpeeds.rollUp = 0;
+	// 	console.log('1h');
+	// }
+
+	// if (player.xSpeeds.rollUp < 0 && player.blocked.right) {
+	// 	player.xSpeeds.rollUp = 0;
+	// 	player.ySpeeds.rollUp = 0;
+	// 	console.log('2h');
+	// }
+
 	// keep track of if the energy's been used
 	let rollUpSignal = false;
 	for (let i = 0; i < lines.length; i++) {
-		if (rollUp(lines[i], xSpeed)) {
+		if (rollUp(player, lines[i], xSpeed)) {
 			rollUpSignal = true;
 		}
 	}
@@ -280,7 +293,7 @@ function collideWithLines() {
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		// if they aren't colliding, skip this one
-		if (!testForLineCollision(player.shape, line)) {
+		if (!testForLineCollision(player, line)) {
 			continue;
 		}
 		// ========== VERTICAL ===========
@@ -323,7 +336,7 @@ function collideWithLines() {
 		// ======== ANGLED ==========
 
 		} else {
-			const points = collisionPoints(player.shape, line);
+			const points = collisionPoints(player, line);
 			const point1 = points[0];
 			const point2 = points[1];
 
@@ -349,7 +362,7 @@ function collideWithLines() {
 					if (player.xSpeed > 0) {playerXBounce();}
 					if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
-					while (testForLineCollision(player.shape, line)) {
+					while (testForLineCollision(player, line)) {
 						game.xOffset++; // reverse
 						line.adjustX(game.xOffset);
 						player.y++;
@@ -364,7 +377,7 @@ function collideWithLines() {
 					if (player.xSpeed < 0) {playerXBounce();}
 					if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
-					while (testForLineCollision(player.shape, line)) {
+					while (testForLineCollision(player, line)) {
 						game.xOffset--; // reverse
 						line.adjustX(game.xOffset);
 						player.y++;
@@ -379,7 +392,7 @@ function collideWithLines() {
 					if (player.xSpeed < 0) {playerXBounce();}
 					if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
-					while (testForLineCollision(player.shape, line)) {
+					while (testForLineCollision(player, line)) {
 						game.xOffset--; // reverse
 						line.adjustX(game.xOffset);
 						player.y--;
@@ -394,7 +407,7 @@ function collideWithLines() {
 					if (player.xSpeed > 0) {playerXBounce();}
 					if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
-					while (testForLineCollision(player.shape, line)) {
+					while (testForLineCollision(player, line)) {
 						game.xOffset++; // reverse
 						line.adjustX(game.xOffset);
 						player.y--;
@@ -413,6 +426,7 @@ function collideWithLines() {
 
 // returns whether a circle is colliding with a line
 function testForLineCollision(circle, line) {
+	const c = circle.shape;
 	// gets the points where they would collide
 	const points = collisionPoints(circle, line);
 	const point1 = points[0];
@@ -420,11 +434,11 @@ function testForLineCollision(circle, line) {
 
 	// if the point on the line is between a collision point and the 
 	// center of the circle, (on the x or y), they're colliding
-	if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
-	withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
+	if (withinRange(line.yAt(point1[0]), c.y, point1[1]) ||
+	withinRange(line.xAt(point1[1]), c.x, point1[0])) {
 		return true;
-	} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) ||
-	withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
+	} else if (withinRange(line.yAt(point2[0]), c.y, point2[1]) ||
+	withinRange(line.xAt(point2[1]), c.x, point2[0])) {
 		return true;
 	}
 	// otherwise, they're not
@@ -445,7 +459,8 @@ function collisionDegree(slope) {
 
 // returns the (x, y)'s of the points on a circle that would collide with a line
 function collisionPoints(circle, line) {
-	const hyp = circle.radius;
+	const c = circle.shape;
+	const hyp = c.radius;
 	const adjs = [];
 	const opps = [];
 
@@ -489,16 +504,16 @@ function collisionPoints(circle, line) {
 		// determines whether to add/subtract the adj/opp
 		switch (true) {
 			case withinRange(degrees[i], 0, 90):
-				points.push([circle.x + adjs[i], circle.y - opps[i]]);
+				points.push([c.x + adjs[i], c.y - opps[i]]);
 				break;
 			case withinRange(degrees[i], 90, 180):
-				points.push([circle.x - adjs[i], circle.y - opps[i]]);
+				points.push([c.x - adjs[i], c.y - opps[i]]);
 				break;
 			case withinRange(degrees[i], 180, 270):
-				points.push([circle.x - adjs[i], circle.y + opps[i]]);
+				points.push([c.x - adjs[i], c.y + opps[i]]);
 				break;
 			case withinRange(degrees[i], 270, 360):
-				points.push([circle.x + adjs[i], circle.y + opps[i]]);
+				points.push([c.x + adjs[i], c.y + opps[i]]);
 				break;
 		}
 	}
@@ -510,6 +525,7 @@ function collisionPoints(circle, line) {
 // tests if a collision between the circle and line is on top of the circle
 // gives false negatives, a false could be bottom collision or no collision so be careful
 function angledCollisionAbove(circle, line) {
+	const c = circle.shape;
 	// no vertical or horizontal
 	if (line.isVertical || line.isHorizontal) {return;}
 
@@ -518,12 +534,12 @@ function angledCollisionAbove(circle, line) {
 	const point2 = points[1];
 
 	// if it's the first (upper) point
-	if (withinRange(line.yAt(point1[0]), circle.y, point1[1]) ||
-	withinRange(line.xAt(point1[1]), circle.x, point1[0])) {
+	if (withinRange(line.yAt(point1[0]), c.y, point1[1]) ||
+	withinRange(line.xAt(point1[1]), c.x, point1[0])) {
 		return true;
 	// if it's the second (lower) point
-	} else if (withinRange(line.yAt(point2[0]), circle.y, point2[1]) ||
-	withinRange(line.xAt(point2[1]), circle.x, point2[0])) {
+	} else if (withinRange(line.yAt(point2[0]), c.y, point2[1]) ||
+	withinRange(line.xAt(point2[1]), c.x, point2[0])) {
 		return false;
 	}
 } // end of angledCollisionAbove
@@ -606,10 +622,24 @@ function playerXBounce() {
 function getBounceDegree(circle, line) {
 	if (!testForLineCollision(circle, line)) {return;}
 
-	const prevPath = new Line(circle.prevX, circle.prevY, circle.x, circle.y);
-	const circleAbove = !angledCollisionAbove(circle, line);
+	const prevPath = new Line(circle.prevX, circle.prevY, -game.xOffset, circle.shape.y, 0);
+	const lineDegree = line.degree;
+	const degreeDifference = line.degree - prevPath.degree;
 
+	// console.log(prevPath);
+
+	return (lineDegree + 180) - degreeDifference;
 } // end of getBounceDegree
+
+
+function bounce(circle, line) {
+	if (!testForLineCollision(circle, line)) {return;}
+	const c = circle.shape;
+
+	const bounceDegree = getBounceDegree(circle, line);
+
+	console.log(bounceDegree);
+} // end of bounce
 
 
 // ==============
@@ -927,7 +957,7 @@ function atRest() {
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		// if the line's vertical or there's no collision, skip this one
-		if (line.isVertical || !testForLineCollision(player.shape, line)) {
+		if (line.isVertical || !testForLineCollision(player, line)) {
 			continue;
 		// if the line's horizontal (and collision)
 		} else if (line.isHorizontal) {
@@ -938,7 +968,7 @@ function atRest() {
 		// if angled (and colliding)
 		} else {
 			// if the angled collision's below, it's at rest
-			if (!angledCollisionAbove(player.shape, line)) {
+			if (!angledCollisionAbove(player, line)) {
 				atRest = true;
 			}
 		}
@@ -1046,7 +1076,7 @@ function rollDownNatural(line) {
 	updatePlayerSpeeds();
 	// only keep going if it's an angled line, collided on the bottom half of the player
 	if (line.isVertical || line.isHorizontal 
-	|| !testForLineCollision(player.shape, line) || angledCollisionAbove(player.shape, line)) {
+	|| !testForLineCollision(player, line) || angledCollisionAbove(player, line)) {
 		return;
 	}
 	// (insert actual rolling physics here if we have it) (insert roll)
@@ -1078,20 +1108,27 @@ function rollDownNatural(line) {
 
 
 // rolls player up the line given, based on force given
-function rollUp(line, force) {
+function rollUp(circle, line, force) {
 	// only keep going if it's an angled line, collided on the bottom half of the player
-	if (line.isVertical || !testForLineCollision(player.shape, line)
-	|| angledCollisionAbove(player.shape, line) || line.isHorizontal) {
+	if (line.isVertical || !testForLineCollision(circle, line)
+	|| angledCollisionAbove(circle, line) || line.isHorizontal) {
 		return false;
 	}
+
+	// // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
+	// if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
+	// (circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
+	// 	console.log("hereye");
+	// 	circle.xSpeeds.rollUp = 0;
+	// }
 
 	let yChange = line.yChangeRate;
 	// if this line doesn't block in the direction it's moving
 	if ((yChange > 0 && force > 0) || (yChange < 0 && force < 0)) {
 		// if it's not currently rolling up, don't bother
-		if (player.xSpeeds.rollUp == 0) {return false;}
+		if (circle.xSpeeds.rollUp == 0) {return false;}
 		// if it's not being blocked, but pushing in the direction it's already rolling, don't bother
-		if (getSign(player.xSpeeds.rollUp) == getSign(force)) {
+		if (getSign(circle.xSpeeds.rollUp) == getSign(force)) {
 			return false;
 		}
 	}
@@ -1109,9 +1146,9 @@ function rollUp(line, force) {
 	let hFraction = (1 / totalEnergy);
 
 	// add to the rollUp xSpeed
-	player.xSpeeds.rollUp += hFraction * force;
+	circle.xSpeeds.rollUp += hFraction * force;
 	// set the rollUp ySpeed to match the current xSpeed
-	player.ySpeeds.rollUp = (player.xSpeeds.rollUp / hFraction) * vFraction;
+	circle.ySpeeds.rollUp = (circle.xSpeeds.rollUp / hFraction) * vFraction;
 	// send a message that the energy's been used
 	return true;
 } // end of rollUp
@@ -1191,7 +1228,10 @@ const animateID = setInterval(() => {
 	draw(ctx);
 	
 	if (lasso.aiming) {Lasso.drawPreLasso(ctx);}
+
 	// console.log(player.xSpeeds, player.ySpeeds);
+	// console.log(bounce(player, lines[1]));
+	// bounce(player, lines[1]);
 }, 1000 / game.fps); // 1000 is 1 second
 
 
