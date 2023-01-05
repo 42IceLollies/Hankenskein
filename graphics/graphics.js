@@ -94,6 +94,13 @@ class Line {
 		}
 		return degree;
 	}
+
+	get slopeIntercept() {
+		const equation = [this.yChangeRate];
+		const yInt = this.y1 + (-this.x1Start * equation[0]);
+		equation.push(yInt);
+		return equation;
+	}
 } // end of Line
 
 // ===============
@@ -191,14 +198,17 @@ const player = {
 const lines = [];
 let points = [];
 
-const testLine = new Line(1000, 500, 2000, 0, game.xOffset);
+const testLine = new Line(1000, 500, 1000, 0, game.xOffset);
 const ground = new Line(0, 300, 1000, 500, game.xOffset);
 
-const collidePoint = new Point(0, 0);
+const point1 = new Point(0, 0);
+const point2 = new Point(0, 0);
 
 lines.push(testLine);
 lines.push(ground);
 
+points.push(point1);
+points.push(point2);
 
 //can be moved to physics
 // ====================
@@ -622,28 +632,83 @@ function playerXBounce() {
 function getBounceDegree(circle, line) {
 	if (!testForLineCollision(circle, line)) {return;}
 
-	const prevPath = new Line(circle.prevX, circle.prevY, -game.xOffset, circle.shape.y, 0);
+	let diff = Math.abs(circle.prevX) - Math.abs(game.xOffset);
+	if (game.xOffset < 0) {diff = -diff;}
+
+	const prevPath = new Line(circle.shape.x - diff, circle.prevY, circle.shape.x, circle.shape.y, 0);
 	const lineDegree = line.degree;
 	const degreeDifference = line.degree - prevPath.degree;
-
-	// console.log(prevPath);
 
 	return (lineDegree + 180) - degreeDifference;
 } // end of getBounceDegree
 
 
+// work in progress
+function getBounceDirection(circle, line, bounceDegree) {
+	const sides1 = getSides(bounceDegree, 10);
+
+	sides1[0] = Math.abs(sides1[0]);
+	if (withinRange(bounceDegree, 90, 270)) {
+		sides1[0] = -sides1[0];
+	}
+	sides1[1] = Math.abs(sides1[1]);
+	if (withinRange(bounceDegree, 0, 180)) {
+		sides1[1] = -sides1[1];
+	}
+
+	const sides2 = [-sides1[0], -sides1[1]];
+	// const c1 = new Circle(circle.shape.x, circle.shape.y, circle.shape.radius);
+	// const c2 = new Circle(circle.shape.x, circle.shape.y, circle.shape.radius);
+
+	// let loopCount = 0;
+	// while (true) {
+	// 	c1.x += sides1[0];
+	// 	c1.y += sides1[1];
+	// 	c2.x += sides2[0];
+	// 	c2.y += sides2[1];
+	// 	if (!testForLineCollision({shape: c1}, line)) {
+	// 		return sides1;
+	// 	} else if (!testForLineCollision({shape: c2}, line)) {
+	// 		return sides2;
+	// 	}
+	// 	if (loopCount % 1000 == 0) {
+	// 		console.log("Infinite Loop Alert");
+	// 	}
+	// }
+} // end of getBounceDirection
+
+
 function bounce(circle, line) {
 	if (!testForLineCollision(circle, line)) {return;}
+	updatePlayerSpeeds();
 	const c = circle.shape;
-
+	// the degree the circle should bounce away at
 	const bounceDegree = getBounceDegree(circle, line);
+	// the total force circle's travelling with
+	const totalEnergy = Math.abs(circle.xSpeed) + Math.abs(circle.ySpeed);
 
-	console.log(bounceDegree);
+	// const sides = getBounceDirection(circle, line, bounceDegree);
+
+	// console.log(sides);
+
+	// const tempDegree = bounceDegree;
+	// const tempSides = getSides(tempDegree, 5);
+
+	// tempSides[0] = Math.abs(tempSides[0]);
+	// if (withinRange(tempDegree, 90, 270)) {
+	// 	tempSides[0] = -tempSides[0];
+	// }
+	// tempSides[1] = Math.abs(tempSides[1]);
+	// if (withinRange(tempDegree, 0, 180)) {
+	// 	tempSides[1] = -tempSides[1];
+	// }
+
+	// console.log(tempSides);
 } // end of bounce
 
 
 // ==============
-// =MISC. MATH
+// =MATH MISC.
 // ==============
 
 
@@ -665,6 +730,22 @@ function getOpp(degree, hyp) {
 } // end of getOpp
 
 
+// returns [adj, opp]
+function getSides(degree, hyp) {
+	const sides = [];
+	// if in the 1st or 3rd quarter, keep it normal
+	if (degree % 180 < 90) {
+		sides.push(getAdj(degree, hyp));
+		sides.push(getOpp(degree, hyp));
+	// if in the 2nd or 4th quarter, switch adj and opp
+	} else {
+		sides.push(getOpp(degree, hyp));
+		sides.push(getAdj(degree, hyp));
+	}
+	return sides;
+} // end of getSides
+
+
 // returns length of hypotenuse off other 2 side lengths
 function getHyp(side1, side2) {
 	adj = Math.abs(side1);
@@ -677,6 +758,24 @@ function getHyp(side1, side2) {
 function inverseSlope(x) {
 	return -(1 / x);
 } // end of invertSlope
+
+
+// takes 2 slope-intercept form equations in [mx, b], returns [x, y] of intersection
+function pointOfIntersection(slope1, slope2) {
+	// the equivalent of getting everything on one side of the equation
+	// while leaving slope2 unchanged
+	slope1[0] -= slope2[0];
+	slope1[1] -= slope2[1];
+	// holds the point of intersection (roll credits!)
+	const coords = [];
+	// in (2x + 9), you'd do (-9 / 2) to find x
+	coords.push(-slope1[1] / slope1[0]);
+	// plug x into equation/slope 2 to find the y
+	// multiply the slope by x, and add the y-int
+	coords.push(coords[0] * slope2[0] + slope2[1]);
+
+	return coords;
+} // end of pointOfIntersection
 
 
 // converts radians to degrees
@@ -933,10 +1032,20 @@ function movePlayer() {
 	player.prevX = -game.xOffset;
 	player.prevY = player.shape.y;
 
+	// point1.moveTo(player.shape.x, player.shape.y);
+
 	// speeds are pixels/second, so it's reduced for how frequently it's happening
 	game.xOffset -= player.xSpeed / game.fps;
 	
 	player.shape.y += player.ySpeed / game.fps;
+
+	point2.moveTo(player.shape.x, player.shape.y);
+
+	let diff = Math.abs(player.prevX) - Math.abs(game.xOffset);
+	if (game.xOffset < 0) {diff = -diff;}
+	point1.moveTo(player.shape.x - diff, player.prevY);
+
+	// console.log(-game.xOffset);
 } // end of movePlayer
 
 
@@ -1115,13 +1224,6 @@ function rollUp(circle, line, force) {
 		return false;
 	}
 
-	// // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
-	// if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
-	// (circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
-	// 	console.log("hereye");
-	// 	circle.xSpeeds.rollUp = 0;
-	// }
-
 	let yChange = line.yChangeRate;
 	// if this line doesn't block in the direction it's moving
 	if ((yChange > 0 && force > 0) || (yChange < 0 && force < 0)) {
@@ -1144,6 +1246,13 @@ function rollUp(circle, line, force) {
 	const vFraction = yChange / totalEnergy;
 	// or vertical
 	let hFraction = (1 / totalEnergy);
+
+	// // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
+	if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
+	(circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
+		console.log("hereye");
+		circle.xSpeeds.rollUp = 0;
+	}
 
 	// add to the rollUp xSpeed
 	circle.xSpeeds.rollUp += hFraction * force;
@@ -1186,7 +1295,8 @@ function draw(ctx) {
 	clearCanvas(ctx);
 	drawLines(ctx);
 	drawPlayer(ctx);
-	// collidePoint.draw(ctx);
+	point1.draw(ctx);
+	point2.draw(ctx);
 } // end of ctx
 
 
@@ -1229,9 +1339,11 @@ const animateID = setInterval(() => {
 	
 	if (lasso.aiming) {Lasso.drawPreLasso(ctx);}
 
+	// console.log(getSides(ground.degree, 1));
+
 	// console.log(player.xSpeeds, player.ySpeeds);
 	// console.log(bounce(player, lines[1]));
-	// bounce(player, lines[1]);
+	bounce(player, lines[1]);
 }, 1000 / game.fps); // 1000 is 1 second
 
 
