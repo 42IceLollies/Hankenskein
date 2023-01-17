@@ -50,8 +50,8 @@ class Line {
 		const yChange = this.y2 - this.y1;
 		//is this bit of code stil in use for redundancy or was it just for testing?
 		if (xChange == 0) {
-			console.log("ERROR: 0 value in xChange");
-			return;
+			console.log("ERROR: 0 value for xChange in yChangeRate()");
+			return false;
 		}
 		return yChange / xChange;
 	}
@@ -97,7 +97,7 @@ class Line {
 
 	get slopeIntercept() {
 		const equation = [this.yChangeRate];
-		const yInt = this.y1 + (-this.x1Start * equation[0]);
+		const yInt = this.y1 + (-this.x1 * equation[0]);
 		equation.push(yInt);
 		return equation;
 	}
@@ -192,25 +192,24 @@ const player = {
 		left: false,
 		right: false,
 	},
+	restCount: 0,
 };
 
 // holds all the lines and points the player can collide with
 const lines = [];
+const testPoints = [];
 let points = [];
 
 const testLine = new Line(1000, 500, 1000, 0, game.xOffset);
 const ground = new Line(0, 300, 1000, 500, game.xOffset);
 
-const point1 = new Point(0, 0);
-const point2 = new Point(0, 0);
-
 lines.push(testLine);
 lines.push(ground);
 
-points.push(point1);
-points.push(point2);
+testPoints.push(new Point(0, 0));
+testPoints.push(new Point(0, 0));
 
-//can be moved to physics
+// can be moved to physics
 // ====================
 // =SPEED CHANGES
 // ====================
@@ -369,8 +368,8 @@ function collideWithLines() {
 				case withinRange(collideDegree, 0, 90):
 					// insert bounce here in place of next 2 lines (and in the other cases)
 					// bounce all the x speeds, and gravity
-					if (player.xSpeed > 0) {playerXBounce();}
-					if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
+					// if (player.xSpeed > 0) {playerXBounce();}
+					// if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
 						game.xOffset++; // reverse
@@ -384,8 +383,8 @@ function collideWithLines() {
 					player.blocked.right = true;
 					break;
 				case withinRange(collideDegree, 90, 180):
-					if (player.xSpeed < 0) {playerXBounce();}
-					if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
+					// if (player.xSpeed < 0) {playerXBounce();}
+					// if (player.ySpeeds.gravity < 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
 						game.xOffset--; // reverse
@@ -399,8 +398,8 @@ function collideWithLines() {
 					player.blocked.left = true;
 					break;
 				case withinRange(collideDegree, 180, 270):
-					if (player.xSpeed < 0) {playerXBounce();}
-					if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
+					// if (player.xSpeed < 0) {playerXBounce();}
+					// if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
 						game.xOffset--; // reverse
@@ -414,8 +413,8 @@ function collideWithLines() {
 					player.blocked.left = true;
 					break;
 				case withinRange(collideDegree, 270, 360):
-					if (player.xSpeed > 0) {playerXBounce();}
-					if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
+					// if (player.xSpeed > 0) {playerXBounce();}
+					// if (player.ySpeeds.gravity > 0) {player.ySpeeds.gravity = -Physics.bounceMomentumLoss(player.ySpeeds.gravity);}
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
 						game.xOffset++; // reverse
@@ -575,7 +574,7 @@ function collideWithPoints() {
 
 		const side1 = point.x - player.shape.x;
 		const side2 = point.y - player.shape.y;
-		// insert bounce here below
+		// insert bounce here below (for colliding with points)
 		// don't count it if it's on the very edge
 		if (Math.abs(side2) < (player.shape.radius / 12) * 11) {
 			// if player's moving toward collision, stop them
@@ -628,7 +627,7 @@ function playerXBounce() {
 	player.xSpeeds.normal = -Physics.bounceMomentumLoss(player.xSpeeds.normal);
 } // end of playerXBounce
 
-
+// finds the degree the circle should bounce away from the line at
 function getBounceDegree(circle, line) {
 	if (!testForLineCollision(circle, line)) {return;}
 
@@ -644,11 +643,12 @@ function getBounceDegree(circle, line) {
 
 
 // work in progress
-function getBounceDirection(circle, line, bounceDegree) {
+function getBounceSides(circle, line, bounceDegree) {
+	// gets the 2 direction combination options
 	const sides1 = getSides(bounceDegree, 10);
 
 	sides1[0] = Math.abs(sides1[0]);
-	if (withinRange(bounceDegree, 90, 270)) {
+	if (!withinRange(bounceDegree, 90, 270)) {
 		sides1[0] = -sides1[0];
 	}
 	sides1[1] = Math.abs(sides1[1]);
@@ -657,25 +657,41 @@ function getBounceDirection(circle, line, bounceDegree) {
 	}
 
 	const sides2 = [-sides1[0], -sides1[1]];
-	// const c1 = new Circle(circle.shape.x, circle.shape.y, circle.shape.radius);
-	// const c2 = new Circle(circle.shape.x, circle.shape.y, circle.shape.radius);
+	// get them as points to compare to the intersection point
+	const point1 = [circle.shape.x + sides1[0], circle.shape.y + sides1[1]];
+	const point2 = [circle.shape.x + sides2[0], circle.shape.y + sides2[1]];
+	// the line the circle will travel along
+	const currPath = new Line(point1[0], point1[1], point2[0], point2[1], 0);
 
-	// let loopCount = 0;
-	// while (true) {
-	// 	c1.x += sides1[0];
-	// 	c1.y += sides1[1];
-	// 	c2.x += sides2[0];
-	// 	c2.y += sides2[1];
-	// 	if (!testForLineCollision({shape: c1}, line)) {
-	// 		return sides1;
-	// 	} else if (!testForLineCollision({shape: c2}, line)) {
-	// 		return sides2;
-	// 	}
-	// 	if (loopCount % 1000 == 0) {
-	// 		console.log("Infinite Loop Alert");
-	// 	}
-	// }
-} // end of getBounceDirection
+	// get where the current path intersects with the colliding line
+	let crossPoint;
+	// if neither are vertical
+	if (!line.isVertical && !currPath.isVertical) {
+		// get the normal point of intersection
+		crossPoint = pointOfIntersection(line.slopeIntercept, currPath.slopeIntercept);
+	// if both are vertical, error
+	} else if (line.isVertical && currPath.isVertical) {
+		console.log("ERROR: 2 vertical lines in getBounceSides");
+	// if one of them is vertical, pass it to a special intersection function
+	// since a vertical line doesn't have a slope intercept form
+	} else {
+		if (line.isVertical) {
+			crossPoint = pointOfIntersectionWithVertical(currPath.slopeIntercept, line.x1);
+		} else if (currPath.isVertical) {
+			crossPoint = pointOfIntersectionWithVertical(line.slopeIntercept, currPath.x1);
+		}
+	}
+
+	// if the first point ISN'T in the same quadrant as the intersection, it's the right way
+	if ((getSign(player.shape.x - point1[0]) == getSign(player.shape.x - crossPoint[0])
+	&& getSign(player.shape.y - point1[1]) == getSign(player.shape.y - crossPoint[1]))) {
+		return sides1;
+	// if the first point ISN'T in the same quadrant as the intersection, it's the right way
+	} else if ((getSign(player.shape.x - point2[0]) == getSign(player.shape.x - crossPoint[0])
+	&& getSign(player.shape.y - point2[1]) == getSign(player.shape.y - crossPoint[1]))) {
+		return sides2;
+	}
+} // end of getBounceSides
 
 
 function bounce(circle, line) {
@@ -684,26 +700,36 @@ function bounce(circle, line) {
 	const c = circle.shape;
 	// the degree the circle should bounce away at
 	const bounceDegree = getBounceDegree(circle, line);
+	// gets the sides (adj, opp) of an example movement in the right direction
+	const sides = getBounceSides(circle, line, bounceDegree);
+
+	// show the center of the player, and where the center will move to
+	testPoints[0].moveTo(player.shape.x, player.shape.y);
+	testPoints[1].moveTo(player.shape.x + sides[0], player.shape.y + sides[1]);
+
+	// calculate the fraction of the energy going to each direction
+	const totalFraction = Math.abs(sides[0]) + Math.abs(sides[1]);
+	// don't .abs the values this time, cause then it carries the correct sign through
+	const hFraction = sides[0] / totalFraction;
+	const vFraction = sides[1] / totalFraction;
+
 	// the total force circle's travelling with
-	const totalEnergy = Math.abs(circle.xSpeed) + Math.abs(circle.ySpeed);
+	const totalEnergy = Physics.bounceMomentumLoss(Math.abs(circle.xSpeed) + Math.abs(circle.ySpeed));
+	console.log(circle.xSpeed, circle.ySpeed);
 
-	// const sides = getBounceDirection(circle, line, bounceDegree);
+	// zero out all the xSpeeds
+	for (let i = 0; i < circle.xSpeeds.length; i++) {
+		circle.xSpeeds[i] = 0;
+	}
+	// put all the new energy into the normal speed
+	circle.xSpeeds.normal = hFraction * totalEnergy;
 
-	// console.log(sides);
-
-	// const tempDegree = bounceDegree;
-	// const tempSides = getSides(tempDegree, 5);
-
-	// tempSides[0] = Math.abs(tempSides[0]);
-	// if (withinRange(tempDegree, 90, 270)) {
-	// 	tempSides[0] = -tempSides[0];
-	// }
-	// tempSides[1] = Math.abs(tempSides[1]);
-	// if (withinRange(tempDegree, 0, 180)) {
-	// 	tempSides[1] = -tempSides[1];
-	// }
-
-	// console.log(tempSides);
+	// zero out all the ySpeeds
+	for (let i = 0; i < circle.ySpeeds.length; i++) {
+		circle.ySpeeds[i] = 0;
+	}
+	// put all the new energy into gravity (probably should have its own at some point)
+	circle.ySpeeds.gravity = vFraction * totalEnergy;
 } // end of bounce
 
 
@@ -766,6 +792,10 @@ function pointOfIntersection(slope1, slope2) {
 	// while leaving slope2 unchanged
 	slope1[0] -= slope2[0];
 	slope1[1] -= slope2[1];
+
+	// update to allow a slope to be a straight vertical line
+
+	if (slope1[0] == 0) {return "parallel";}
 	// holds the point of intersection (roll credits!)
 	const coords = [];
 	// in (2x + 9), you'd do (-9 / 2) to find x
@@ -776,6 +806,14 @@ function pointOfIntersection(slope1, slope2) {
 
 	return coords;
 } // end of pointOfIntersection
+
+
+// finds the intersection of 2 lines when one of them is vertical
+// takes slope in [mx, b] form, vertical line location as just a number
+// returns point of intersection in [x, y] form
+function pointOfIntersectionWithVertical(slope, vertX) {
+	return [vertX, (slope[0] * vertX) + slope[1]];
+} // end of pointOfIntersectionWithVertical
 
 
 // converts radians to degrees
@@ -803,6 +841,7 @@ function withinRange(num, rangeStart, rangeEnd) {
 
 // returns +1 if positive, -1 if negative
 function getSign(num) {
+	if (num == 0) {return 0;}
 	return num / Math.abs(num);
 } // end of getSign
 
@@ -884,6 +923,9 @@ document.addEventListener("keydown", (e) => {
 			// moveLines();
 			// fall();
 			// roll();
+			// if (player.restCount < 3) {
+			// 	bounce(player, lines[1]);
+			// }
 			// updatePlayerSpeeds();
 			// console.log(player.xSpeeds, player.ySpeeds);
 			break;
@@ -1032,20 +1074,13 @@ function movePlayer() {
 	player.prevX = -game.xOffset;
 	player.prevY = player.shape.y;
 
-	// point1.moveTo(player.shape.x, player.shape.y);
-
 	// speeds are pixels/second, so it's reduced for how frequently it's happening
 	game.xOffset -= player.xSpeed / game.fps;
 	
 	player.shape.y += player.ySpeed / game.fps;
 
-	point2.moveTo(player.shape.x, player.shape.y);
-
 	let diff = Math.abs(player.prevX) - Math.abs(game.xOffset);
 	if (game.xOffset < 0) {diff = -diff;}
-	point1.moveTo(player.shape.x - diff, player.prevY);
-
-	// console.log(-game.xOffset);
 } // end of movePlayer
 
 
@@ -1295,8 +1330,8 @@ function draw(ctx) {
 	clearCanvas(ctx);
 	drawLines(ctx);
 	drawPlayer(ctx);
-	point1.draw(ctx);
-	point2.draw(ctx);
+	testPoints[0].draw(ctx);
+	testPoints[1].draw(ctx);
 } // end of ctx
 
 
@@ -1323,7 +1358,10 @@ const animateID = setInterval(() => {
 
 	propelPlayer();
 	if (atRest()) {
+		player.restCount++;
 		frictionPlayer();
+	} else {
+		player.restCount = 0;
 	}
 	collideWithLines();
 	collideWithPoints();
@@ -1339,11 +1377,11 @@ const animateID = setInterval(() => {
 	
 	if (lasso.aiming) {Lasso.drawPreLasso(ctx);}
 
-	// console.log(getSides(ground.degree, 1));
-
-	// console.log(player.xSpeeds, player.ySpeeds);
-	// console.log(bounce(player, lines[1]));
-	bounce(player, lines[1]);
+	// still not done, but closer
+	// if (player.restCount < 3) {
+	// 	bounce(player, lines[1]);
+	// }
+	
 }, 1000 / game.fps); // 1000 is 1 second
 
 
