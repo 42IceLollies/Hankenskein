@@ -685,11 +685,11 @@ function getBounceSides(circle, line, bounceDegree) {
 	// if the first point ISN'T in the same quadrant as the intersection, it's the right way
 	if ((getSign(player.shape.x - point1[0]) == getSign(player.shape.x - crossPoint[0])
 	&& getSign(player.shape.y - point1[1]) == getSign(player.shape.y - crossPoint[1]))) {
-		return sides1;
+		return sides2;
 	// if the first point ISN'T in the same quadrant as the intersection, it's the right way
 	} else if ((getSign(player.shape.x - point2[0]) == getSign(player.shape.x - crossPoint[0])
 	&& getSign(player.shape.y - point2[1]) == getSign(player.shape.y - crossPoint[1]))) {
-		return sides2;
+		return sides1;
 	}
 } // end of getBounceSides
 
@@ -704,8 +704,8 @@ function bounce(circle, line) {
 	const sides = getBounceSides(circle, line, bounceDegree);
 
 	// show the center of the player, and where the center will move to
-	testPoints[0].moveTo(player.shape.x, player.shape.y);
-	testPoints[1].moveTo(player.shape.x + sides[0], player.shape.y + sides[1]);
+	// testPoints[0].moveTo(player.shape.x, player.shape.y);
+	// testPoints[1].moveTo(player.shape.x + sides[0], player.shape.y + sides[1]);
 
 	// calculate the fraction of the energy going to each direction
 	const totalFraction = Math.abs(sides[0]) + Math.abs(sides[1]);
@@ -713,23 +713,19 @@ function bounce(circle, line) {
 	const hFraction = sides[0] / totalFraction;
 	const vFraction = sides[1] / totalFraction;
 
-	// the total force circle's travelling with
-	const totalEnergy = Physics.bounceMomentumLoss(Math.abs(circle.xSpeed) + Math.abs(circle.ySpeed));
-	console.log(circle.xSpeed, circle.ySpeed);
+	const hForce = circle.xSpeeds.normal;
+	const vForce = circle.ySpeeds.gravity;
 
-	// zero out all the xSpeeds
-	for (let i = 0; i < circle.xSpeeds.length; i++) {
-		circle.xSpeeds[i] = 0;
-	}
-	// put all the new energy into the normal speed
+	// add together the net force we're using, reduce by the bounce momentum loss
+	// .abs since it's still a positive amount of energy, even moving in a negative direction on the canvas
+	const totalEnergy = Physics.bounceMomentumLoss(Math.abs(hForce) + Math.abs(vForce));
+
+	// put the right amount of the reduced energy into the normal speed
 	circle.xSpeeds.normal = hFraction * totalEnergy;
 
-	// zero out all the ySpeeds
-	for (let i = 0; i < circle.ySpeeds.length; i++) {
-		circle.ySpeeds[i] = 0;
-	}
 	// put all the new energy into gravity (probably should have its own at some point)
 	circle.ySpeeds.gravity = vFraction * totalEnergy;
+	updatePlayerSpeeds();
 } // end of bounce
 
 
@@ -918,14 +914,14 @@ document.addEventListener("keydown", (e) => {
 			keydown.down = true;
 			break;
 		case 32:
-			keydown.space = true;
+			// keydown.space = true;
 			// movePlayer();
 			// moveLines();
 			// fall();
 			// roll();
-			// if (player.restCount < 3) {
+			// // if (player.restCount < 3) {
 			// 	bounce(player, lines[1]);
-			// }
+			// // }
 			// updatePlayerSpeeds();
 			// console.log(player.xSpeeds, player.ySpeeds);
 			break;
@@ -1378,8 +1374,8 @@ const animateID = setInterval(() => {
 	if (lasso.aiming) {Lasso.drawPreLasso(ctx);}
 
 	// still not done, but closer
-	// if (player.restCount < 3) {
-	// 	bounce(player, lines[1]);
+	// if (player.restCount < 1) {
+		bounce(player, lines[1]);
 	// }
 	
 }, 1000 / game.fps); // 1000 is 1 second
