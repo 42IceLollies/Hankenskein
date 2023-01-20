@@ -70,7 +70,7 @@ class Lasso{
     static pointY;
     static lassoX;
     static lassoY;
-    static lassoPoints;
+    static lassoPoints = {};
 
     static setLassoProperties(hankX, hankY, pointX, pointY)
     {
@@ -85,6 +85,12 @@ class Lasso{
     {
         this.hankX = hankX;
         this.hankY = hankY;
+    }
+
+    static setPointProperties(pointX, pointY)
+    {
+        this.pointX = pointX;
+        this.pointY = pointY; 
     }
 
 
@@ -122,24 +128,9 @@ class Lasso{
 
     //When space bar is pressed, lasso falls and pulls in until it catches on something 
     //called when spacebar is pressed
-    static dropLasso(){
-        //breaks lines into smaller line segments
+    static dropLasso()
+    {
         
-        //find length of line & divide by size of segments
-        //create array of objects to hold x1, y1, x2, y2 & boolean hasCollidedWithGround - can use testForLineCollision on line 415?
-
-        //decreases y of all points if hasCollidedWithGround = false & point is not in between two fallen sections
-
-        //if it is between two fallen sections, extra slope has to be turned into a curve
-
-        //curve is parabola- find how much longer section is than direct route between two objects
-        //greater the distance between heights of two fallen points, closer to the lower one, the bottom of the vertex is
-        //divide distance to halfway between two points by difference in heights and use that number to judge distance from the shorter that the vertex will fall at
-        //and uhhhh do some parabola stufffff
-        //i've been trying to figure this out for an hour now and have no idea how to do it so we'll just push that task onto future cordelia
-
-        //draws all points/segments
-    
         
     }
 
@@ -150,8 +141,9 @@ class Lasso{
 
     static drawLasso()
     {
+        //loop drawing lasso with x and y growing closer to the full length of prospected line 
 
-    }
+    } 
 
 
     //can probably put in main class but a reels in and d adds slack

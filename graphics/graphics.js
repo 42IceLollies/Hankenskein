@@ -846,7 +846,7 @@ function getSign(num) {
 // =LASSOING
 //================
 	
-	//maybe this should all be moved to lasso class?
+	//maybe this should all be moved to lasso classo?
 	//realy wanted to write lasso classo there // do it!
 	const lasso = {
 		intervalId: null,
@@ -872,9 +872,34 @@ function getSign(num) {
 	function incrementForce()
 	{	
 		//adds fraction of x component and y component of slope to cursor point each time
-		lasso.forceX+=(lasso.mouseX-player.shape.x)/50;
-		lasso.forceY+=(lasso.mouseY-player.shape.y)/50;
+		lasso.forceX+=(lasso.mouseX-player.shape.x)/20;
+		lasso.forceY+=(lasso.mouseY-player.shape.y)/20;
 		Lasso.setLassoProperties(player.shape.x, player.shape.y, lasso.forceX, lasso.forceY);
+	}
+
+	function changeMouseLocation()
+	{ 
+		//should be changing angle instead of location
+
+		//finds angle of new x point in reference to old x point and changes the forceX accordingly (some fancy circle stuff?)
+		//does same with y 
+
+		// if(lasso.forceX<lasso.mouseX)
+		// {
+		// 	lasso.forceX-=lasso.mouseX;
+		// } else if(lasso.forceX>lasso.mouseX)
+		// {
+		// 	lasso.forceX+=lasso.mouseX;
+		// }
+
+		// if(lasso.forceY<lasso.mouseY)
+		// {
+		// 	lasso.forceY-=lasso.mouseY;
+		// } else if(lasso.forceY>lasso.mouseY)
+		// {
+		// 	lasso.forceY+=lasso.mouseY;
+		// }
+		
 	}
 	
 
@@ -974,11 +999,15 @@ document.addEventListener("mousedown", (e)=>{
 });
 
 
-//might need to change something so that it doesn't clear the line until space is pressed
 document.addEventListener("mouseup", (e)=>{
 	keydown.mouse=false;
 	clearInterval(lasso.intervalId);
-	lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y)}, 100);
+	lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
+		document.addEventListener('mousemove',(e)=>{ setMouseCoordinates(e.clientX, e.clientY); 
+		changeMouseLocation();
+		Lasso.setPointProperties(lasso.mouseX, lasso.mouseY); 
+		});
+		}, 100);
 });
 
 
