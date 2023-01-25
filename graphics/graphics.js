@@ -877,28 +877,34 @@ function getSign(num) {
 		Lasso.setLassoProperties(player.shape.x, player.shape.y, lasso.forceX, lasso.forceY);
 	}
 
-	function changeMouseLocation()
+	function changeMouseLocation(e)
 	{ 
 		//should be changing angle instead of location
 
 		//finds angle of new x point in reference to old x point and changes the forceX accordingly (some fancy circle stuff?)
 		//does same with y 
 
-		// if(lasso.forceX<lasso.mouseX)
-		// {
-		// 	lasso.forceX-=lasso.mouseX;
-		// } else if(lasso.forceX>lasso.mouseX)
-		// {
-		// 	lasso.forceX+=lasso.mouseX;
-		// }
+		//calculates lengths of components for each line ( force line and line to new mouse location )
+		const oldX = Math.abs(lasso.forceX-player.shape.x);
+		const newX = Math.abs(e.clientX - player.shape.x);
+		const oldY = Math.abs(lasso.forceY - player.shape.y);
+		const newY = Math.abs(e.clientY - player.shape.y);
+		
+		//finds length that line should be based on previous force lenggth 
+		const length = Math.sqrt(oldX*oldX + oldY*oldY);
+		//slope of new line to where client is
+		const slope = newY/newX;
 
-		// if(lasso.forceY<lasso.mouseY)
-		// {
-		// 	lasso.forceY-=lasso.mouseY;
-		// } else if(lasso.forceY>lasso.mouseY)
-		// {
-		// 	lasso.forceY+=lasso.mouseY;
-		// }
+		//still working on rearranging equation to find the number
+		//currently doesn't give right answers and has problems with negatives
+		const finalX = length * Math.sqrt(1+slope)/(1+slope);
+		const finalY = slope * finalX;
+
+		console.log(length + " " + Math.sqrt(finalX*finalX + finalY*finalY))
+
+		//set forceX & forceY to new values 
+		lasso.forceX = finalX;
+		lasso.forceY = finalY;
 		
 	}
 	
@@ -1001,10 +1007,12 @@ document.addEventListener("mousedown", (e)=>{
 
 document.addEventListener("mouseup", (e)=>{
 	keydown.mouse=false;
+	//clears interval that grows the prospected lasso line
 	clearInterval(lasso.intervalId);
+	//adds one that moves the line according to mouse location
 	lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
-		document.addEventListener('mousemove',(e)=>{ setMouseCoordinates(e.clientX, e.clientY); 
-		changeMouseLocation();
+		document.addEventListener('mousemove',(e)=>{ //setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
+		changeMouseLocation(e);
 		Lasso.setPointProperties(lasso.mouseX, lasso.mouseY); 
 		});
 		}, 100);
