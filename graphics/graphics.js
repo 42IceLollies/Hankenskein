@@ -855,6 +855,7 @@ function getSign(num) {
 		mouseX: 0,
 		mouseY:0,
 		aiming: false,
+		forceLength:0,
 	}
 
 	function setMouseCoordinates(x, y)
@@ -874,33 +875,27 @@ function getSign(num) {
 		//adds fraction of x component and y component of slope to cursor point each time
 		lasso.forceX+=(lasso.mouseX-player.shape.x)/20;
 		lasso.forceY+=(lasso.mouseY-player.shape.y)/20;
+
+		//updates the length of the force
+		var x = lasso.forceX-player.shape.x;
+		var y = lasso.forceY - player.shape.y;
+		lasso.forceLength = Math.sqrt((x*x) + (y*y));
+
 		Lasso.setLassoProperties(player.shape.x, player.shape.y, lasso.forceX, lasso.forceY);
 	}
 
 	function changeMouseLocation(e)
 	{ 
-		//should be changing angle instead of location
+		//new location of cursor in reference to player
+		const newX = e.clientX - player.shape.x;
+		const newY = e.clientY - player.shape.y;
 
-		//finds angle of new x point in reference to old x point and changes the forceX accordingly (some fancy circle stuff?)
-		//does same with y 
+		//calculates length of force in reference to player's location
+		const ratio = lasso.forceLength/Math.sqrt(newX*newX + newY*newY);
 
-		//calculates lengths of components for each line ( force line and line to new mouse location )
-		const oldX = Math.abs(lasso.forceX-player.shape.x);
-		const newX = Math.abs(e.clientX - player.shape.x);
-		const oldY = Math.abs(lasso.forceY - player.shape.y);
-		const newY = Math.abs(e.clientY - player.shape.y);
-		
-		//finds length that line should be based on previous force lenggth 
-		const length = Math.sqrt(oldX*oldX + oldY*oldY);
-		//slope of new line to where client is
-		const slope = newY/newX;
-
-		//still working on rearranging equation to find the number
-		//currently doesn't give right answers and has problems with negatives
-		const finalX = length * Math.sqrt(1+slope)/(1+slope);
-		const finalY = slope * finalX;
-
-		console.log(length + " " + Math.sqrt(finalX*finalX + finalY*finalY))
+		//finds location of the end of the line
+		const finalX = player.shape.x + (newX*ratio);
+		const finalY = player.shape.y + (newY*ratio);
 
 		//set forceX & forceY to new values 
 		lasso.forceX = finalX;
@@ -965,6 +960,7 @@ document.addEventListener("keydown", (e) => {
 	}
 });
 
+var listener;
 
 // logs when keys are released
 document.addEventListener("keyup", (e) => {
@@ -985,6 +981,7 @@ document.addEventListener("keyup", (e) => {
 			keydown.space = false;
 			lasso.aiming = false;
 			clearInterval(lasso.intervalId);
+			document.removeEventListener('mousemove', mouseMove);
 			break;
 		case 87:
 			keydown.w = false;
@@ -1005,18 +1002,26 @@ document.addEventListener("mousedown", (e)=>{
 });
 
 
+
 document.addEventListener("mouseup", (e)=>{
 	keydown.mouse=false;
 	//clears interval that grows the prospected lasso line
 	clearInterval(lasso.intervalId);
 	//adds one that moves the line according to mouse location
 	lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
-		document.addEventListener('mousemove',(e)=>{ //setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
-		changeMouseLocation(e);
-		Lasso.setPointProperties(lasso.mouseX, lasso.mouseY); 
-		});
-		}, 100);
+		listener = document.addEventListener('mousemove', mouseMove);
+		}, 500);
 });
+
+
+//external function for eventListener above so it's easier to cancel later
+function mouseMove(e)
+	{
+			//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
+		changeMouseLocation(e);
+		Lasso.setPointProperties(lasso.forceX, lasso.forceY); 
+		Lasso.drawPreLasso(ctx);
+	}
 
 
 // ================
