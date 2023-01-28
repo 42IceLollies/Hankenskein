@@ -890,7 +890,9 @@ function getSign(num) {
 		forceY: player.shape.y,
 		mouseX: 0,
 		mouseY:0,
-		aiming: false,
+		lassoStage: "not active",
+		forceLength:0,
+		slope:0,
 	}
 
 	function setMouseCoordinates(x, y)
@@ -910,32 +912,76 @@ function getSign(num) {
 		//adds fraction of x component and y component of slope to cursor point each time
 		lasso.forceX+=(lasso.mouseX-player.shape.x)/20;
 		lasso.forceY+=(lasso.mouseY-player.shape.y)/20;
+
+		//updates the length of the force
+		var x = lasso.forceX-player.shape.x;
+		var y = lasso.forceY - player.shape.y;
+		lasso.forceLength = Math.sqrt((x*x) + (y*y));
+		lasso.slope = y/x;
+
 		Lasso.setLassoProperties(player.shape.x, player.shape.y, lasso.forceX, lasso.forceY);
 	}
 
-	function changeMouseLocation()
+	function changeMouseLocation(e)
 	{ 
-		//should be changing angle instead of location
+		//new location of cursor in reference to player
+		const newX = e.clientX - player.shape.x;
+		const newY = e.clientY - player.shape.y;
 
-		//finds angle of new x point in reference to old x point and changes the forceX accordingly (some fancy circle stuff?)
-		//does same with y 
+		//calculates length of force in reference to player's location
+		const ratio = lasso.forceLength/Math.sqrt(newX*newX + newY*newY);
 
-		// if(lasso.forceX<lasso.mouseX)
-		// {
-		// 	lasso.forceX-=lasso.mouseX;
-		// } else if(lasso.forceX>lasso.mouseX)
-		// {
-		// 	lasso.forceX+=lasso.mouseX;
-		// }
+		//finds location of the end of the line
+		const finalX = player.shape.x + (newX*ratio);
+		const finalY = player.shape.y + (newY*ratio);
 
-		// if(lasso.forceY<lasso.mouseY)
-		// {
-		// 	lasso.forceY-=lasso.mouseY;
-		// } else if(lasso.forceY>lasso.mouseY)
-		// {
-		// 	lasso.forceY+=lasso.mouseY;
-		// }
+		//set forceX & forceY to new values 
+		lasso.forceX = finalX;
+		lasso.forceY = finalY;
+		lasso.slope = newY/newX;
 		
+	}
+
+	var lassoCounter = 0;
+
+	function incrementLassoStage()
+	{
+		lassoCounter++;
+		if(lassoCounter == 3)//this line will need to be changed as more of the lasso throw is implemented
+		{
+			lassoCounter = 0;
+		}
+		
+	}
+
+
+	function drawLasso()
+	{
+		switch(lassoCounter)
+		{
+			case 0:
+			break;
+			
+			case 1:
+				Lasso.drawPreLasso(ctx);
+			break;
+
+			case 2:
+				Lasso.throwLasso(ctx);
+			break;
+
+			// case 3: 
+			// 	lassoStage = "falling";
+			// break;
+
+			// case 4:
+			// 	lassoStage = "grabbing";
+			// break;
+
+			// case 5:
+			// 	lassoStage = "at rest";
+			// break;
+		}
 	}
 	
 
@@ -995,6 +1041,7 @@ document.addEventListener("keydown", (e) => {
 	}
 });
 
+var listener;
 
 // logs when keys are released
 document.addEventListener("keyup", (e) => {
@@ -1013,8 +1060,11 @@ document.addEventListener("keyup", (e) => {
 			break;
 		case 32:
 			keydown.space = false;
-			lasso.aiming = false;
-			clearInterval(lasso.intervalId);
+			incrementLassoStage();
+			if(lasso.lassoStage==1){
+				clearInterval(lasso.intervalId);
+				document.removeEventListener('mousemove', mouseMove);
+			}
 			break;
 		case 87:
 			keydown.w = false;
@@ -1029,22 +1079,41 @@ document.addEventListener("keyup", (e) => {
 document.addEventListener("mousedown", (e)=>{
 	keydown.mouse=true;
 	setMouseCoordinates(e.clientX, e.clientY);
-	resetForceBase();
-	lasso.intervalId = setInterval(incrementForce, 100);
-	lasso.aiming = true;
+	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
+	//if(lasso.lassoStage==0)
+	//{
+		incrementLassoStage();
+	//}
+		
+	//if(lasso.lassoStage==1){
+		resetForceBase();
+		lasso.intervalId = setInterval(incrementForce, 100);
+	//}
 });
+
 
 
 document.addEventListener("mouseup", (e)=>{
 	keydown.mouse=false;
-	clearInterval(lasso.intervalId);
-	lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
-		document.addEventListener('mousemove',(e)=>{ setMouseCoordinates(e.clientX, e.clientY); 
-		changeMouseLocation();
-		Lasso.setPointProperties(lasso.mouseX, lasso.mouseY); 
-		});
-		}, 100);
+
+	//if(lasso.lassoStage == 1){
+		//clears interval that grows the prospected lasso line
+		clearInterval(lasso.intervalId);
+		//adds one that moves the line according to mouse location
+		lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
+			listener = document.addEventListener('mousemove', mouseMove);
+		}, 500);
+	//}
 });
+
+
+//external function for eventListener above so it's easier to cancel later
+function mouseMove(e)
+	{
+			//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
+		changeMouseLocation(e);
+		Lasso.setPointProperties(lasso.forceX, lasso.forceY); 
+	}
 
 
 // ================
@@ -1481,7 +1550,7 @@ const animateID = setInterval(() => {
 
 	draw(ctx);
 	
-	if (lasso.aiming) {Lasso.drawPreLasso(ctx);}
+	drawLasso();
 
 	for (let i = 0; i < lines.length; i++) {
 		bounce(player, lines[i]);
