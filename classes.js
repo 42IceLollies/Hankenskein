@@ -28,7 +28,14 @@ class Physics{
         const ySpeed = initYSpeed + (this.g * timeOffGround);
         return ySpeed;
         // To Do: find a conversion between meters and pixels
+        // px/m = player.shape.radius / player.radiusActual
 
+    }
+
+    // gives the acceleration from gravity in pixels
+    // takes the fps the game is running at, and the current meter to pixel rate
+    static gravityAcceleration(fps, pxPerM) {
+        return (2.5 * pxPerM) / fps;
     }
 
 

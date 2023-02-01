@@ -154,7 +154,7 @@ class Circle {
 
 
 const game = {
-	fps: 25,
+	fps: 35,
 	xOffset: 0,
 	frictionRate: .6,
 	// gravityForce: 0, // updated by fall() // no longer in use
@@ -201,7 +201,7 @@ const testPoints = [];
 let points = [];
 
 const testLine = new Line(1000, 500, 1000, 0, game.xOffset);
-const ground = new Line(0, 500, 1000, 500, game.xOffset);
+const ground = new Line(0, 450, 1000, 500, game.xOffset);
 
 lines.push(testLine);
 lines.push(ground);
@@ -270,11 +270,11 @@ function propelPlayer() {
 
 	// if not, try rolling down
 	let rollDownSignal = false;
-	// for (let i = 0; i < lines.length; i++) {
-	// 	if (rollDown(player, lines[i], xSpeed)) {
-	// 		rollDownSignal = true;
-	// 	}
-	// }
+	for (let i = 0; i < lines.length; i++) {
+		if (rollDown(player, lines[i], xSpeed)) {
+			rollDownSignal = true;
+		}
+	}
 
 	// if it hasn't been used in rollUp or rollDown, put it into the normal speed
 	if (!rollDownSignal) {
@@ -431,7 +431,8 @@ function collideWithLines() {
 					break;
 			}
 		}
-	}	
+	}
+	// moveLines();
 } // end of collideWithLines
 
 
@@ -729,8 +730,14 @@ function bounce(circle, line) {
 	updatePlayerSpeeds();
 	const c = circle.shape;
 	// the degree the circle should bounce away at
-	const bounceDegree = getBounceDegree(circle, line); 
-	// console.log(bounceDegree, line.degree);
+	const bounceDegree = getBounceDegree(circle, line);
+
+	if (Math.abs(bounceDegree % 180 - line.degree % 180) <= 2) {
+		console.log("too close");
+		return;
+	}
+
+	console.log(bounceDegree, line.degree);
 	// gets the sides (adj, opp) of an example movement in the right direction
 	const sides = getBounceSides(circle, line, bounceDegree);
 
@@ -740,8 +747,8 @@ function bounce(circle, line) {
 	}
 
 	// show the center of the player, and where the center will move to
-	testPoints[0].moveTo(player.shape.x, player.shape.y);
-	testPoints[1].moveTo(player.shape.x + sides[0], player.shape.y + sides[1]);
+	// testPoints[0].moveTo(player.shape.x, player.shape.y);
+	// testPoints[1].moveTo(player.shape.x + sides[0], player.shape.y + sides[1]);
 
 	// calculate the fraction of the energy going to each direction
 	const totalFraction = Math.abs(sides[0]) + Math.abs(sides[1]);
@@ -876,6 +883,13 @@ function getSign(num) {
 	if (num == 0) {return 0;}
 	return num / Math.abs(num);
 } // end of getSign
+
+
+// gives the current conversion rate from meters to pixels
+// based on how big the player is on screen, and how big it's supposed to be
+function getPxPerM() {
+	return player.shape.radius / player.radiusActual;
+}
 
 
 //================
@@ -1156,6 +1170,7 @@ function resize() {
 	player.shape.radius = canvas.height * player.screenPercent;
 	player.shape.y = canvas.height * playerHeight;
 	player.acceleration = player.shape.radius * 6;
+	// player.acceleration = player.shape.radius * 9;
 
 	// resizes the lines
 	for (let i = 0; i < lines.length; i++) {
@@ -1266,8 +1281,8 @@ function fall() {
 	// if it's in midair
 	if (!atRest()) {
 		// apply gravity
-		// reversed because the negative direction is opposite of usual
-		player.ySpeeds.gravity += Physics.affectGravity(0, timer);
+		player.ySpeeds.gravity += Physics.gravityAcceleration(game.fps, getPxPerM());
+		// player.ySpeeds.gravity += Physics.affectGravity(0, timer);
 
 	// if it's at rest
 	} else {
@@ -1323,7 +1338,6 @@ function roll() {
 	// for every line
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
-		// possibly redundant to have nested functions, keeping it for now though
 		rollDownNatural(line);
 	}
 } // end of roll
@@ -1355,7 +1369,8 @@ function rollDownNatural(line) {
 	}
 	// (insert actual rolling physics here if we have it) (insert roll)
 	// get the starting amount of gravity
-	let vForce = Physics.affectGravity(0, 1);
+	// let vForce = Physics.affectGravity(0, 1);
+	let vForce = Physics.gravityAcceleration(game.fps, getPxPerM());
 	// get the horizontal energy based on the downward force and how steep the line is
 	// (moduloed by 180 cause 30 degrees and 210 degrees are the same line)
 	const hForce = horizontalRollDownEnergy(vForce, line.degree % 180);
@@ -1514,7 +1529,7 @@ function draw(ctx) {
 
 
 // resize it before starting
-resizeCanvas();
+// resizeCanvas();
 // center player
 player.shape.x = canvas.width / 2;
 // size the player correctly
@@ -1556,7 +1571,7 @@ const animateID = setInterval(() => {
 		bounce(player, lines[i]);
 	}
 	
-	console.log(player.xSpeeds, player.ySpeeds);
+	// console.log(player.xSpeeds, player.ySpeeds);
 }, 1000 / game.fps); // 1000 is 1 second
 
 
