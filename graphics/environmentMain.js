@@ -182,7 +182,8 @@ const player = {
 	},
 	acceleration: 150,
 	fillColor: "#e2619f", // pink
-	screenPercent: 0.035, // 3.5% of the height
+	// screenPercent: 0.035, // 3.5% of the height
+	screenPercent: 0.04,
 	radiusActual: 0.1016, // 4 inches in meters
 	weightActual: "idk", // in kilograms?
 	// tracks which directions it's blocked by something
@@ -733,11 +734,11 @@ function bounce(circle, line) {
 	const bounceDegree = getBounceDegree(circle, line);
 
 	if (Math.abs(bounceDegree % 180 - line.degree % 180) <= 2) {
-		console.log("too close");
+		// console.log("too close");
 		return;
 	}
 
-	console.log(bounceDegree, line.degree);
+	// console.log(bounceDegree, line.degree);
 	// gets the sides (adj, opp) of an example movement in the right direction
 	const sides = getBounceSides(circle, line, bounceDegree);
 
@@ -1504,10 +1505,30 @@ function clearCanvas(ctx) {
 
 // draws in the player, info from player{}
 function drawPlayer(ctx) {
-	ctx.fillStyle = player.fillColor;
-	ctx.beginPath();
-	ctx.arc(player.shape.x, player.shape.y, player.shape.radius, 0, 2 * Math.PI);
-	ctx.fill();
+	// ctx.fillStyle = player.fillColor;
+	// ctx.beginPath();
+	// ctx.arc(player.shape.x, player.shape.y, player.shape.radius, 0, 2 * Math.PI);
+	// ctx.fill();
+	const ball = new Image();
+	ball.src = "./Art/Hankenskein.png";
+
+	// const x = player.shape.x - player.shape.radius;
+	// const y = player.shape.y - player.shape.radius;
+	const centerX = player.shape.x;
+	const centerY = player.shape.y;
+
+	// const deg = Math.floor(Math.random() * 360 + 1); // funky spin time
+	const deg = 0;
+
+	// ctx.save();
+	ctx.translate(centerX, centerY);
+	ctx.rotate(degreesToRadians(deg));
+	// ctx.drawImage(ball, player.shape.x-player.shape.radius, player.shape.y-player.shape.radius,
+	// 	player.shape.radius*2 , player.shape.radius*2);
+	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2);
+	ctx.rotate(-degreesToRadians(deg));
+	ctx.translate(-centerX, -centerY);
+	// ctx.restore();
 } // end of drawPlayer
 
 
