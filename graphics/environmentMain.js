@@ -973,8 +973,8 @@ document.addEventListener("keyup", (e) => {
 			break;
 		case 32:
 			keydown.space = false;
-			incrementLassoStage();
-			if(lasso.lassoStage==1){
+			Lasso.incrementLassoStage();
+			if(Lasso.lassoStage==1){
 				clearInterval(lasso.intervalId);
 				document.removeEventListener('mousemove', mouseMove);
 			}
@@ -1484,7 +1484,7 @@ const animateID = setInterval(() => {
 
 	draw(ctx);
 	
-	Lasso.drawLasso();
+	Lasso.drawLasso(ctx);
 
 	for (let i = 0; i < lines.length; i++) {
 		bounce(player, lines[i]);

@@ -73,22 +73,32 @@ class Physics{
 class Lasso{
     static hankX;
     static hankY;
-    static pointX;
-    static pointY;
+    static pointX = 100;
+    static pointY = 100;
     static lassoX;
     static lassoY;
     static lassoPoints = [];
     static lassoCounter = 0;
-    static lasso = {
-		intervalId: null,
-		forceX: player.shape.x,
-		forceY: player.shape.y,
-		mouseX: 0,
-		mouseY:0,
-		lassoStage: "not active",
-		forceLength:0,
-		slope:0,
-	}
+
+    //copy of lasso's variables because it's not working for some reason?
+    static forceX = player.shape.x;
+    static forceY = player.shape.y;
+    static mouseX = 0;
+    static mouseY = 0;
+    static forceLength = 0;
+    static intervalId = null;
+    static lassoStage = "not active";
+    static slope = 0;
+    // static lasso = {
+	// 	intervalId: null,
+	// 	forceX: player.shape.x,
+	// 	forceY: player.shape.y,
+	// 	mouseX: 0,
+	// 	mouseY:0,
+	// 	lassoStage: "not active",
+	// 	forceLength:0,
+	// 	slope:0,
+	// }
 
     static setLassoProperties(hankX, hankY, pointX, pointY)
     {
@@ -126,50 +136,50 @@ class Lasso{
 
     static getLassoIntervalId()
     {
-        return this.lasso.intervalId;
+        return this.intervalId;
     }
 
     static getForceX()
     {
-        return this.lasso.forceX;
+        return this.forceX;
 
     }
 
     static getForceY()
     {
-        return this.lasso.forceY;
+        return this.forceY;
     }
 
 
 	static setMouseCoordinates(x, y)
 	{
-		this.lasso.mouseX = x;
-		this.lasso.mouseY = y;
+		this.mouseX = x;
+		this.mouseY = y;
 	}
 
 	static resetForceBase()
 	{
-		this.lasso.forceX = player.shape.x;
-		this.lasso.forceY = player.shape.y;
+		this.forceX = player.shape.x;
+		this.forceY = player.shape.y;
 	}
 
     //need to uncomment this to get lasso to work but it's reading lasso object as undeclared
-    
-	// static incrementForce()
-	// {	
-	// 	//adds fraction of x component and y component of slope to cursor point each time
-    //    // console.log(this.lasso);
-	// 	this.lasso.forceX+=(this.lasso.mouseX-player.shape.x)/20;
-	// 	this.lasso.forceY+=(this.lasso.mouseY-player.shape.y)/20;
 
-	// 	//updates the length of the force
-	// 	var x = this.lasso.forceX-player.shape.x;
-	// 	var y = this.lasso.forceY - player.shape.y;
-	// 	this.lasso.forceLength = Math.sqrt((x*x) + (y*y));
-	// 	this.lasso.slope = y/x;
+	static incrementForce()
+	{	
+		//adds fraction of x component and y component of slope to cursor point each time
+       // console.log(this.lasso);
+		this.forceX+=(this.mouseX-player.shape.x)/20;
+		this.forceY+=(this.mouseY-player.shape.y)/20;
 
-	// 	Lasso.setLassoProperties(player.shape.x, player.shape.y, this.lasso.forceX, this.lasso.forceY);
-	// }
+		//updates the length of the force
+		var x = this.forceX-player.shape.x;
+		var y = this.forceY - player.shape.y;
+		this.forceLength = Math.sqrt((x*x) + (y*y));
+		this.slope = y/x;
+
+		Lasso.setLassoProperties(player.shape.x, player.shape.y, this.forceX, this.forceY);
+	}
 
 	static changeMouseLocation(e)
 	{ 
@@ -178,16 +188,16 @@ class Lasso{
 		const newY = e.clientY - player.shape.y;
 
 		//calculates length of force in reference to player's location
-		const ratio = this.lasso.forceLength/Math.sqrt(newX*newX + newY*newY);
+		const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
 
 		//finds location of the end of the line
 		const finalX = player.shape.x + (newX*ratio);
 		const finalY = player.shape.y + (newY*ratio);
 
 		//set forceX & forceY to new values 
-		this.lasso.forceX = finalX;
-		this.lasso.forceY = finalY;
-		this.lasso.slope = newY/newX;
+		this.forceX = finalX;
+		this.forceY = finalY;
+		this.slope = newY/newX;
 		
 	}
 
@@ -203,7 +213,7 @@ class Lasso{
 	}
 
 
-	static drawLasso()
+	static drawLasso(ctx)
 	{
 		switch(this.lassoCounter)
 		{
@@ -211,11 +221,11 @@ class Lasso{
 			break;
 			
 			case 1:
-				Lasso.drawPreLasso(ctx);
+				this.drawPreLasso(ctx);
 			break;
 
 			case 2:
-				Lasso.throwLasso(ctx);
+				this.throwLasso(ctx);
 			break;
 
 			// case 3: 
@@ -238,6 +248,7 @@ class Lasso{
     //called when cursor is being held down
     static drawPreLasso(ctx)
     {
+        console.log(this.pointX + " " + this.pointY);
         const tempLineWidth = ctx.lineWidth;
         ctx.lineWidth = 5;
         ctx.strokeStyle = "#8CA231";
@@ -293,11 +304,11 @@ class Lasso{
     }
 
     //need to find a different name
-    static drawLasso()
-    {
-        //loop drawing lasso with x and y growing closer to the full length of prospected line 
+    // static drawLasso()
+    // {
+    //     //loop drawing lasso with x and y growing closer to the full length of prospected line 
 
-    } 
+    // } 
 
 
     //can probably put in main class but a reels in and d adds slack
