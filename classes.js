@@ -78,6 +78,17 @@ class Lasso{
     static lassoX;
     static lassoY;
     static lassoPoints = [];
+    static lassoCounter = 0;
+    static lasso = {
+		intervalId: null,
+		forceX: player.shape.x,
+		forceY: player.shape.y,
+		mouseX: 0,
+		mouseY:0,
+		lassoStage: "not active",
+		forceLength:0,
+		slope:0,
+	}
 
     static setLassoProperties(hankX, hankY, pointX, pointY)
     {
@@ -113,7 +124,116 @@ class Lasso{
         return Math.sqrt((this.lassoX * this.lassoX) + (this.lassoY * this.lassoY));
     }
 
-        
+    static getLassoIntervalId()
+    {
+        return this.lasso.intervalId;
+    }
+
+    static getForceX()
+    {
+        return this.lasso.forceX;
+
+    }
+
+    static getForceY()
+    {
+        return this.lasso.forceY;
+    }
+
+
+	static setMouseCoordinates(x, y)
+	{
+		this.lasso.mouseX = x;
+		this.lasso.mouseY = y;
+	}
+
+	static resetForceBase()
+	{
+		this.lasso.forceX = player.shape.x;
+		this.lasso.forceY = player.shape.y;
+	}
+
+    //need to uncomment this to get lasso to work but it's reading lasso object as undeclared
+    
+	// static incrementForce()
+	// {	
+	// 	//adds fraction of x component and y component of slope to cursor point each time
+    //    // console.log(this.lasso);
+	// 	this.lasso.forceX+=(this.lasso.mouseX-player.shape.x)/20;
+	// 	this.lasso.forceY+=(this.lasso.mouseY-player.shape.y)/20;
+
+	// 	//updates the length of the force
+	// 	var x = this.lasso.forceX-player.shape.x;
+	// 	var y = this.lasso.forceY - player.shape.y;
+	// 	this.lasso.forceLength = Math.sqrt((x*x) + (y*y));
+	// 	this.lasso.slope = y/x;
+
+	// 	Lasso.setLassoProperties(player.shape.x, player.shape.y, this.lasso.forceX, this.lasso.forceY);
+	// }
+
+	static changeMouseLocation(e)
+	{ 
+		//new location of cursor in reference to player
+		const newX = e.clientX - player.shape.x;
+		const newY = e.clientY - player.shape.y;
+
+		//calculates length of force in reference to player's location
+		const ratio = this.lasso.forceLength/Math.sqrt(newX*newX + newY*newY);
+
+		//finds location of the end of the line
+		const finalX = player.shape.x + (newX*ratio);
+		const finalY = player.shape.y + (newY*ratio);
+
+		//set forceX & forceY to new values 
+		this.lasso.forceX = finalX;
+		this.lasso.forceY = finalY;
+		this.lasso.slope = newY/newX;
+		
+	}
+
+
+	static incrementLassoStage()
+	{
+		this.lassoCounter++;
+		if(this.lassoCounter == 3)//this line will need to be changed as more of the lasso throw is implemented
+		{
+			this.lassoCounter = 0;
+		}
+		
+	}
+
+
+	static drawLasso()
+	{
+		switch(this.lassoCounter)
+		{
+			case 0:
+			break;
+			
+			case 1:
+				Lasso.drawPreLasso(ctx);
+			break;
+
+			case 2:
+				Lasso.throwLasso(ctx);
+			break;
+
+			// case 3: 
+			// 	lassoStage = "falling";
+			// break;
+
+			// case 4:
+			// 	lassoStage = "grabbing";
+			// break;
+
+			// case 5:
+			// 	lassoStage = "at rest";
+			// break;
+		}
+	}
+	
+
+
     //draw line method
     //called when cursor is being held down
     static drawPreLasso(ctx)
@@ -172,6 +292,7 @@ class Lasso{
 
     }
 
+    //need to find a different name
     static drawLasso()
     {
         //loop drawing lasso with x and y growing closer to the full length of prospected line 

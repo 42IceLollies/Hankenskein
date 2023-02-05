@@ -897,108 +897,6 @@ function getPxPerM() {
 // =LASSOING
 //================
 	
-	//maybe this should all be moved to lasso classo?
-	//realy wanted to write lasso classo there // do it!
-	const lasso = {
-		intervalId: null,
-		forceX: player.shape.x,
-		forceY: player.shape.y,
-		mouseX: 0,
-		mouseY:0,
-		lassoStage: "not active",
-		forceLength:0,
-		slope:0,
-	}
-
-	function setMouseCoordinates(x, y)
-	{
-		lasso.mouseX = x;
-		lasso.mouseY = y;
-	}
-
-	function resetForceBase()
-	{
-		lasso.forceX = player.shape.x;
-		lasso.forceY = player.shape.y;
-	}
-
-	function incrementForce()
-	{	
-		//adds fraction of x component and y component of slope to cursor point each time
-		lasso.forceX+=(lasso.mouseX-player.shape.x)/20;
-		lasso.forceY+=(lasso.mouseY-player.shape.y)/20;
-
-		//updates the length of the force
-		var x = lasso.forceX-player.shape.x;
-		var y = lasso.forceY - player.shape.y;
-		lasso.forceLength = Math.sqrt((x*x) + (y*y));
-		lasso.slope = y/x;
-
-		Lasso.setLassoProperties(player.shape.x, player.shape.y, lasso.forceX, lasso.forceY);
-	}
-
-	function changeMouseLocation(e)
-	{ 
-		//new location of cursor in reference to player
-		const newX = e.clientX - player.shape.x;
-		const newY = e.clientY - player.shape.y;
-
-		//calculates length of force in reference to player's location
-		const ratio = lasso.forceLength/Math.sqrt(newX*newX + newY*newY);
-
-		//finds location of the end of the line
-		const finalX = player.shape.x + (newX*ratio);
-		const finalY = player.shape.y + (newY*ratio);
-
-		//set forceX & forceY to new values 
-		lasso.forceX = finalX;
-		lasso.forceY = finalY;
-		lasso.slope = newY/newX;
-		
-	}
-
-	var lassoCounter = 0;
-
-	function incrementLassoStage()
-	{
-		lassoCounter++;
-		if(lassoCounter == 3)//this line will need to be changed as more of the lasso throw is implemented
-		{
-			lassoCounter = 0;
-		}
-		
-	}
-
-
-	function drawLasso()
-	{
-		switch(lassoCounter)
-		{
-			case 0:
-			break;
-			
-			case 1:
-				Lasso.drawPreLasso(ctx);
-			break;
-
-			case 2:
-				Lasso.throwLasso(ctx);
-			break;
-
-			// case 3: 
-			// 	lassoStage = "falling";
-			// break;
-
-			// case 4:
-			// 	lassoStage = "grabbing";
-			// break;
-
-			// case 5:
-			// 	lassoStage = "at rest";
-			// break;
-		}
-	}
-	
 
 
 
@@ -1093,16 +991,16 @@ document.addEventListener("keyup", (e) => {
 
 document.addEventListener("mousedown", (e)=>{
 	keydown.mouse=true;
-	setMouseCoordinates(e.clientX, e.clientY);
+	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
 	//if(lasso.lassoStage==0)
 	//{
-		incrementLassoStage();
+		Lasso.incrementLassoStage();
 	//}
 		
 	//if(lasso.lassoStage==1){
-		resetForceBase();
-		lasso.intervalId = setInterval(incrementForce, 100);
+		Lasso.resetForceBase();
+		Lasso.getIntervalId = setInterval(Lasso.incrementForce, 100);
 	//}
 });
 
@@ -1113,9 +1011,9 @@ document.addEventListener("mouseup", (e)=>{
 
 	//if(lasso.lassoStage == 1){
 		//clears interval that grows the prospected lasso line
-		clearInterval(lasso.intervalId);
+		clearInterval(Lasso.getLassoIntervalId());
 		//adds one that moves the line according to mouse location
-		lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
+		Lasso.getIntervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
 			listener = document.addEventListener('mousemove', mouseMove);
 		}, 500);
 	//}
@@ -1126,8 +1024,8 @@ document.addEventListener("mouseup", (e)=>{
 function mouseMove(e)
 	{
 			//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
-		changeMouseLocation(e);
-		Lasso.setPointProperties(lasso.forceX, lasso.forceY); 
+		Lasso.changeMouseLocation(e);
+		Lasso.setPointProperties(Lasso.getForceX(), Lasso.getForceY()); 
 	}
 
 
@@ -1586,7 +1484,7 @@ const animateID = setInterval(() => {
 
 	draw(ctx);
 	
-	drawLasso();
+	Lasso.drawLasso();
 
 	for (let i = 0; i < lines.length; i++) {
 		bounce(player, lines[i]);
