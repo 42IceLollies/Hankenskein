@@ -975,7 +975,7 @@ document.addEventListener("keyup", (e) => {
 			keydown.space = false;
 			Lasso.incrementLassoStage();
 			if(Lasso.lassoStage==1){
-				clearInterval(lasso.intervalId);
+				clearInterval(Lasso.intervalId);
 				document.removeEventListener('mousemove', mouseMove);
 			}
 			break;
@@ -991,6 +991,7 @@ document.addEventListener("keyup", (e) => {
 
 document.addEventListener("mousedown", (e)=>{
 	keydown.mouse=true;
+	//console.log(e.clientX, e.clientY);
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
 	//if(lasso.lassoStage==0)
@@ -1000,7 +1001,8 @@ document.addEventListener("mousedown", (e)=>{
 		
 	//if(lasso.lassoStage==1){
 		Lasso.resetForceBase();
-		Lasso.getIntervalId = setInterval(Lasso.incrementForce, 100);
+		Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
+		//console.log("POints" + Lasso.mouseX + Lasso.mouseY);
 	//}
 });
 
@@ -1011,9 +1013,9 @@ document.addEventListener("mouseup", (e)=>{
 
 	//if(lasso.lassoStage == 1){
 		//clears interval that grows the prospected lasso line
-		clearInterval(Lasso.getLassoIntervalId());
+		clearInterval(Lasso.intervalId);
 		//adds one that moves the line according to mouse location
-		Lasso.getIntervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
+		Lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
 			listener = document.addEventListener('mousemove', mouseMove);
 		}, 500);
 	//}
@@ -1025,7 +1027,7 @@ function mouseMove(e)
 	{
 			//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
 		Lasso.changeMouseLocation(e);
-		Lasso.setPointProperties(Lasso.getForceX(), Lasso.getForceY()); 
+		Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
 	}
 
 

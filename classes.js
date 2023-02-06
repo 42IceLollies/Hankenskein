@@ -73,7 +73,7 @@ class Physics{
 class Lasso{
     static hankX;
     static hankY;
-    static pointX = 100;
+    static pointX = 100; // extraneous at this point I think 
     static pointY = 100;
     static lassoX;
     static lassoY;
@@ -102,6 +102,7 @@ class Lasso{
 
     static setLassoProperties(hankX, hankY, pointX, pointY)
     {
+       // console.log(1);
         this.hankX = hankX;
         this.hankY = hankY;
         this.pointX = pointX;
@@ -111,12 +112,14 @@ class Lasso{
 
     static setHankProperties(hankX, hankY)
     {
+       // console.log(2);
         this.hankX = hankX;
         this.hankY = hankY;
     }
 
     static setPointProperties(pointX, pointY)
     {
+       // console.log(3);
         this.pointX = pointX;
         this.pointY = pointY; 
     }
@@ -125,40 +128,47 @@ class Lasso{
     //method to calculate direction and force of throw, 
     //pointX and pointY incremented while cursor is held down, and function is called
     //also returns distance of line
-    static getLassoForce()
-    {
-        this.lassoX = this.pointX<this.hankX ? -(this.hankX-this.pointX) : this.pointX-this.hankX;
-        this.lassoY = this.pointY<this.hankY ? -(this.hankY-this.pointY) : this.pointY-this.hankY;
+    // static getLassoForce()
+    // {
+    //    // console.log(4);
+    //     this.lassoX = this.pointX<this.hankX ? -(this.hankX-this.pointX) : this.pointX-this.hankX;
+    //     this.lassoY = this.pointY<this.hankY ? -(this.hankY-this.pointY) : this.pointY-this.hankY;
 
-        //uses pythagorean theorum to find length of line from hankenskein to point location
-        return Math.sqrt((this.lassoX * this.lassoX) + (this.lassoY * this.lassoY));
-    }
+    //     //uses pythagorean theorum to find length of line from hankenskein to point location
+    //     return Math.sqrt((this.lassoX * this.lassoX) + (this.lassoY * this.lassoY));
+    // }
 
-    static getLassoIntervalId()
-    {
-        return this.intervalId;
-    }
+    // static getLassoIntervalId()
+    // {
+    //    // console.log(5);
+    //     return this.intervalId;
+    // }
 
-    static getForceX()
-    {
-        return this.forceX;
+    // static getForceX()
+    // {
+    //   ///  console.log(6);
+    //     return this.forceX;
 
-    }
+    // }
 
-    static getForceY()
-    {
-        return this.forceY;
-    }
+    // static getForceY()
+    // {
+    //    // console.log(7);
+    //     return this.forceY;
+    // }
 
 
 	static setMouseCoordinates(x, y)
 	{
+        //console.log(8);
 		this.mouseX = x;
 		this.mouseY = y;
+        console.log(this.mouseX + " " + this.mouseY);
 	}
 
 	static resetForceBase()
 	{
+     //   console.log(9);
 		this.forceX = player.shape.x;
 		this.forceY = player.shape.y;
 	}
@@ -167,23 +177,32 @@ class Lasso{
 
 	static incrementForce()
 	{	
+       // console.log(10);
 		//adds fraction of x component and y component of slope to cursor point each time
        // console.log(this.lasso);
-		this.forceX+=(this.mouseX-player.shape.x)/20;
-		this.forceY+=(this.mouseY-player.shape.y)/20;
+       //bug is that for some reason within the confines of this function, this.mouseX and this.mouseY are undefined
+      // console.log("mouseX: " + Lasso.mouseX + " " + Lasso.mouseY);
+		Lasso.forceX+=(Lasso.mouseX-player.shape.x)/20;
+		Lasso.forceY+=(Lasso.mouseY-player.shape.y)/20;
+       // console.log(Lasso.mouseX + " " + Lasso.mouseY);
 
 		//updates the length of the force
-		var x = this.forceX-player.shape.x;
-		var y = this.forceY - player.shape.y;
-		this.forceLength = Math.sqrt((x*x) + (y*y));
-		this.slope = y/x;
+		var x = Lasso.forceX-player.shape.x;
+		var y = Lasso.forceY - player.shape.y;
+		Lasso.forceLength = Math.sqrt((x*x) + (y*y));
+		Lasso.slope = y/x;
 
-		Lasso.setLassoProperties(player.shape.x, player.shape.y, this.forceX, this.forceY);
+        Lasso.hankX = player.shape.x;
+        Lasso.hankY = player.shape.y;
+        Lasso.pointX = Lasso.forceX;
+        Lasso.pointY = Lasso.forceY;
 	}
 
 	static changeMouseLocation(e)
 	{ 
+       // console.log(11);
 		//new location of cursor in reference to player
+        //console.log(player.shape.x);
 		const newX = e.clientX - player.shape.x;
 		const newY = e.clientY - player.shape.y;
 
@@ -204,6 +223,7 @@ class Lasso{
 
 	static incrementLassoStage()
 	{
+       // console.log(12);
 		this.lassoCounter++;
 		if(this.lassoCounter == 3)//this line will need to be changed as more of the lasso throw is implemented
 		{
@@ -215,17 +235,18 @@ class Lasso{
 
 	static drawLasso(ctx)
 	{
+       // console.log(13);
 		switch(this.lassoCounter)
 		{
 			case 0:
 			break;
 			
 			case 1:
-				this.drawPreLasso(ctx);
+				Lasso.drawPreLasso(ctx);
 			break;
 
 			case 2:
-				this.throwLasso(ctx);
+				Lasso.throwLasso(ctx);
 			break;
 
 			// case 3: 
@@ -248,14 +269,19 @@ class Lasso{
     //called when cursor is being held down
     static drawPreLasso(ctx)
     {
-        console.log(this.pointX + " " + this.pointY);
+       // console.log(15);
+        console.log( this.hankX + " " + this.hankY + " " + this.pointX + " " + this.pointY);
         const tempLineWidth = ctx.lineWidth;
         ctx.lineWidth = 5;
         ctx.strokeStyle = "#8CA231";
         ctx.globalAlpha = 0.5;
         ctx.beginPath();
         ctx.moveTo(this.hankX, this.hankY);
+        //ctx.moveTo(5, 5);
+      //  console.log(this.pointX + " " + this.pointY);
         ctx.lineTo(this.pointX, this.pointY);
+       
+       // ctx.lineTo(this.forceX, this.forceY);
         ctx.stroke();
 
         //resetting everything for the rest of the code to work
@@ -268,6 +294,7 @@ class Lasso{
     //called when spacebar is pressed
     static throwLasso(ctx)
     {
+       // console.log(16);
         const tempLineWidth = ctx.lineWidth;
         ctx.lineWidth = 5;
         ctx.strokeStyle =  player.fillColor;
@@ -300,6 +327,7 @@ class Lasso{
 
     static pullInLasso()
     {
+        //console.log(17);
 
     }
 
