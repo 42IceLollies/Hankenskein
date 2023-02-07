@@ -1015,7 +1015,7 @@ document.addEventListener("mouseup", (e)=>{
 		//clears interval that grows the prospected lasso line
 		clearInterval(Lasso.intervalId);
 		//adds one that moves the line according to mouse location
-		Lasso.intervalId=setInterval(()=>{Lasso.setHankProperties(player.shape.x, player.shape.y); 
+		Lasso.intervalId=setInterval(()=>{//Lasso.setHankProperties(player.shape.x, player.shape.y); 
 			listener = document.addEventListener('mousemove', mouseMove);
 		}, 500);
 	//}
