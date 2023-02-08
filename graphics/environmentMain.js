@@ -935,6 +935,10 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 32:
 			keydown.space = true;
+			if(Lasso.lassoCounter == 1)
+			{
+				Lasso.incrementLassoStage();
+			}
 			// movePlayer();
 			// moveLines();
 			// fall();
@@ -973,7 +977,6 @@ document.addEventListener("keyup", (e) => {
 			break;
 		case 32:
 			keydown.space = false;
-			Lasso.incrementLassoStage();
 			if(Lasso.lassoStage==1){
 				clearInterval(Lasso.intervalId);
 				document.removeEventListener('mousemove', mouseMove);
@@ -994,16 +997,16 @@ document.addEventListener("mousedown", (e)=>{
 	//console.log(e.clientX, e.clientY);
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
-	//if(lasso.lassoStage==0)
-	//{
+	if(Lasso.lassoCounter==0||Lasso.lassoCounter == 2)
+	{
 		Lasso.incrementLassoStage();
-	//}
+	}
 		
-	//if(lasso.lassoStage==1){
+	if(Lasso.lassoCounter==1){
 		Lasso.resetForceBase();
 		Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
-		//console.log("POints" + Lasso.mouseX + Lasso.mouseY);
-	//}
+		//also add the mouse update in here
+	}
 });
 
 
@@ -1027,7 +1030,7 @@ function mouseMove(e)
 	{
 			//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
 		Lasso.changeMouseLocation(e);
-		Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
+		//Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
 	}
 
 

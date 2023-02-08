@@ -140,6 +140,7 @@ class Lasso{
 
 	static incrementLassoStage()
 	{
+        //console.log(this.lassoCounter);
 		this.lassoCounter++;
 		if(this.lassoCounter == 3)//this line will need to be changed as more of the lasso throw is implemented
 		{
