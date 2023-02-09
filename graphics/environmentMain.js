@@ -1009,19 +1009,20 @@ document.addEventListener("mousedown", (e)=>{
 	}
 });
 
-
-
 document.addEventListener("mouseup", (e)=>{
 	keydown.mouse=false;
 
-	//if(lasso.lassoStage == 1){
-		//clears interval that grows the prospected lasso line
-		clearInterval(Lasso.intervalId);
+	//clears interval that grows the prospected lasso line
+	clearInterval(Lasso.intervalId);
+
+	if(Lasso.lassoCounter == 1){
+		
 		//adds one that moves the line according to mouse location
 		Lasso.intervalId=setInterval(()=>{//Lasso.setHankProperties(player.shape.x, player.shape.y); 
 			listener = document.addEventListener('mousemove', mouseMove);
+			clearMouseMove();
 		}, 500);
-	//}
+	}
 });
 
 
@@ -1032,6 +1033,14 @@ function mouseMove(e)
 		Lasso.changeMouseLocation(e);
 		//Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
 	}
+
+	//clears listener for mouse move whenever the lasso is launched
+function clearMouseMove()
+{
+	if(Lasso.lassoCounter==2){
+		document.removeEventListener('mousemove', mouseMove)
+	}
+}
 
 
 // ================
