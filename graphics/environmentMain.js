@@ -193,7 +193,8 @@ const player = {
 		left: false,
 		right: false,
 	},
-	restCount: 0,
+	// restCount: 0,
+	rotation: 0, // degrees
 };
 
 // holds all the lines and points the player can collide with
@@ -1125,9 +1126,32 @@ function meterPixelRate() {
 // =====================
 
 
+// adds rotation to player based on how far it's rolled
+function spinPlayer() {
+	// the distance player has moved
+	const distanceX = -game.xOffset - player.prevX;
+	const distanceY = player.shape.y - player.prevY;
+	// if it's not on a surface, turn less dramatically, and only based on xSpeed
+	if (!atRest()) {
+		player.rotation += distanceX / (2*Math.PI*player.shape.radius) * 360 / 3;
+	// if it's moving across a surface
+	} else {
+		// find the actual distance it's traveled
+		let distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+		// flip the sign if necessary
+		if (distanceX < 0) {
+			distance = -distance;
+		}
+		// and rotate it
+		player.rotation += distance / (2*Math.PI*player.shape.radius) * 360;
+	}
+} // end of spinPlayer
+
+
 // moves the player vertically, everything else moves horizontally
 function movePlayer() {
 	updatePlayerSpeeds();
+
 	// cause it doesn't actually move horizontally
 	player.prevX = -game.xOffset;
 	player.prevY = player.shape.y;
@@ -1139,6 +1163,10 @@ function movePlayer() {
 
 	let diff = Math.abs(player.prevX) - Math.abs(game.xOffset);
 	if (game.xOffset < 0) {diff = -diff;}
+
+	// console.log(diff);
+
+	spinPlayer();
 } // end of movePlayer
 
 
@@ -1429,18 +1457,12 @@ function drawPlayer(ctx) {
 	const centerX = player.shape.x;
 	const centerY = player.shape.y;
 
-	// const deg = Math.floor(Math.random() * 360 + 1); // funky spin time
-	const deg = 0;
-
-	// ctx.save();
+	// gets it to rotate (i don't really get it either)
 	ctx.translate(centerX, centerY);
-	ctx.rotate(degreesToRadians(deg));
-	// ctx.drawImage(ball, player.shape.x-player.shape.radius, player.shape.y-player.shape.radius,
-	// 	player.shape.radius*2 , player.shape.radius*2);
+	ctx.rotate(degreesToRadians(player.rotation % 360));
 	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2);
-	ctx.rotate(-degreesToRadians(deg));
+	ctx.rotate(-degreesToRadians(player.rotation % 360));
 	ctx.translate(-centerX, -centerY);
-	// ctx.restore();
 } // end of drawPlayer
 
 

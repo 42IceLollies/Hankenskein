@@ -1,6 +1,6 @@
 class Physics{
     //gravity is -9.8 m/s^2 but I'm not entirely sure what a meter is in this game so feel free to change it
-    static g = 9.8;
+    static g = 2.5;
     static seconds = 0;
     static frameCount = 0;
      
@@ -35,7 +35,7 @@ class Physics{
     // gives the acceleration from gravity in pixels
     // takes the fps the game is running at, and the current meter to pixel rate
     static gravityAcceleration(fps, pxPerM) {
-        return (2.5 * pxPerM) / fps;
+        return (this.g * pxPerM) / fps;
     }
 
 
