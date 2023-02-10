@@ -192,6 +192,7 @@ class Lasso{
         ctx.strokeStyle = "#8CA231";
         ctx.globalAlpha = 0.5;
         ctx.beginPath();
+        ctx.lineCap = 'round';
         ctx.moveTo(player.shape.x, player.shape.y)
        // ctx.lineTo(this.pointX, this.pointY);
        ctx.lineTo(this.forceX, this.forceY);
@@ -217,7 +218,7 @@ class Lasso{
         var incrementY = (this.forceY-player.shape.y)/segments;
         var energyLoss = 0.85;
         var currPoint = new Point(player.shape.x, player.shape.y);
-        var squiggliness = 1;
+        var squiggliness = 30;
 
      
         //iterates through points to draw line with gradually decreasing slope
@@ -225,19 +226,21 @@ class Lasso{
         {
             this.lassoPoints[i] = currPoint;
             this.guidePoints.push(currPoint);
-            currPoint = new Point(currPoint.x+incrementX, currPoint.y+incrementY);
-            incrementY *= energyLoss;
+            currPoint = new Point(currPoint.x+incrementX, currPoint.y + (incrementY*Math.pow(energyLoss, i)));
         }
 
-        incrementY = (this.forceY-player.shape.y)/segments;
+       // incrementY = (this.forceY-player.shape.y)/segments;
 
         //adds extra points to lassoPath to make squiggles
+        var count = 0;
         for(var i = 1; i<segments*2-1; i+=2)
         {
-            var xTemp = player.shape.x + incrementX*i + (Math.random()*incrementX);
-            var yTemp = Math.random()>0.5?incrementY + Math.random()*squiggliness : incrementY - Math.random()*squiggliness;
-            yTemp += player.shape.y;
-            incrementY *= energyLoss;
+            var xTemp = player.shape.x + incrementX*count + (Math.random()*incrementX);
+           // var rand = Math.random();
+           // console.log(rand);
+          //  var yTemp =  Math.random()>0.5 ? (this.lassoPoints[i-1].y + incrementY*Math.pow(energyLoss,i) + Math.random()*squiggliness) : this.lassoPoints[i-1].y + incrementY*Math.pow(energyLoss,i) - Math.random()*squiggliness ;
+            var yTemp = this.lassoPoints[i-1].y + incrementY*Math.pow(energyLoss, i) - Math.random()*squiggliness;
+            count++;
 
             this.lassoPoints[i] = new Point(xTemp, yTemp);
         }
@@ -265,28 +268,29 @@ class Lasso{
          const tempLineWidth = ctx.lineWidth;
          ctx.lineWidth = 5;
          ctx.strokeStyle =  player.fillColor;
-
          //path for lasso and path for controlling lasso fall
          let lassoPath = new Path2D();
          let guidePath = new Path2D();
 
+         ctx.lineCap = 'round';
+
          lassoPath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
-         guidePath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
+         guidePath.moveTo(this.guidePoints[0].x, this.guidePoints[0].y);
  
-       for(var i = 1; i<this.lassoPoints.length; i++)
+       for(var i = 1; i<this.lassoPoints.length-3; i+=3)
        {
           //some typeerror in this line 
         //console.log(this.lassoPoints[i]);
-         lassoPath.lineTo(this.lassoPoints[i].x, this.lassoPoints[i].y);
+         lassoPath.bezierCurveTo(this.lassoPoints[i].x, this.lassoPoints[i].y, this.lassoPoints[i+1].x, this.lassoPoints[i+1].y, this.lassoPoints[i+2].x, this.lassoPoints[i+2].y);
+        }
+        ctx.stroke(lassoPath);
 
-         if(i<this.guidePoints.length)
-         {
+        for(var i = 1; i<this.guidePoints.length; i++)
+        {
             guidePath.lineTo(this.guidePoints[i].x, this.guidePoints[i].y);
-         }
+        }
+        //ctx.stroke(guidePath);
 
-         ctx.stroke(lassoPath);
-         ctx.stroke(guidePath);
-    }
     
         ctx.lineWidth = tempLineWidth;
         ctx.strokeStyle = "#000000";
