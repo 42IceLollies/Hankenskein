@@ -79,8 +79,11 @@ class Lasso{
     static lassoCounter = 0;
 
     //copy of lasso's variables because it's not working for some reason?
-    static forceX = player.shape.x;
-    static forceY = player.shape.y;
+    static forceX = 0;
+    static forceY = 0;
+    // were causing loading issues, called resetForceBase() in start of other js file
+    // static forceX = player.shape.x;
+    // static forceY = player.shape.y;
     static mouseX = 0;
     static mouseY = 0;
     static forceLength = 0;
@@ -306,5 +309,184 @@ class Lasso{
 }
 
 
+
+// ==================
+// =LINE CLASS
+// ==================
+
+
+class Line {
+    constructor(x1Start, y1, x2Start, y2, xOffset) {
+        this.x1Start = x1Start;
+        this.x2Start = x2Start;
+        this.y1 = y1;
+        this.y2 = y2;
+        this.x1 = x1Start + xOffset;
+        this.x2 = x2Start + xOffset;
+    }
+
+    adjustX(xOffset) {
+        this.x1 = this.x1Start + xOffset;
+        this.x2 = this.x2Start + xOffset;
+    }
+
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(this.x2, this.y2);
+        ctx.stroke();
+    }
+
+    get isVertical() {
+        return (this.x1 == this.x2);
+    }
+
+    get isHorizontal() {
+        return (this.y1 == this.y2);
+    }
+
+    static withinRange(num, rangeStart, rangeEnd) {
+        if (rangeStart < rangeEnd) {
+            return (num >= rangeStart && num <= rangeEnd);
+        } else {
+            return (num >= rangeEnd && num <= rangeStart);
+        }
+    }
+
+    get yChangeRate() {
+        const xChange = this.x2Start - this.x1Start;
+        const yChange = this.y2 - this.y1;
+        //is this bit of code stil in use for redundancy or was it just for testing?
+        if (xChange == 0) {
+            console.log("ERROR: 0 value for xChange in yChangeRate()");
+            return false;
+        }
+        return yChange / xChange;
+    }
+
+    // returns the y value on the line at the given x
+    yAt(x) {
+        if (!Line.withinRange(x, this.x1, this.x2) || this.isVertical) {return;}
+        if (this.isHorizontal) {return this.y1;}
+
+        const y = this.y1 + (this.yChangeRate * (x - this.x1));
+        return y;
+    }
+
+    get xChangeRate() {
+        const xChange = this.x2Start - this.x1Start;
+        const yChange = this.y2 - this.y1;
+        if (yChange == 0) {
+            console.log("ERROR: 0 value in yChange");
+            return;
+        }
+        return xChange / yChange;
+    }
+
+    // returns the y value on the line at the given x
+    xAt(y) {
+        if (!Line.withinRange(y, this.y1, this.y2) || this.isHorizontal) {return;}
+        if (this.isVertical) {return this.x1;}
+
+        const x = this.x1 + (this.xChangeRate * (y - this.y1));
+        return x;
+    }
+
+    get degree() {
+        if (this.isVertical) {
+            return 90;
+        }
+        let degree = Math.atan(-this.yChangeRate) * (180 / Math.PI);
+        if (degree < 0) {
+            degree = 180 + degree;
+        }
+        return degree;
+    }
+
+    get slopeIntercept() {
+        const equation = [this.yChangeRate];
+        const yInt = this.y1 + (-this.x1 * equation[0]);
+        equation.push(yInt);
+        return equation;
+    }
+} // end of Line
+
+
+// ===============
+// =POINT CLASS
+// ===============
+
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    moveTo(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    draw(ctx) {
+        ctx.fillStyle = "purple";
+        ctx.fillRect(this.x - 2, this.y - 2, 5, 5);
+    }
+} // end of Point
+
+
+function fillPoints() {
+    points = [];
+    for (let i = 0; i < lines.length; i++) {
+        points.push(new Point(lines[i].x1, lines[i].y1));
+        points.push(new Point(lines[i].x2, lines[i].y2))
+    }
+} // end of fillPoints
+
+
+// ==================
+// =CIRCLE CLASS
+// ==================
+
+
+class Circle {
+    constructor(x, y, radius) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+    }
+} // end of Circle
+
+
+// ==================
+// =BACKGROUND CLASS
+// ==================
+
+
+class Background {
+    constructor(src, x, y, height) {
+        this.img = new Image();
+        this.img.src = src;
+        this.widthFraction = this.img.width / this.img.height;
+        this.startX = x;
+        this.x = this.startX;
+        this.y = 0;
+        this.height = height;
+        this.width = height * this.widthFraction;
+    }
+
+    updateX(xOffset) {
+        this.x = this.startX + xOffset;
+    }
+
+    updateDimensions(height) {
+        const widthFraction = this.img.width / this.img.height;
+        this.height = height;
+        this.width = height * widthFraction;
+    }
+
+    draw(ctx) {
+        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+    }
+}
 
 
