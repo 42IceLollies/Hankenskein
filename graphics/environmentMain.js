@@ -74,7 +74,7 @@ function setup() {
 
 	Lasso.resetForceBase();
 
-	background = new Background("./Backgrounds/levelOneBackground.png", 0, 0, canvas.height);
+	background = new Background("../Art/Backgrounds/levelOneBackground.png", 0, 0, canvas.height);
 }
 
 
@@ -1319,7 +1319,7 @@ function drawPlayer(ctx) {
 	// ctx.arc(player.shape.x, player.shape.y, player.shape.radius, 0, 2 * Math.PI);
 	// ctx.fill();
 	const ball = new Image();
-	ball.src = "./Art/Hankenskein.png";
+	ball.src = "../Art/Hankenskein.png";
 
 	// const x = player.shape.x - player.shape.radius;
 	// const y = player.shape.y - player.shape.radius;
