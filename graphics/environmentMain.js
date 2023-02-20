@@ -8,10 +8,9 @@ const ctx = canvas.getContext('2d');
 
 
 const game = {
-	fps: 50,
+	fps: 35,
 	xOffset: 0,
 	frictionRate: .6,
-	// gravityForce: 0, // updated by fall() // no longer in use
 };
 
 
@@ -39,7 +38,7 @@ const player = {
 	// screenPercent: 0.035, // 3.5% of the height
 	screenPercent: 0.04,
 	radiusActual: 0.1016, // 4 inches in meters
-	weightActual: "idk", // in kilograms?
+	weightActual: "idk", // in kilograms? // never actually used it
 	// tracks which directions it's blocked by something
 	blocked: {
 		up: false,
@@ -74,7 +73,7 @@ function setup() {
 
 	Lasso.resetForceBase();
 
-	background = new Background("../Art/Backgrounds/levelOneBackground.png", 0, 0, canvas.height);
+	background = new Background("../Art/Backgrounds/levelOneBackground.png", 830, 0, canvas.height);
 }
 
 
@@ -935,6 +934,12 @@ function resize() {
 		lineXs.push([(line.x1 - player.shape.x) / player.shape.radius, (line.x2 - player.shape.x) / player.shape.radius]);
 	}
 
+	background.updateDimensions(canvas.height);
+
+	// the difference between the background location and the player location,
+	// divided by the player radius for scale
+	let backFraction = (background.x - player.shape.x) / player.shape.radius;
+
 	// resize the canvas to fill the whole window
 	resizeCanvas();
 
@@ -972,7 +977,15 @@ function resize() {
 	points = [];
 	fillPoints();
 
+	// resize the image to fit height-wise
 	background.updateDimensions(canvas.height);
+	// the px amount of how far back the background should be from the player
+	const backXDistance = player.shape.x - game.xOffset + (backFraction * player.shape.radius);
+	// use this method cause setting it directly doesn't work
+	background.setStartX(backXDistance);
+	// update offset after
+	background.updateOffset(game.xOffset);
+
 } // end of resize
 
 
@@ -1348,9 +1361,9 @@ function draw(ctx) {
 	background.draw(ctx);
 	drawLines(ctx);
 	drawPlayer(ctx);
-	// testPoints[0].draw(ctx);
-	// testPoints[1].draw(ctx);
-} // end of ctx
+
+	Lasso.drawLasso(ctx);
+} // end of draw
 
 
 //==================================
@@ -1376,15 +1389,13 @@ const animateID = setInterval(() => {
 
 	movePlayer();
 	moveLines();
-	background.updateX(game.xOffset);
+	background.updateOffset(game.xOffset);
 	fillPoints();
 
 	fall();
 	roll();
 
 	draw(ctx);
-	
-	Lasso.drawLasso(ctx);
 
 	for (let i = 0; i < lines.length; i++) {
 		bounce(player, lines[i]);
@@ -1392,4 +1403,10 @@ const animateID = setInterval(() => {
 	
 }, 1000 / game.fps); // 1000 is 1 second
 
-
+// const resizeId = setInterval(() => {
+// 	resize();
+// 	updatePlayerSpeeds();
+// 	// called here so collision still works
+// 	moveLines();
+// 	draw(ctx);
+// }, 41);
