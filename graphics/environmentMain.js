@@ -8,10 +8,9 @@ const ctx = canvas.getContext('2d');
 
 
 const game = {
-	fps: 50,
+	fps: 35,
 	xOffset: 0,
 	frictionRate: .6,
-	// gravityForce: 0, // updated by fall() // no longer in use
 };
 
 
@@ -39,7 +38,7 @@ const player = {
 	// screenPercent: 0.035, // 3.5% of the height
 	screenPercent: 0.04,
 	radiusActual: 0.1016, // 4 inches in meters
-	weightActual: "idk", // in kilograms?
+	weightActual: "idk", // in kilograms? // never actually used it
 	// tracks which directions it's blocked by something
 	blocked: {
 		up: false,
@@ -63,8 +62,8 @@ function setup() {
 	// size the player correctly
 	player.shape.radius = canvas.height * player.screenPercent;
 
-	const testLine = new Line(1000, 500, 1000, 0, game.xOffset);
-	const ground = new Line(0, 450, 1000, 500, game.xOffset);
+	const testLine = new Line(1000, 400, 2000, 300, game.xOffset);
+	const ground = new Line(0, 250, 1000, 400, game.xOffset);
 
 	lines.push(testLine);
 	lines.push(ground);
@@ -74,7 +73,7 @@ function setup() {
 
 	Lasso.resetForceBase();
 
-	background = new Background("./Backgrounds/levelOneBackground.png", 0, 0, canvas.height);
+	background = new Background("../Art/Backgrounds/levelOneBackground.png", 830, 0, canvas.height);
 }
 
 
@@ -935,6 +934,12 @@ function resize() {
 		lineXs.push([(line.x1 - player.shape.x) / player.shape.radius, (line.x2 - player.shape.x) / player.shape.radius]);
 	}
 
+	background.updateDimensions(canvas.height);
+
+	// the difference between the background location and the player location,
+	// divided by the player radius for scale
+	let backFraction = (background.x - player.shape.x) / player.shape.radius;
+
 	// resize the canvas to fill the whole window
 	resizeCanvas();
 
@@ -972,7 +977,15 @@ function resize() {
 	points = [];
 	fillPoints();
 
+	// resize the image to fit height-wise
 	background.updateDimensions(canvas.height);
+	// the px amount of how far back the background should be from the player
+	const backXDistance = player.shape.x - game.xOffset + (backFraction * player.shape.radius);
+	// use this method cause setting it directly doesn't work
+	background.setStartX(backXDistance);
+	// update offset after
+	background.updateOffset(game.xOffset);
+
 } // end of resize
 
 
@@ -1314,12 +1327,8 @@ function clearCanvas(ctx) {
 
 // draws in the player, info from player{}
 function drawPlayer(ctx) {
-	// ctx.fillStyle = player.fillColor;
-	// ctx.beginPath();
-	// ctx.arc(player.shape.x, player.shape.y, player.shape.radius, 0, 2 * Math.PI);
-	// ctx.fill();
 	const ball = new Image();
-	ball.src = "./Art/Hankenskein.png";
+	ball.src = "../Art/Hankenskein.png";
 
 	// const x = player.shape.x - player.shape.radius;
 	// const y = player.shape.y - player.shape.radius;
@@ -1332,7 +1341,47 @@ function drawPlayer(ctx) {
 	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2);
 	ctx.rotate(-degreesToRadians(player.rotation % 360));
 	ctx.translate(-centerX, -centerY);
+
+	drawPlayerEyes();
 } // end of drawPlayer
+
+
+function drawPlayerEyes() {
+	// draw the big white circles with the black outline
+	ctx.beginPath();
+	const x1 = player.shape.x - player.shape.radius * (4/9);
+	const x2 = player.shape.x + player.shape.radius * (4/9);
+	let y1 = player.shape.y - player.shape.radius * (1/9);
+	let y2 = player.shape.y - player.shape.radius * (1/9);
+	const radius = player.shape.radius * (5/12);
+
+	const bounces = player.rotation / 180;
+	const movementFraction = 1/12;
+
+	if (Math.floor(bounces) % 2 == 1) {
+		y1 -= (player.shape.radius * movementFraction) * (bounces % 1);
+		y2 += (player.shape.radius * movementFraction) * (bounces % 1);
+	} else {
+		y1 -= (player.shape.radius * movementFraction) * (1-(bounces % 1));
+		y2 += (player.shape.radius * movementFraction) * (1-(bounces % 1));
+	}
+
+	ctx.arc(x1, y1, radius, 0, 2 * Math.PI);
+	ctx.fillStyle = "white";
+	ctx.fill();
+	ctx.strokeStyle = "black";
+	ctx.stroke();
+
+	ctx.beginPath();
+
+	ctx.arc(x2, y2, radius, 0, 2 * Math.PI);
+	ctx.fillStyle = "white";
+	ctx.fill();
+	ctx.strokeStyle = "black";
+	ctx.stroke();
+
+	// draw the smaller black circle
+} // end of drawPlayerEyes
 
 
 // draws in the lines
@@ -1345,12 +1394,12 @@ function drawLines(ctx) {
 
 function draw(ctx) {
 	clearCanvas(ctx);
-	background.draw(ctx);
+	// background.draw(ctx); // here
 	drawLines(ctx);
 	drawPlayer(ctx);
-	// testPoints[0].draw(ctx);
-	// testPoints[1].draw(ctx);
-} // end of ctx
+
+	Lasso.drawLasso(ctx);
+} // end of draw
 
 
 //==================================
@@ -1376,15 +1425,13 @@ const animateID = setInterval(() => {
 
 	movePlayer();
 	moveLines();
-	background.updateX(game.xOffset);
+	background.updateOffset(game.xOffset);
 	fillPoints();
 
 	fall();
 	roll();
 
 	draw(ctx);
-	
-	Lasso.drawLasso(ctx);
 
 	for (let i = 0; i < lines.length; i++) {
 		bounce(player, lines[i]);
@@ -1392,4 +1439,10 @@ const animateID = setInterval(() => {
 	
 }, 1000 / game.fps); // 1000 is 1 second
 
-
+// const resizeId = setInterval(() => {
+// 	resize();
+// 	updatePlayerSpeeds();
+// 	// called here so collision still works
+// 	moveLines();
+// 	draw(ctx);
+// }, 41);

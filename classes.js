@@ -96,7 +96,7 @@ class Lasso{
 	{
 		this.mouseX = x;
 		this.mouseY = y;
-        console.log(this.mouseX + " " + this.mouseY);
+        // console.log(this.mouseX + " " + this.mouseY);
 	}
 
 	static resetForceBase()
@@ -474,7 +474,7 @@ class Background {
         this.width = height * this.widthFraction;
     }
 
-    updateX(xOffset) {
+    updateOffset(xOffset) {
         this.x = this.startX + xOffset;
     }
 
@@ -482,6 +482,10 @@ class Background {
         const widthFraction = this.img.width / this.img.height;
         this.height = height;
         this.width = height * widthFraction;
+    }
+
+    setStartX(newX) {
+        this.startX = newX;
     }
 
     draw(ctx) {
