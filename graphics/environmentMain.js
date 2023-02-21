@@ -62,8 +62,8 @@ function setup() {
 	// size the player correctly
 	player.shape.radius = canvas.height * player.screenPercent;
 
-	const testLine = new Line(1000, 500, 1000, 0, game.xOffset);
-	const ground = new Line(0, 450, 1000, 500, game.xOffset);
+	const testLine = new Line(1000, 400, 2000, 300, game.xOffset);
+	const ground = new Line(0, 250, 1000, 400, game.xOffset);
 
 	lines.push(testLine);
 	lines.push(ground);
@@ -1327,10 +1327,6 @@ function clearCanvas(ctx) {
 
 // draws in the player, info from player{}
 function drawPlayer(ctx) {
-	// ctx.fillStyle = player.fillColor;
-	// ctx.beginPath();
-	// ctx.arc(player.shape.x, player.shape.y, player.shape.radius, 0, 2 * Math.PI);
-	// ctx.fill();
 	const ball = new Image();
 	ball.src = "../Art/Hankenskein.png";
 
@@ -1345,7 +1341,47 @@ function drawPlayer(ctx) {
 	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2);
 	ctx.rotate(-degreesToRadians(player.rotation % 360));
 	ctx.translate(-centerX, -centerY);
+
+	drawPlayerEyes();
 } // end of drawPlayer
+
+
+function drawPlayerEyes() {
+	// draw the big white circles with the black outline
+	ctx.beginPath();
+	const x1 = player.shape.x - player.shape.radius * (4/9);
+	const x2 = player.shape.x + player.shape.radius * (4/9);
+	let y1 = player.shape.y - player.shape.radius * (1/9);
+	let y2 = player.shape.y - player.shape.radius * (1/9);
+	const radius = player.shape.radius * (5/12);
+
+	const bounces = player.rotation / 180;
+	const movementFraction = 1/12;
+
+	if (Math.floor(bounces) % 2 == 1) {
+		y1 -= (player.shape.radius * movementFraction) * (bounces % 1);
+		y2 += (player.shape.radius * movementFraction) * (bounces % 1);
+	} else {
+		y1 -= (player.shape.radius * movementFraction) * (1-(bounces % 1));
+		y2 += (player.shape.radius * movementFraction) * (1-(bounces % 1));
+	}
+
+	ctx.arc(x1, y1, radius, 0, 2 * Math.PI);
+	ctx.fillStyle = "white";
+	ctx.fill();
+	ctx.strokeStyle = "black";
+	ctx.stroke();
+
+	ctx.beginPath();
+
+	ctx.arc(x2, y2, radius, 0, 2 * Math.PI);
+	ctx.fillStyle = "white";
+	ctx.fill();
+	ctx.strokeStyle = "black";
+	ctx.stroke();
+
+	// draw the smaller black circle
+} // end of drawPlayerEyes
 
 
 // draws in the lines
@@ -1358,7 +1394,7 @@ function drawLines(ctx) {
 
 function draw(ctx) {
 	clearCanvas(ctx);
-	background.draw(ctx);
+	// background.draw(ctx); // here
 	drawLines(ctx);
 	drawPlayer(ctx);
 
