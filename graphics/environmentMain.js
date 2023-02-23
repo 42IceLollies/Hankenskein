@@ -1253,7 +1253,7 @@ function rollUp(circle, line, force) {
 	// // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
 	if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
 	(circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
-		console.log("hereye");
+		// console.log("hereye");
 		circle.xSpeeds.rollUp = 0;
 	}
 
@@ -1366,21 +1366,43 @@ function drawPlayerEyes() {
 		y2 += (player.shape.radius * movementFraction) * (1-(bounces % 1));
 	}
 
-	ctx.arc(x1, y1, radius, 0, 2 * Math.PI);
-	ctx.fillStyle = "white";
-	ctx.fill();
-	ctx.strokeStyle = "black";
-	ctx.stroke();
+	const eye1 = new Circle(x1, y1, radius);
+	const eye2 = new Circle(x2, y2, radius);
 
-	ctx.beginPath();
-
-	ctx.arc(x2, y2, radius, 0, 2 * Math.PI);
-	ctx.fillStyle = "white";
-	ctx.fill();
-	ctx.strokeStyle = "black";
-	ctx.stroke();
+	eye1.fill(ctx, "white");
+	eye2.fill(ctx, "white");
+	eye1.outline(ctx, "black");
+	eye2.outline(ctx, "black");
 
 	// draw the smaller black circle
+
+	let px1 = eye1.x;
+	let px2 = eye2.x;
+	let py1 = eye1.y;
+	let py2 = eye2.y;
+
+	const maxShift = eye1.radius * (4/16);
+	let xShift = player.xSpeed / 200 * maxShift;
+	let yShift = player.ySpeed / 200 * maxShift;
+
+	if (Math.abs(xShift) > maxShift) {
+		xShift = getSign(xShift) * maxShift;
+	}
+	if (Math.abs(yShift) > maxShift) {
+		yShift = getSign(yShift) * maxShift;
+	}
+
+	px1 += xShift;
+	px2 += xShift;
+	py1 += yShift;
+	py2 += yShift;
+
+	const pupil1 = new Circle(px1, py1, eye1.radius / 2);
+	const pupil2 = new Circle(px2, py2, eye2.radius / 2);
+
+	pupil1.fill(ctx, "black");
+	pupil2.fill(ctx, "black");
+
 } // end of drawPlayerEyes
 
 
@@ -1439,10 +1461,3 @@ const animateID = setInterval(() => {
 	
 }, 1000 / game.fps); // 1000 is 1 second
 
-// const resizeId = setInterval(() => {
-// 	resize();
-// 	updatePlayerSpeeds();
-// 	// called here so collision still works
-// 	moveLines();
-// 	draw(ctx);
-// }, 41);

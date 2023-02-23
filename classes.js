@@ -454,6 +454,22 @@ class Circle {
         this.y = y;
         this.radius = radius;
     }
+
+    // color as string word
+    fill(ctx, color) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+    }
+
+    // color as string word
+    outline(ctx, color) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+        ctx.strokeStyle = color;
+        ctx.stroke();
+    }
 } // end of Circle
 
 
