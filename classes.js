@@ -417,14 +417,20 @@ class Line {
 // ===============
 
 class Point {
-    constructor(x, y) {
-        this.x = x;
+    constructor(xStart, y, xOffset) {
+        this.xStart = xStart;
+        this.x = xStart;
         this.y = y;
     }
 
-    moveTo(x, y) {
-        this.x = x;
+    adjustX(xOffset) {
+        this.x = this.xStart + xOffset;
+    }
+
+    moveTo(x, y, xOffset) {
+        this.xStart = x - xOffset;
         this.y = y;
+        this.updateOffset(xOffset);
     }
 
     draw(ctx) {

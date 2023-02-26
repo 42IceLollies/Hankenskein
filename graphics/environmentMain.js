@@ -69,9 +69,6 @@ function setup() {
 	lines.push(testLine);
 	lines.push(ground);
 
-	// testPoints.push(new Point(0, 0));
-	// testPoints.push(new Point(0, 0));
-
 	Lasso.resetForceBase();
 
 	background = new Background("../Art/Backgrounds/levelOneBackground.png", 830, 0, canvas.height);
@@ -419,17 +416,9 @@ function angledCollisionAbove(circle, line) {
 
 
 // handles player collision with points
-// == currently does nothing, (changing xSpeed directly is outdated), awaiting updating ==
 function collideWithPoints() {
 	updatePlayerSpeeds();
-
-	const points = [];
-	// every end of a line is a point to collide with
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i]
-		points.push(new Point(line.x1, line.y1));
-		points.push(new Point(line.x2, line.y2));
-	}
+	movePoints();
 
 	// for every point
 	for (let i = 0; i < points.length; i++) {
@@ -609,13 +598,7 @@ function circleLineBounce(circle, line) {
 
 
 function circlePointBounceAll(circle) {
-	const points = [];
-	// every end of a line is a point to collide with
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i]
-		points.push(new Point(line.x1, line.y1));
-		points.push(new Point(line.x2, line.y2));
-	}
+	movePoints();
 
 	for (let i = 0; i < points.length; i++) {
 		const collideLine = collisionPointToLine(circle, points[i]);
@@ -886,16 +869,14 @@ document.addEventListener("mouseup", (e)=>{
 
 
 //external function for eventListener above so it's easier to cancel later
-function mouseMove(e)
-	{
-			//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
-		Lasso.changeMouseLocation(e);
-		//Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
-	}
+function mouseMove(e) {
+	//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
+	Lasso.changeMouseLocation(e);
+	//Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
+}
 
 	//clears listener for mouse move whenever the lasso is launched
-function clearMouseMove()
-{
+function clearMouseMove() {
 	if(Lasso.lassoCounter==2){
 		document.removeEventListener('mousemove', mouseMove)
 	}
@@ -966,8 +947,14 @@ function resize() {
 	}
 	// move the lines, so anything after this still works
 	moveLines();
+	
 	points = [];
-	fillPoints();
+	// every end of a line is a point to collide with
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i]
+		points.push(new Point(line.x1, line.y1, 0));
+		points.push(new Point(line.x2, line.y2, 0));
+	}
 
 	// resize the image to fit height-wise
 	background.updateDimensions(canvas.height);
@@ -1122,9 +1109,14 @@ function moveLines() {
 	}
 } // end of moveLines
 
-function updatePoints() {
 
-} // end of updatePoints
+// moves the points based on xOffset
+function movePoints() {
+	for (let i = 0; i < points.length; i++) {
+		// adjust every point's x position
+		points[i].adjustX(game.xOffset);
+	}
+} // end of movePoints
 
 
 // updates the main speeds in player
@@ -1351,7 +1343,7 @@ function drawPlayerEyes() {
 	let y2 = player.shape.y - player.shape.radius * (1/9);
 	const radius = player.shape.radius * (5/12);
 
-	const bounces = player.rotation / 180;
+	const bounces = Math.abs(player.rotation / 180);
 	const movementFraction = 1/12;
 
 	if (Math.floor(bounces) % 2 == 1) {
@@ -1359,7 +1351,7 @@ function drawPlayerEyes() {
 		y2 += (player.shape.radius * movementFraction) * (bounces % 1);
 	} else {
 		y1 -= (player.shape.radius * movementFraction) * (1-(bounces % 1));
-		y2 += (player.shape.radius * movementFraction) * (1-(bounces % 1));
+		y2 += (player.shape.radius * movementFraction) * (1- (bounces % 1));
 	}
 
 	const eye1 = new Circle(x1, y1, radius);
