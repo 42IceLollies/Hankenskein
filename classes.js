@@ -417,14 +417,20 @@ class Line {
 // ===============
 
 class Point {
-    constructor(x, y) {
-        this.x = x;
+    constructor(xStart, y, xOffset) {
+        this.xStart = xStart;
+        this.x = xStart;
         this.y = y;
     }
 
-    moveTo(x, y) {
-        this.x = x;
+    adjustX(xOffset) {
+        this.x = this.xStart + xOffset;
+    }
+
+    moveTo(x, y, xOffset) {
+        this.xStart = x - xOffset;
         this.y = y;
+        this.updateOffset(xOffset);
     }
 
     draw(ctx) {
@@ -453,6 +459,22 @@ class Circle {
         this.x = x;
         this.y = y;
         this.radius = radius;
+    }
+
+    // color as string word
+    fill(ctx, color) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+    }
+
+    // color as string word
+    outline(ctx, color) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+        ctx.strokeStyle = color;
+        ctx.stroke();
     }
 } // end of Circle
 
