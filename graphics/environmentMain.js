@@ -33,7 +33,8 @@ const player = {
 		rollDown: 0,
 		rollUp: 0,
 	},
-	acceleration: 150,
+	// acceleration: 150,
+	acceleration: 300,
 	fillColor: "#e2619f", // pink
 	// screenPercent: 0.035, // 3.5% of the height
 	screenPercent: 0.04,
@@ -57,22 +58,37 @@ const testPoints = [];
 let points = [];
 let background;
 
+let linePoints = [[[0, 0], [0, 499]], [[0, 499], [2666, 500]], [[2666, 500], [2666, 0]], [[827, 500], [1094, 370]],
+	[[1094, 370], [1098, 379]], [[1098, 379], [1162, 379]], [[1162, 379], [1162, 446]], [[1162, 446], [1161, 500]]
+	, [[1937, 500], [1940, 300]], [[1940, 300], [2285, 302]], [[2285, 302], [2288, 500]]
+	, [[1993, 215], [2075, 214]]];
+
 function setup() {
 	// center player
 	player.shape.x = canvas.width / 2;
 	// size the player correctly
 	player.shape.radius = canvas.height * player.screenPercent;
 
-	const testLine = new Line(1000, 350, 2000, 400, game.xOffset);
-	const ground = new Line(0, 400, 1000, 350, game.xOffset);
+	// const testLine = new Line(1000, 350, 2000, 400, game.xOffset);
+	// const ground = new Line(0, 400, 1000, 350, game.xOffset);
 
-	lines.push(testLine);
-	lines.push(ground);
+	// lines.push(testLine);
+	// lines.push(ground);
+	createLines(linePoints);
 
 	Lasso.resetForceBase();
 
-	background = new Background("../Art/Backgrounds/levelOneBackground.png", 830, 0, canvas.height);
+	background = new Background("../Art/Backgrounds/levelOneBackground.png", 0, 0, canvas.height);
 }
+
+
+function createLines(pointsArray) {
+	for (let i = 0; i < pointsArray.length; i++) {
+		const set = pointsArray[i];
+		const newLine = new Line(set[0][0], set[0][1], set[1][0], set[1][1], 0);
+		lines.push(newLine);
+	}
+} // end of createLines
 
 
 // can be moved to physics
@@ -835,6 +851,8 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousedown", (e)=>{
+	console.log(e.x - game.xOffset, e.y);
+
 	keydown.mouse=true;
 	//console.log(e.clientX, e.clientY);
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
@@ -914,7 +932,7 @@ function resize() {
 	let backFraction = (background.x - player.shape.x) / player.shape.radius;
 
 	// resize the canvas to fill the whole window
-	resizeCanvas();
+	resizeCanvas(); // uncomment
 
 	// compare the new and old dimensions
 	// if no change, end it now
@@ -928,8 +946,8 @@ function resize() {
 	// make radius the set fraction of the height
 	player.shape.radius = canvas.height * player.screenPercent;
 	player.shape.y = canvas.height * playerHeight;
-	player.acceleration = player.shape.radius * 6;
-	// player.acceleration = player.shape.radius * 9;
+	// player.acceleration = player.shape.radius * 6;
+	player.acceleration = player.shape.radius * 9;
 
 	// resizes the lines
 	for (let i = 0; i < lines.length; i++) {
@@ -985,7 +1003,7 @@ function meterPixelRate() {
 // =====================
 // =MOVING
 // =====================
-//random change :/
+
 
 // adds rotation to player based on how far it's rolled
 function spinPlayer() {
@@ -1407,7 +1425,8 @@ function drawLines(ctx) {
 
 function draw(ctx) {
 	clearCanvas(ctx);
-	// background.draw(ctx); // here
+	background.updateDimensions(canvas.height);
+	background.draw(ctx); // here
 	drawLines(ctx);
 	drawPlayer(ctx);
 
@@ -1434,11 +1453,12 @@ const animateID = setInterval(() => {
 		frictionPlayer();
 	}
 	collideWithLines();
-	collideWithPoints();
+	// collideWithPoints();
 
 	movePlayer();
 	moveLines();
 	background.updateOffset(game.xOffset);
+	background.updateDimensions();
 	fillPoints();
 
 	fall();
@@ -1449,8 +1469,9 @@ const animateID = setInterval(() => {
 	for (let i = 0; i < lines.length; i++) {
 		circleLineBounce(player, lines[i]);
 	}
-	circlePointBounceAll(player);
+	// circlePointBounceAll(player);
 
+	// console.log(player.xSpeeds, player.ySpeeds);
 	
 }, 1000 / game.fps); // 1000 is 1 second
 
