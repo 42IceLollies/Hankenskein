@@ -1,0 +1,34 @@
+
+
+#box{
+position: relative;
+z-index:3;
+}
+
+img{
+    position:absolute;
+    top:0;
+    width:100vw;
+    height:100vh;
+    /* the distance of the image to the image to the top of the screen*/
+}
+#title{
+    z-index:2;
+    position:absolute;
+    width:100vw;
+    
+}
+
+body{
+    padding:0%;
+    /*no outer shell on the outside*/
+    margin:0;
+    /*makes things not go to the edge of the screen*/
+
+}
+#flowers{
+    width:100vw;
+    position:absolute;
+    padding:0;
+    margin:0;
+}
