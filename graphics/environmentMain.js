@@ -63,7 +63,7 @@ let linePoints = [[[0, 0], [0, 499]], [[0, 499], [2666, 500]], [[2666, 500], [26
 	, [[1937, 500], [1940, 300]], [[1940, 300], [2285, 302]], [[2285, 302], [2288, 500]]
 	, [[1993, 215], [2075, 214]]];
 
-function setup() {
+function setup(linesArray) {
 	// center player
 	player.shape.x = canvas.width / 2;
 	// size the player correctly
@@ -76,7 +76,7 @@ function setup() {
 	// lines.push(ground);
 	createLines(linePoints);
 
-	Lasso.resetForceBase();
+	Lasso.resetForceBase(linesArray);
 
 	background = new Background("../Art/Backgrounds/levelOneBackground.png", 0, 0, canvas.height);
 }
@@ -1453,7 +1453,7 @@ function draw(ctx) {
 // =ANIMATE LOOP
 //==================================
 
-setup();
+// setup(linePoints);
 
 // the animate loop, cycles everything
 const animateID = setInterval(() => {
@@ -1473,7 +1473,6 @@ const animateID = setInterval(() => {
 	movePlayer();
 	moveLines();
 	background.updateOffset(game.xOffset);
-	background.updateDimensions();
 	fillPoints();
 
 	fall();
