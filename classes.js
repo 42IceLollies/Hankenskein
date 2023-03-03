@@ -334,6 +334,8 @@ class Line {
         ctx.beginPath();
         ctx.moveTo(this.x1, this.y1);
         ctx.lineTo(this.x2, this.y2);
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
         ctx.stroke();
     }
 
@@ -474,6 +476,7 @@ class Circle {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
         ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
         ctx.stroke();
     }
 } // end of Circle

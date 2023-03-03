@@ -1423,10 +1423,25 @@ function drawLines(ctx) {
 } // end of drawLines
 
 
+// function drawWalls(ctx, background) {
+// 	const thick = canvas.height / 10;
+
+// 	ctx.beginPath();
+// 	ctx.rect(background.x - thick, background.y - thick, background.width + thick*2, background.height + thick*2);
+// 	ctx.strokeStyle = "#630";
+// 	ctx.lineWidth = thick;
+// 	ctx.stroke();
+// } // end of drawWalls
+
+
 function draw(ctx) {
 	clearCanvas(ctx);
+	ctx.beginPath();
+	ctx.rect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = "#dad";
+	ctx.fill();
 	background.updateDimensions(canvas.height);
-	background.draw(ctx); // here
+	background.draw(ctx);
 	drawLines(ctx);
 	drawPlayer(ctx);
 
