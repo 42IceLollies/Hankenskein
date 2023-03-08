@@ -76,6 +76,7 @@ class Physics{
 class Lasso{
     static lassoPoints;
     static guidePoints;
+    static collideHorizon = [];
     static lassoCounter = 0;
 
     //copy of lasso's variables because it's not working for some reason?
@@ -267,6 +268,27 @@ class Lasso{
         //need to clear the arrays of points when making a new line?
         //yeah, at least the guidePoints one, it's being weird
 
+        //bro i really need to comment this better, even I can't figure out what I was meaning to do 
+        //apologies to y'all else who have to read it
+        //it's 10:00 and I probably should go to bed
+        //I had caffiene too late in the day tho and I am wide awake/vibing to idkHOW
+
+    static lassoCollide(horizon)
+    {
+        //sees collision of horizon in reference to all registered obstructions
+        //testForLineCollision(circle, line)
+
+        for(var i = 0; i<lines.length; i++)
+        {
+            if(testForLineCollision(horizon, lines[i]))
+            {
+                return(true);
+            }
+        }
+        return (false);
+
+    }
+
 
     static drawLassoFall(ctx)
     {
@@ -282,8 +304,15 @@ class Lasso{
 
          lassoPath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
          guidePath.moveTo(this.guidePoints[0].x, this.guidePoints[0].y);
+
+         //update collideHorizon
+         for(var i = 0; i<this.lassoPoints.length; i++)
+         {
+            this.collideHorizon[i] = {shape: new Circle(this.lassoPoints[i].x, this.lassoPoints[i].y, 5)};
+         }
          
  
+         //draws lasso string
        for(var i = 1; i<this.lassoPoints.length-3; i+=3)
        {
          lassoPath.bezierCurveTo(this.lassoPoints[i].x, this.lassoPoints[i].y, this.lassoPoints[i+1].x, this.lassoPoints[i+1].y, this.lassoPoints[i+2].x, this.lassoPoints[i+2].y);
@@ -298,12 +327,16 @@ class Lasso{
 
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
-            if(this.lassoPoints[i].y<canvas.height) //REPLACE WITH BOOLEAN OF IF IT CONTACTS WITH LINES
+            // console.log(this.lassoPoints.length);
+            // console.log(this.collideHorizon.length);
+            this.lassoCollide(this.collideHorizon[i]);
+           // if(this.lassoPoints[i].y<canvas.height-5) //REPLACE WITH BOOLEAN OF IF IT CONTACTS WITH LINES
+            if(!this.lassoCollide(this.collideHorizon[i]))
             {
+               // this.guidePoints[i].y+=3;
                this.lassoPoints[i].y+=3;//can be changed to grav acceleration
-               this.guidePoints[i].y+=3;
              }
-            }
+        }
        
     
         ctx.lineWidth = tempLineWidth;
