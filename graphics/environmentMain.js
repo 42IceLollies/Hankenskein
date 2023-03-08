@@ -58,10 +58,10 @@ const testPoints = [];
 let points = [];
 let background;
 
-let linePoints = [[[0, 0], [0, 499]], [[0, 499], [2666, 500]], [[2666, 500], [2666, 0]], [[827, 500], [1094, 370]],
-	[[1094, 370], [1098, 379]], [[1098, 379], [1162, 379]], [[1162, 379], [1162, 446]], [[1162, 446], [1161, 500]]
-	, [[1937, 500], [1940, 300]], [[1940, 300], [2285, 302]], [[2285, 302], [2288, 500]]
-	, [[1993, 215], [2075, 214]]];
+// let linePoints = [[[0, 0], [0, 499]], [[0, 499], [2666, 500]], [[2666, 500], [2666, 0]], [[827, 500], [1094, 370]],
+// 	[[1094, 370], [1098, 379]], [[1098, 379], [1162, 379]], [[1162, 379], [1162, 446]], [[1162, 446], [1161, 500]]
+// 	, [[1937, 500], [1940, 300]], [[1940, 300], [2285, 302]], [[2285, 302], [2288, 500]]
+// 	, [[1993, 215], [2075, 214]]];
 
 function setup(linesArray) {
 	// center player
@@ -74,7 +74,7 @@ function setup(linesArray) {
 
 	// lines.push(testLine);
 	// lines.push(ground);
-	createLines(linePoints);
+	createLines(linesArray);
 
 	Lasso.resetForceBase(linesArray);
 
@@ -123,30 +123,44 @@ function propelPlayer() {
 	updatePlayerSpeeds();
 	// hold the speed seperately for testing
 	let xSpeed = player.xSpeeds.normal;
+	// let xSpeed = player.xSpeed;
+	// holds the change amount seperately
+	let speedChange = 0;
 	// add the new input speed
 	if (keydown.left || keydown.a) {
 		xSpeed -= player.acceleration / game.fps;
+		speedChange -= player.acceleration / game.fps;
 	}
 	if (keydown.right || keydown.d) {
 		xSpeed += player.acceleration / game.fps;
+		speedChange += player.acceleration / game.fps;
 	}
 	// avoids dividing by zero in rollUp()
-	if (xSpeed == 0) {
-		player.xSpeeds.normal = xSpeed;
-		return;
-	}
+	if (xSpeed == 0) {xSpeed = 0.1;}
+	// if (xSpeed == 0) {
+	// 	player.xSpeeds.normal = xSpeed;
+	// 	return;
+	// }
 
 	// keep track of if the energy's been used
 	let rollUpSignal = false;
 	for (let i = 0; i < lines.length; i++) {
 		if (rollUp(player, lines[i], xSpeed)) {
 			rollUpSignal = true;
+			break;
 		}
 	}
 
 	// if the energy's been used by rollUp, end it
 	if (rollUpSignal) {
+		// for (const speed in player.xSpeeds) {
+		// 	if (speed == "rollUp") {continue;}
+		// 	player.xSpeeds[`${speed}`] = 0;
+		// }
 		player.xSpeeds.normal = 0;
+		if (getSign(player.xSpeeds.rollDown) == getSign(player.xSpeeds.rollUp)) {
+			// player.xSpeeds.rollDown = 0;
+		}
 		return;
 	}
 
@@ -160,10 +174,18 @@ function propelPlayer() {
 
 	// if it hasn't been used in rollUp or rollDown, put it into the normal speed
 	if (!rollDownSignal) {
-		player.xSpeeds.normal = xSpeed;
+		// player.xSpeeds.normal = xSpeed;
+		player.xSpeeds.normal += speedChange;
 	// if it's been used, zero out normal speed
 	} else {
+		// for (const speed in player.xSpeeds) {
+		// 	if (speed == "rollDown") {continue;}
+		// 	player.xSpeeds[`${speed}`] = 0;
+		// }
 		player.xSpeeds.normal = 0;
+		if (getSign(player.xSpeeds.rollDown) == getSign(player.xSpeeds.rollUp)) {
+			// player.xSpeeds.rollUp = 0;
+		}
 	}
 } // end of propelPlayer
 
@@ -211,8 +233,6 @@ function collideWithLine(line) {
 				// game.xOffset++;
 				player.blocked.left = true;
 			}
-			// reverse horizontal direction, with reduced speed
-			// playerXBounce();
 
 		// =========== HORIZONTAL =============
 
@@ -873,13 +893,13 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousedown", (e)=>{
-	console.log(e.x - game.xOffset, e.y);
+	// console.log(e.x - game.xOffset, e.y);
 
 	keydown.mouse=true;
 	//console.log(e.clientX, e.clientY);
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
-	if(Lasso.lassoCounter==0||Lasso.lassoCounter == 2|| Lasso.lassoCounter == 3)
+	if(Lasso.lassoCounter==0||Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3)
 	{
 		Lasso.incrementLassoStage();
 	}
@@ -1218,12 +1238,10 @@ function rollDownNatural(line) {
 	|| !testForLineCollision(player, line) || angledCollisionAbove(player, line)) {
 		return;
 	}
-	// (insert actual rolling physics here if we have it) (insert roll)
 	// get the starting amount of gravity
-	// let vForce = Physics.affectGravity(0, 1);
 	let vForce = Physics.gravityAcceleration(game.fps, getPxPerM());
 	// get the horizontal energy based on the downward force and how steep the line is
-	// (moduloed by 180 cause 30 degrees and 210 degrees are the same line)
+	// (moduloed by 180 cause 30 degrees and 210 degrees are the same line) for simplicity
 	const hForce = horizontalRollDownEnergy(vForce, line.degree % 180);
 	vForce -= Math.abs(hForce);
 
@@ -1231,12 +1249,12 @@ function rollDownNatural(line) {
 	if (hForce > 0 && player.blocked.right) {
 		// zero the speed, and return
 		if (player.ySpeeds.rollDown > 0) {player.ySpeeds.rollDown = 0;}
-		if (player.xSpeeds.rollDown > 0) {player.xSpeeds.rollDown = 0;}
+		// if (player.xSpeeds.rollDown > 0) {player.xSpeeds.rollDown = 0;}
 		return;
 	// if moving left and blocked
 	} else if (hForce < 0 && player.blocked.left) {
 		// zero the speed and return
-		if (player.ySpeeds.rollDown > 0) {player.ySpeeds.rollDown = 0;}
+		// if (player.ySpeeds.rollDown > 0) {player.ySpeeds.rollDown = 0;}
 		if (player.xSpeeds.rollDown < 0) {player.xSpeeds.rollDown = 0;}
 		return;
 	}
@@ -1265,8 +1283,11 @@ function rollUp(circle, line, force) {
 			return false;
 		}
 	}
-	// finds the fraction of the energy to give to each part based on yChange
-	// adds enough speed to get to a point higher on the line
+
+	// if (getSign(force) == getSign(player.xSpeeds.rollDown)) {
+	// 	force += player.xSpeeds.rollDown;
+	// 	player.xSpeeds.rollDown = 0;
+	// }
 
 	// if the push is going downhill, the rollUp code below works for taking away from
 	// rollUp speed as well
@@ -1278,15 +1299,16 @@ function rollUp(circle, line, force) {
 	// or vertical
 	let hFraction = (1 / totalEnergy);
 
-	// // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
-	if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
-	(circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
-		// console.log("hereye");
-		circle.xSpeeds.rollUp = 0;
-	}
+	// // // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
+	// if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
+	// (circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
+	// 	// console.log("hereye");
+	// 	circle.xSpeeds.rollUp = 0;
+	// }
 
 	// add to the rollUp xSpeed
-	circle.xSpeeds.rollUp += hFraction * force;
+	// circle.xSpeeds.rollUp += hFraction * force;
+	circle.xSpeeds.rollUp = hFraction * force;
 	// set the rollUp ySpeed to match the current xSpeed
 	circle.ySpeeds.rollUp = (circle.xSpeeds.rollUp / hFraction) * vFraction;
 	// send a message that the energy's been used
@@ -1313,6 +1335,12 @@ function rollDown(circle, line, force) {
 			return false;
 		}
 	}
+
+	// if (getSign(force) == getSign(player.xSpeeds.rollUp)) {
+	// 	force += player.xSpeeds.rollUp;
+	// 	player.xSpeeds.rollUp = 0;
+	// }
+
 	// finds the fraction of the energy to give to each part based on yChange
 	// adds enough speed to get to a point higher on the line
 
@@ -1334,7 +1362,8 @@ function rollDown(circle, line, force) {
 	}
 
 	// add to the rollUp xSpeed
-	circle.xSpeeds.rollDown += hFraction * force;
+	// circle.xSpeeds.rollDown += hFraction * force;
+	circle.xSpeeds.rollDown = hFraction * force;
 	// set the rollUp ySpeed to match the current xSpeed
 	circle.ySpeeds.rollDown = (circle.xSpeeds.rollDown / hFraction) * vFraction;
 	// send a message that the energy's been used
@@ -1507,7 +1536,7 @@ const animateID = setInterval(() => {
 	}
 	// circlePointBounceAll(player);
 
-	// console.log(player.xSpeeds, player.ySpeeds);
+	console.log(player.xSpeeds);
 	
 }, 1000 / game.fps); // 1000 is 1 second
 
