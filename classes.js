@@ -212,6 +212,9 @@ class Lasso{
     //called when spacebar is pressed
     static throwLasso(ctx)
     {
+       // console.log("points updated");
+
+
         this.lassoPoints = [];
         this.guidePoints = [];
 
@@ -279,11 +282,10 @@ class Lasso{
 
          lassoPath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
          guidePath.moveTo(this.guidePoints[0].x, this.guidePoints[0].y);
+         
  
        for(var i = 1; i<this.lassoPoints.length-3; i+=3)
        {
-          //some typeerror in this line 
-        //console.log(this.lassoPoints[i]);
          lassoPath.bezierCurveTo(this.lassoPoints[i].x, this.lassoPoints[i].y, this.lassoPoints[i+1].x, this.lassoPoints[i+1].y, this.lassoPoints[i+2].x, this.lassoPoints[i+2].y);
         }
         ctx.stroke(lassoPath);
@@ -294,6 +296,15 @@ class Lasso{
         }
         //ctx.stroke(guidePath);
 
+        for(var i = 0; i<this.lassoPoints.length; i++)
+        {
+            if(this.lassoPoints[i].y<canvas.height) //REPLACE WITH BOOLEAN OF IF IT CONTACTS WITH LINES
+            {
+               this.lassoPoints[i].y+=3;//can be changed to grav acceleration
+               this.guidePoints[i].y+=3;
+             }
+            }
+       
     
         ctx.lineWidth = tempLineWidth;
         ctx.strokeStyle = "#000000";
