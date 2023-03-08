@@ -124,10 +124,10 @@ function propelPlayer() {
 	// hold the speed seperately for testing
 	let xSpeed = player.xSpeeds.normal;
 	// add the new input speed
-	if (keydown.left) {
+	if (keydown.left || keydown.a) {
 		xSpeed -= player.acceleration / game.fps;
 	}
-	if (keydown.right) {
+	if (keydown.right || keydown.d) {
 		xSpeed += player.acceleration / game.fps;
 	}
 	// avoids dividing by zero in rollUp()
@@ -772,7 +772,10 @@ const keydown = {
 	space: false,
 	w: false,
 	s: false,
-	mouse:false,
+	r: false,
+	a: false,
+	d: false,
+	mouse: false,
 };
 
 
@@ -813,6 +816,16 @@ document.addEventListener("keydown", (e) => {
 		case 83:
 			keydown.s = true;
 			break;
+		case 82:
+			keydown.r = true;
+			location.reload();
+			break;
+		case 65:
+			keydown.a = true;
+			break;
+		case 68:
+			keydown.d = true;
+			break;
 	}
 });
 
@@ -845,6 +858,15 @@ document.addEventListener("keyup", (e) => {
 			break;
 		case 83:
 			keydown.s = false;
+			break;
+		case 82:
+			keydown.r = false;
+			break;
+		case 65:
+			keydown.a = false;
+			break;
+		case 68:
+			keydown.d = false;
 			break;
 	}
 });
