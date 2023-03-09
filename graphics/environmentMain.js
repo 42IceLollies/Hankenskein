@@ -48,6 +48,7 @@ const player = {
 		right: false,
 	},
 	rotation: 0, // degrees
+	pauseSpin: false,
 };
 
 
@@ -178,6 +179,9 @@ function propelPlayer() {
 // doesn't handle collision with the point on the end of the line
 function collideWithLines() {
 	updatePlayerSpeeds();
+
+	player.pauseSpin = false;
+
 	for (const key in player.blocked) {
 		player.blocked[`${key}`] = false
 	}
@@ -203,16 +207,20 @@ function collideWithLine(line) {
 			// if player's to the left, stop moving right
 			if (player.shape.x < line.x1 && player.xSpeed > 0) {
 				game.xOffset += player.shape.radius - (line.x1 - player.shape.x);
-				// game.xOffset--;
 				player.blocked.right = true;
+				player.pauseSpin = true;
+				// for (let i = 0; i < player.xSpeeds.length; i++) {
+				// 	player.xSpeeds[i] /= 2;
+				// }
 			// if player's to the right, stop moving left
 			} else if (player.shape.x > line.x1 && player.xSpeed < 0) {
 				game.xOffset -= player.shape.radius - (player.shape.x - line.x1);
-				// game.xOffset++;
 				player.blocked.left = true;
+				player.pauseSpin = true;
+				// for (let i = 0; i < player.xSpeeds.length; i++) {
+				// 	player.xSpeeds[i] /= 2;
+				// }
 			}
-			// reverse horizontal direction, with reduced speed
-			// playerXBounce();
 
 		// =========== HORIZONTAL =============
 
@@ -1007,6 +1015,7 @@ function meterPixelRate() {
 
 // adds rotation to player based on how far it's rolled
 function spinPlayer() {
+	if (player.pauseSpin) {return;}
 	// the distance player has moved
 	const distanceX = -game.xOffset - player.prevX;
 	const distanceY = player.shape.y - player.prevY;
@@ -1243,24 +1252,22 @@ function rollUp(circle, line, force) {
 			return false;
 		}
 	}
-	// finds the fraction of the energy to give to each part based on yChange
-	// adds enough speed to get to a point higher on the line
 
 	// if the push is going downhill, the rollUp code below works for taking away from
 	// rollUp speed as well
 
 	// add yChange and 1 to find the total
 	const totalEnergy = Math.abs(yChange) + 1;
-	// put it in a ratio with the amount of the total that's horizontal
+	// put it in a ratio with the amount of the total that's vertical
 	const vFraction = yChange / totalEnergy;
-	// or vertical
+	// or horizontal
 	let hFraction = (1 / totalEnergy);
 
-	// // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
+	// zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
 	if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
 	(circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
 		// console.log("hereye");
-		circle.xSpeeds.rollUp = 0;
+		// circle.xSpeeds.rollUp = 0;
 	}
 
 	// add to the rollUp xSpeed
@@ -1485,7 +1492,7 @@ const animateID = setInterval(() => {
 	}
 	// circlePointBounceAll(player);
 
-	// console.log(player.xSpeeds, player.ySpeeds);
+	console.log(player.xSpeeds);
 	
 }, 1000 / game.fps); // 1000 is 1 second
 
