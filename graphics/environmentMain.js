@@ -286,10 +286,11 @@ function collideWithLine(line) {
 				case withinRange(collideDegree, 0, 90):
 					// move diagonally away from the line until not touching anymore
 					while (testForLineCollision(player, line)) {
-						game.xOffset++; // reverse
+						game.xOffset++;
 						line.adjustX(game.xOffset);
 						player.shape.y++;
 					}
+					// then move back to touch it by one
 					player.shape.y--;
 					game.xOffset--;
 					// no up or right
@@ -608,16 +609,13 @@ function circleLineBounce(circle, line) {
 	const bounceDegree = getBounceDegree(circle, line);
 
 	if (Math.abs(bounceDegree % 180 - line.degree % 180) <= 2) {
-		// console.log("too close");
 		return;
 	}
 
-	// console.log(bounceDegree, line.degree);
 	// gets the sides (adj, opp) of an example movement in the right direction
 	const sides = getBounceSides(circle, line, bounceDegree);
 
 	if (sides == false) {
-		// console.log("hey");
 		return;
 	}
 
@@ -1220,7 +1218,7 @@ function roll() {
 	// for every line
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
-		rollDownNatural(line);
+		rollDownNatural(player, line);
 	}
 } // end of roll
 
@@ -1242,11 +1240,11 @@ function horizontalRollDownEnergy(energy, degree) {
 
 
 // adds speed to roll player down the given line
-function rollDownNatural(line) {
+function rollDownNatural(circle, line) {
 	updatePlayerSpeeds();
 	// only keep going if it's an angled line, collided on the bottom half of the player
 	if (line.isVertical || line.isHorizontal 
-	|| !testForLineCollision(player, line) || angledCollisionAbove(player, line)) {
+	|| !testForLineCollision(circle, line) || angledCollisionAbove(circle, line)) {
 		return;
 	}
 	// get the starting amount of gravity
@@ -1257,22 +1255,22 @@ function rollDownNatural(line) {
 	vForce -= Math.abs(hForce);
 
 	// if moving right and blocked
-	if (hForce > 0 && player.blocked.right) {
+	if (hForce > 0 && circle.blocked.right) {
 		// zero the speed, and return
-		if (player.ySpeeds.rollDown > 0) {player.ySpeeds.rollDown = 0;}
-		// if (player.xSpeeds.rollDown > 0) {player.xSpeeds.rollDown = 0;}
+		// if (circle.ySpeeds.rollDown > 0) {circle.ySpeeds.rollDown = 0;}
+		// if (circle.xSpeeds.rollDown > 0) {circle.xSpeeds.rollDown = 0;}
 		return;
 	// if moving left and blocked
-	} else if (hForce < 0 && player.blocked.left) {
+	} else if (hForce < 0 && circle.blocked.left) {
 		// zero the speed and return
-		// if (player.ySpeeds.rollDown > 0) {player.ySpeeds.rollDown = 0;}
-		if (player.xSpeeds.rollDown < 0) {player.xSpeeds.rollDown = 0;}
+		// if (circle.ySpeeds.rollDown > 0) {circle.ySpeeds.rollDown = 0;}
+		// if (circle.xSpeeds.rollDown < 0) {circle.xSpeeds.rollDown = 0;}
 		return;
 	}
 	// if it's able to move, add the horizontal speed
-	player.xSpeeds.rollDown += hForce;
+	circle.xSpeeds.rollDown += hForce;
 	// and add the necessary amount of vertical speed to get to the lower point on the line
-	player.ySpeeds.rollDown = line.yChangeRate * player.xSpeeds.rollDown;
+	circle.ySpeeds.rollDown = line.yChangeRate * circle.xSpeeds.rollDown;
 } // end of rollDownNatural
 
 
@@ -1294,14 +1292,11 @@ function rollUp(circle, line, force) {
 			return false;
 		}
 	}
-<<<<<<< HEAD
-=======
 
-	// if (getSign(force) == getSign(player.xSpeeds.rollDown)) {
-	// 	force += player.xSpeeds.rollDown;
-	// 	player.xSpeeds.rollDown = 0;
-	// }
->>>>>>> origin/main
+	if (getSign(force) == getSign(player.xSpeeds.rollDown)) {
+		force += getHyp(player.xSpeeds.rollDown, player.ySpeeds.rollDown) * getSign(player.xSpeeds.rollDown);
+		player.xSpeeds.rollDown = 0;
+	}
 
 	// if the push is going downhill, the rollUp code below works for taking away from
 	// rollUp speed as well
@@ -1313,25 +1308,23 @@ function rollUp(circle, line, force) {
 	// or horizontal
 	let hFraction = (1 / totalEnergy);
 
-<<<<<<< HEAD
 	// zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
 	if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
 	(circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
 		// console.log("hereye");
 		// circle.xSpeeds.rollUp = 0;
 	}
-=======
+
 	// // // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
 	// if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
 	// (circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
 	// 	// console.log("hereye");
 	// 	circle.xSpeeds.rollUp = 0;
 	// }
->>>>>>> origin/main
 
 	// add to the rollUp xSpeed
-	// circle.xSpeeds.rollUp += hFraction * force;
-	circle.xSpeeds.rollUp = hFraction * force;
+	circle.xSpeeds.rollUp += hFraction * force;
+	// circle.xSpeeds.rollUp = hFraction * force;
 	// set the rollUp ySpeed to match the current xSpeed
 	circle.ySpeeds.rollUp = (circle.xSpeeds.rollUp / hFraction) * vFraction;
 	// send a message that the energy's been used
@@ -1359,10 +1352,10 @@ function rollDown(circle, line, force) {
 		}
 	}
 
-	// if (getSign(force) == getSign(player.xSpeeds.rollUp)) {
-	// 	force += player.xSpeeds.rollUp;
-	// 	player.xSpeeds.rollUp = 0;
-	// }
+	if (getSign(force) == getSign(player.xSpeeds.rollUp)) {
+		force += getHyp(player.xSpeeds.rollUp, player.ySpeeds.rollUp) * getSign(player.xSpeeds.rollUp);
+		player.xSpeeds.rollUp = 0;
+	}
 
 	// finds the fraction of the energy to give to each part based on yChange
 	// adds enough speed to get to a point higher on the line
@@ -1377,16 +1370,16 @@ function rollDown(circle, line, force) {
 	// or vertical
 	let hFraction = (1 / totalEnergy);
 
-	// zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
-	if ((circle.xSpeeds.rollDown > 0 && circle.blocked.right) || 
-	(circle.xSpeeds.rollDown < 0 && circle.blocked.left)) {
-		// console.log("hereye2");
-		circle.xSpeeds.rollDown = 0;
-	}
+	// // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
+	// if ((circle.xSpeeds.rollDown > 0 && circle.blocked.right) || 
+	// (circle.xSpeeds.rollDown < 0 && circle.blocked.left)) {
+	// 	// console.log("hereye2");
+	// 	circle.xSpeeds.rollDown = 0;
+	// }
 
 	// add to the rollUp xSpeed
-	// circle.xSpeeds.rollDown += hFraction * force;
-	circle.xSpeeds.rollDown = hFraction * force;
+	circle.xSpeeds.rollDown += hFraction * force;
+	// circle.xSpeeds.rollDown = hFraction * force;
 	// set the rollUp ySpeed to match the current xSpeed
 	circle.ySpeeds.rollDown = (circle.xSpeeds.rollDown / hFraction) * vFraction;
 	// send a message that the energy's been used
@@ -1559,7 +1552,7 @@ const animateID = setInterval(() => {
 	}
 	// circlePointBounceAll(player);
 
-	console.log(player.xSpeeds);
+	// console.log(player.xSpeeds);
 	
 }, 1000 / game.fps); // 1000 is 1 second
 
