@@ -47,6 +47,12 @@ const player = {
 		left: false,
 		right: false,
 	},
+	stopped: {
+		up: false,
+		down: false,
+		left: false,
+		right: false,
+	},
 	rotation: 0, // degrees
 	pauseSpin: false,
 };
@@ -204,8 +210,12 @@ function collideWithLines() {
 
 	player.pauseSpin = false;
 
+	// reset all those
 	for (const key in player.blocked) {
 		player.blocked[`${key}`] = false
+	}
+	for (const key in player.stopped) {
+		player.stopped[`${key}`] = false;
 	}
 	// tests the player against every line
 	for (let i = 0; i < lines.length; i++) {
@@ -230,18 +240,22 @@ function collideWithLine(line) {
 			if (player.shape.x < line.x1 && player.xSpeed > 0) {
 				game.xOffset += player.shape.radius - (line.x1 - player.shape.x);
 				player.blocked.right = true;
+				player.stopped.right = true;
 				player.pauseSpin = true;
-				// for (let i = 0; i < player.xSpeeds.length; i++) {
-				// 	player.xSpeeds[i] /= 2;
-				// }
+				// temporary
+				for (let i = 0; i < player.xSpeeds.length; i++) {
+					player.xSpeeds[i] = 0;
+				}
 			// if player's to the right, stop moving left
 			} else if (player.shape.x > line.x1 && player.xSpeed < 0) {
 				game.xOffset -= player.shape.radius - (player.shape.x - line.x1);
 				player.blocked.left = true;
+				player.stopped.left = true;
 				player.pauseSpin = true;
-				// for (let i = 0; i < player.xSpeeds.length; i++) {
-				// 	player.xSpeeds[i] /= 2;
-				// }
+				// temporary
+				for (let i = 0; i < player.xSpeeds.length; i++) {
+					player.xSpeeds[i] = 0;
+				}
 			}
 
 		// =========== HORIZONTAL =============
@@ -482,26 +496,47 @@ function collideWithPoints() {
 } // end of collideWithPoints
 
 
-// stops the circle from overlapping the line it's just collided with
-function resolveCollisionOverlap(circle, line) {
-	const bounceDegree = getBounceDegree(circle, line);
-	const sides = getBounceSides(circle, line, bounceDegree);
+// // stops the circle from overlapping the line it's just collided with
+// function resolveCollisionOverlap(circle, line) {
+// 	const bounceDegree = getBounceDegree(circle, line);
+// 	const sides = getBounceSides(circle, line, bounceDegree);
 
-	if (sides == false) {
-		console.log("resolveCollisionOverlap");
-		return;
+// 	if (sides == false) {
+// 		// console.log("resolveCollisionOverlap");
+// 		return;
+// 	}
+
+// 	const totalFraction = Math.abs(sides[0]) + Math.abs(sides[1]);
+
+
+// 	while (testForLineCollision(circle, line)) {
+// 		game.xOffset -= sides[0] / totalFraction;
+// 		line.adjustX(game.xOffset);
+// 		circle.shape.y += sides[1] / totalFraction;
+// 	}
+// }
+
+
+function resolveVerticalOverlap(circle, line) {
+	if (!line.isVertical || !testForLineCollision(circle, line)) {return;}
+	console.log("here");
+
+	// if player's to the left, stop moving right
+	if (player.shape.x < line.x1 && player.xSpeed > 0) {
+		game.xOffset += player.shape.radius - (line.x1 - player.shape.x);
+		player.blocked.right = true;
+		player.pauseSpin = true;
+	// if player's to the right, stop moving left
+	} else if (player.shape.x > line.x1 && player.xSpeed < 0) {
+		game.xOffset -= player.shape.radius - (player.shape.x - line.x1);
+		player.blocked.left = true;
+		player.pauseSpin = true;
 	}
-
-	const totalFraction = Math.abs(sides[0]) + Math.abs(sides[1]);
-
-
-	while (testForLineCollision(circle, line)) {
-		game.xOffset -= sides[0] / totalFraction;
-		line.adjustX(game.xOffset);
-		circle.shape.y += sides[1] / totalFraction;
-	}
-
-	// herrr
+	movePlayer();
+	moveLines();
+	background.updateOffset(game.xOffset);
+	fillPoints();
+	// mark
 }
 
 
@@ -546,6 +581,7 @@ function getBounceDegree(circle, line) {
 
 
 function getBounceSides(circle, line, bounceDegree) {
+	if (!testForLineCollision(circle, line)) {return false;}
 	// gets the 2 direction combination options
 	const sides1 = getSides(bounceDegree, 10);
 
@@ -901,7 +937,7 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousedown", (e)=>{
-	// console.log(e.x - game.xOffset, e.y);
+	console.log(e.x - game.xOffset, e.y);
 
 	keydown.mouse=true;
 	//console.log(e.clientX, e.clientY);
@@ -982,7 +1018,7 @@ function resize() {
 	let backFraction = (background.x - player.shape.x) / player.shape.radius;
 
 	// resize the canvas to fill the whole window
-	resizeCanvas(); // uncomment
+	// resizeCanvas(); // uncomment
 
 	// compare the new and old dimensions
 	// if no change, end it now
@@ -1249,6 +1285,7 @@ function rollDownNatural(circle, line) {
 	}
 	// get the starting amount of gravity
 	let vForce = Physics.gravityAcceleration(game.fps, getPxPerM());
+	vForce *= (1/2);
 	// get the horizontal energy based on the downward force and how steep the line is
 	// (moduloed by 180 cause 30 degrees and 210 degrees are the same line) for simplicity
 	const hForce = horizontalRollDownEnergy(vForce, line.degree % 180);
@@ -1521,6 +1558,7 @@ function draw(ctx) {
 //==================================
 
 // setup(linePoints);
+// resize();
 
 // the animate loop, cycles everything
 const animateID = setInterval(() => {
@@ -1542,15 +1580,17 @@ const animateID = setInterval(() => {
 	background.updateOffset(game.xOffset);
 	fillPoints();
 
+
 	fall();
 	roll();
 
-	draw(ctx);
-
 	for (let i = 0; i < lines.length; i++) {
 		circleLineBounce(player, lines[i]);
+		// resolveVerticalOverlap(player, lines[i]);
 	}
 	// circlePointBounceAll(player);
+
+	draw(ctx);
 
 	// console.log(player.xSpeeds);
 	
