@@ -323,13 +323,10 @@ class Lasso{
         {
             guidePath.lineTo(this.guidePoints[i].x, this.guidePoints[i].y);
         }
-        //ctx.stroke(guidePath);
 
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
-            // console.log(this.lassoPoints.length);
-            // console.log(this.collideHorizon.length);
-            this.lassoCollide(this.collideHorizon[i]);
+           // this.lassoCollide(this.collideHorizon[i]);
            // if(this.lassoPoints[i].y<canvas.height-5) //REPLACE WITH BOOLEAN OF IF IT CONTACTS WITH LINES
             if(!this.lassoCollide(this.collideHorizon[i]))
             {
