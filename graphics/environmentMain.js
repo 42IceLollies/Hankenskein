@@ -1,4 +1,6 @@
+// gets the canvas that we'll do everything on initialized
 const canvas = document.getElementById('canvas');
+// the part we'll actually call all the drawing on
 const ctx = canvas.getContext('2d');
 
 
@@ -6,16 +8,18 @@ const ctx = canvas.getContext('2d');
 // =DATA OBJECTS
 // ==================
 
-
+// holds some general variables that are handy to keep together
 const game = {
 	fps: 35,
 	xOffset: 0,
 	frictionRate: .6,
 };
 
-
+// holds all the player information
 const player = {
+	// for ease of drawing and moving (x, y, radius)
 	shape: new Circle(100, 100, 25),
+	// keeps track of where it just was
 	prevX: 100,
 	prevY: 100,
 	xSpeed: 0,
@@ -33,13 +37,12 @@ const player = {
 		rollDown: 0,
 		rollUp: 0,
 	},
-	// acceleration: 150,
+	// how much speed it can gain, set elsewhere (probably resize)
 	acceleration: 300,
-	fillColor: "#e2619f", // pink
-	// screenPercent: 0.035, // 3.5% of the height
-	screenPercent: 0.04,
-	radiusActual: 0.1016, // 4 inches in meters
-	weightActual: "idk", // in kilograms? // never actually used it
+	fillColor: "#e2619f", // pink // this doesn't show when the drawing's in place
+	screenPercent: 0.04, // 4% of the height
+	radiusActual: 0.1016, // 4 inches in meters // used for physics calculations
+	// weightActual: "idk", // in kilograms? // never actually used it
 	// tracks which directions it's blocked by something
 	blocked: {
 		up: false,
@@ -60,38 +63,36 @@ const player = {
 
 // holds all the lines and points the player can collide with
 const lines = [];
-const drawnLines = [];
-const testPoints = [];
+const drawnLines = []; // for testing
+// const testPoints = [];
 let points = [];
-let background;
+let background; // background image
 
-// let linePoints = [[[0, 0], [0, 499]], [[0, 499], [2666, 500]], [[2666, 500], [2666, 0]], [[827, 500], [1094, 370]],
-// 	[[1094, 370], [1098, 379]], [[1098, 379], [1162, 379]], [[1162, 379], [1162, 446]], [[1162, 446], [1161, 500]]
-// 	, [[1937, 500], [1940, 300]], [[1940, 300], [2285, 302]], [[2285, 302], [2288, 500]]
-// 	, [[1993, 215], [2075, 214]]];
 
-function setup(linesArray) {
+// gathered all the loose setup code into this function, called from html file
+// input the lines to draw for that level
+function setup(linesArray, backgroundPath) {
 	// center player
 	player.shape.x = canvas.width / 2;
 	// size the player correctly
 	player.shape.radius = canvas.height * player.screenPercent;
 
-	// const testLine = new Line(1000, 350, 2000, 400, game.xOffset);
-	// const ground = new Line(0, 400, 1000, 350, game.xOffset);
-
-	// lines.push(testLine);
-	// lines.push(ground);
+	// makes line objects from the (x, y) points in the array
 	createLines(linesArray);
 
 	Lasso.resetForceBase(linesArray);
 
-	background = new Background("../Art/Backgrounds/levelOneBackground.png", 0, 0, canvas.height);
+	// sets the background image with the file provided
+	background = new Background(backgroundPath, 0, 0, canvas.height);
 }
 
 
+// creates actual line objects from the [x, y], [x, y] points provided in the array
 function createLines(pointsArray) {
+	// for every set (line)
 	for (let i = 0; i < pointsArray.length; i++) {
 		const set = pointsArray[i];
+		// put pass the points into the constructor
 		const newLine = new Line(set[0][0], set[0][1], set[1][0], set[1][1], 0);
 		lines.push(newLine);
 	}
@@ -103,18 +104,9 @@ function createLines(pointsArray) {
 // =SPEED CHANGES
 // ====================
 
+
 // reduces player's speed
 function frictionPlayer() {
-	// for every ySpeed
-	for (key in player.ySpeeds) {
-		// apply friction to rollDown and rollUp only
-		if (key == "rollDown" || key == "rollUp") {
-			player.ySpeeds[`${key}`] -= (player.ySpeeds[`${key}`] * game.frictionRate) / game.fps;
-		}
-		// round to zero if it's tiny
-		if (Math.abs(player.ySpeeds[`${key}`]) < 1) {player.ySpeeds[`${key}`] = 0;}
-	}
-
 	// for every xSpeed
 	for (key in player.xSpeeds) {
 		// apply friction
@@ -125,6 +117,7 @@ function frictionPlayer() {
 } // end of frictionPlayer
 
 
+// can use arrows or aswd
 // propels the player based on arrow keys & adjusts speed based on external elements
 function propelPlayer() {
 	updatePlayerSpeeds();
@@ -133,21 +126,17 @@ function propelPlayer() {
 	// let xSpeed = player.xSpeed;
 	// holds the change amount seperately
 	let speedChange = 0;
-	// add the new input speed
-	if (keydown.left || keydown.a) {
+	// add the new input speed - unless stopped in that direction (by vertical line)
+	if ((keydown.left || keydown.a) && !player.stopped.left) {
 		xSpeed -= player.acceleration / game.fps;
 		speedChange -= player.acceleration / game.fps;
 	}
-	if (keydown.right || keydown.d) {
+	if ((keydown.right || keydown.d) && !player.stopped.right) {
 		xSpeed += player.acceleration / game.fps;
 		speedChange += player.acceleration / game.fps;
 	}
-	// avoids dividing by zero in rollUp()
-	if (xSpeed == 0) {xSpeed = 0.1;}
-	// if (xSpeed == 0) {
-	// 	player.xSpeeds.normal = xSpeed;
-	// 	return;
-	// }
+	// avoids dividing by zero in later function calls
+	if (xSpeed == 0) {xSpeed = 0.00001;}
 
 	// keep track of if the energy's been used
 	let rollUpSignal = false;
@@ -160,14 +149,7 @@ function propelPlayer() {
 
 	// if the energy's been used by rollUp, end it
 	if (rollUpSignal) {
-		// for (const speed in player.xSpeeds) {
-		// 	if (speed == "rollUp") {continue;}
-		// 	player.xSpeeds[`${speed}`] = 0;
-		// }
 		player.xSpeeds.normal = 0;
-		if (getSign(player.xSpeeds.rollDown) == getSign(player.xSpeeds.rollUp)) {
-			// player.xSpeeds.rollDown = 0;
-		}
 		return;
 	}
 
@@ -185,10 +167,6 @@ function propelPlayer() {
 		player.xSpeeds.normal += speedChange;
 	// if it's been used, zero out normal speed
 	} else {
-		// for (const speed in player.xSpeeds) {
-		// 	if (speed == "rollDown") {continue;}
-		// 	player.xSpeeds[`${speed}`] = 0;
-		// }
 		player.xSpeeds.normal = 0;
 		if (getSign(player.xSpeeds.rollDown) == getSign(player.xSpeeds.rollUp)) {
 			// player.xSpeeds.rollUp = 0;
@@ -243,9 +221,9 @@ function collideWithLine(line) {
 				player.stopped.right = true;
 				player.pauseSpin = true;
 				// temporary
-				for (let i = 0; i < player.xSpeeds.length; i++) {
-					player.xSpeeds[i] = 0;
-				}
+				// for (let i = 0; i < player.xSpeeds.length; i++) {
+				// 	player.xSpeeds[i] = 0;
+				// }
 			// if player's to the right, stop moving left
 			} else if (player.shape.x > line.x1 && player.xSpeed < 0) {
 				game.xOffset -= player.shape.radius - (player.shape.x - line.x1);
@@ -253,9 +231,9 @@ function collideWithLine(line) {
 				player.stopped.left = true;
 				player.pauseSpin = true;
 				// temporary
-				for (let i = 0; i < player.xSpeeds.length; i++) {
-					player.xSpeeds[i] = 0;
-				}
+				// for (let i = 0; i < player.xSpeeds.length; i++) {
+				// 	player.xSpeeds[i] = 0;
+				// }
 			}
 
 		// =========== HORIZONTAL =============
@@ -937,7 +915,7 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousedown", (e)=>{
-	console.log(e.x - game.xOffset, e.y);
+	// console.log(e.x - game.xOffset, e.y);
 
 	keydown.mouse=true;
 	//console.log(e.clientX, e.clientY);
@@ -1018,7 +996,7 @@ function resize() {
 	let backFraction = (background.x - player.shape.x) / player.shape.radius;
 
 	// resize the canvas to fill the whole window
-	// resizeCanvas(); // uncomment
+	resizeCanvas(); // uncomment
 
 	// compare the new and old dimensions
 	// if no change, end it now
@@ -1033,7 +1011,7 @@ function resize() {
 	player.shape.radius = canvas.height * player.screenPercent;
 	player.shape.y = canvas.height * playerHeight;
 	// player.acceleration = player.shape.radius * 6;
-	player.acceleration = player.shape.radius * 9;
+	player.acceleration = player.shape.radius * 10;
 
 	// resizes the lines
 	for (let i = 0; i < lines.length; i++) {
@@ -1285,7 +1263,7 @@ function rollDownNatural(circle, line) {
 	}
 	// get the starting amount of gravity
 	let vForce = Physics.gravityAcceleration(game.fps, getPxPerM());
-	vForce *= (1/2);
+	vForce *= (5/8);
 	// get the horizontal energy based on the downward force and how steep the line is
 	// (moduloed by 180 cause 30 degrees and 210 degrees are the same line) for simplicity
 	const hForce = horizontalRollDownEnergy(vForce, line.degree % 180);
@@ -1560,6 +1538,8 @@ function draw(ctx) {
 // setup(linePoints);
 // resize();
 
+let count = 0;
+
 // the animate loop, cycles everything
 const animateID = setInterval(() => {
 
@@ -1592,7 +1572,10 @@ const animateID = setInterval(() => {
 
 	draw(ctx);
 
-	// console.log(player.xSpeeds);
+	if (count % 10 == 0) {
+		// console.log(player.ySpeeds);
+	}
 	
+	count++;
 }, 1000 / game.fps); // 1000 is 1 second
 
