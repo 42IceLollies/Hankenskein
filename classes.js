@@ -75,11 +75,10 @@ class Physics{
 //==================LASSO CLASS============================
 class Lasso{
     static lassoPoints;
-    static guidePoints;
     static collideHorizon = [];
     static lassoCounter = 0;
 
-    //copy of lasso's variables because it's not working for some reason?
+    //copy of lasso's variables because it's not working for some reason? - Was this a note I wrote to myself or was it someone else? (-Cordelia)
     static forceX = 0;
     static forceY = 0;
     // were causing loading issues, called resetForceBase() in start of other js file
@@ -97,7 +96,6 @@ class Lasso{
 	{
 		this.mouseX = x;
 		this.mouseY = y;
-        // console.log(this.mouseX + " " + this.mouseY);
 	}
 
 	static resetForceBase()
@@ -106,7 +104,7 @@ class Lasso{
 		this.forceY = player.shape.y;
 	}
 
-
+    //called when mouse is pressed down to make force projection longer and how far the lasso is thrown
 	static incrementForce()
 	{	
 		Lasso.forceX+=(Lasso.mouseX-player.shape.x)/20;
@@ -143,9 +141,9 @@ class Lasso{
 	}
 
 
+    //increments the parts of the animation to call different functions
 	static incrementLassoStage()
 	{
-        //console.log(this.lassoCounter);
 		this.lassoCounter++;
 		if(this.lassoCounter == 4)//this line will need to be changed as more of the lasso throw is implemented
 		{
@@ -155,6 +153,7 @@ class Lasso{
 	}
 
 
+    //calls the correct function for the stage of the animation
 	static drawLasso(ctx)
 	{
 		switch(this.lassoCounter)
@@ -187,10 +186,9 @@ class Lasso{
 
 
     //draw line method
-    //called when cursor is being held down
+    //called when cursor is being held down to draw the lasso projection
     static drawPreLasso(ctx)
     {
-      //  console.log( this.hankX + " " + this.hankY + " " + this.pointX + " " + this.pointY);
         const tempLineWidth = ctx.lineWidth;
         ctx.lineWidth = 5;
         ctx.strokeStyle = "#8CA231";
@@ -198,7 +196,6 @@ class Lasso{
         ctx.beginPath();
         ctx.lineCap = 'round';
         ctx.moveTo(player.shape.x, player.shape.y)
-       // ctx.lineTo(this.pointX, this.pointY);
        ctx.lineTo(this.forceX, this.forceY);
        
         ctx.stroke();
@@ -213,11 +210,8 @@ class Lasso{
     //called when spacebar is pressed
     static throwLasso(ctx)
     {
-       // console.log("points updated");
-
-
         this.lassoPoints = [];
-        this.guidePoints = [];
+
 
         //divides paths into segments to create curve
         var segments = 10;
@@ -232,51 +226,31 @@ class Lasso{
         for(var i = 0; i<segments*2; i+=2)
         {
             this.lassoPoints[i] = currPoint;
-            this.guidePoints.push(currPoint);
+            //this.guidePoints.push(currPoint);
             currPoint = new Point(currPoint.x+incrementX, currPoint.y + (incrementY*Math.pow(energyLoss, i)));
         }
 
-       // incrementY = (this.forceY-player.shape.y)/segments;
 
         //adds extra points to lassoPath to make squiggles
         var count = 0;
         for(var i = 1; i<segments*2-1; i+=2)
         {
             var xTemp = player.shape.x + incrementX*count + (Math.random()*incrementX);
-           // var rand = Math.random();
-           // console.log(rand);
-          //  var yTemp =  Math.random()>0.5 ? (this.lassoPoints[i-1].y + incrementY*Math.pow(energyLoss,i) + Math.random()*squiggliness) : this.lassoPoints[i-1].y + incrementY*Math.pow(energyLoss,i) - Math.random()*squiggliness ;
+          
             var yTemp = this.lassoPoints[i-1].y + incrementY*Math.pow(energyLoss, i) - Math.random()*squiggliness;
             count++;
 
             this.lassoPoints[i] = new Point(xTemp, yTemp);
         }
-
-        //lassoPath.smooth(); //maybe ctx.lineCap = 'smooth' - can figure out later;
-        //all my prayers that this acually does something
      
         this.incrementLassoStage();
     }
 
-    //notes to myself on what I'm planning to do lol
-//    //make random points along to make line squiggly
-        //make points sink and the starting draw point for line gets set to x of wherever the line has just touched the ground 
-        //use an invisible line without wiggles to determine point of x
-        //everything before x becomes just a straight line on ground
-        //stops at x of the end of the squiggly line
 
-        //need to clear the arrays of points when making a new line?
-        //yeah, at least the guidePoints one, it's being weird
-
-        //bro i really need to comment this better, even I can't figure out what I was meaning to do 
-        //apologies to y'all else who have to read it
-        //it's 10:00 and I probably should go to bed
-        //I had caffiene too late in the day tho and I am wide awake/vibing to idkHOW
-
+    //called to see if the lasso has fallen on anything 
     static lassoCollide(horizon)
     {
         //sees collision of horizon in reference to all registered obstructions
-        //testForLineCollision(circle, line)
 
         for(var i = 0; i<lines.length; i++)
         {
@@ -285,11 +259,13 @@ class Lasso{
                 return(true);
             }
         }
+
         return (false);
 
     }
 
 
+    //called once the lasso has initially been drawn and animates its fall
     static drawLassoFall(ctx)
     {
          //settings for string style
@@ -298,12 +274,10 @@ class Lasso{
          ctx.strokeStyle =  player.fillColor;
          //path for lasso and path for controlling lasso fall
          let lassoPath = new Path2D();
-         let guidePath = new Path2D();
 
          ctx.lineCap = 'round';
 
          lassoPath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
-         guidePath.moveTo(this.guidePoints[0].x, this.guidePoints[0].y);
 
          //update collideHorizon
          for(var i = 0; i<this.lassoPoints.length; i++)
@@ -319,18 +293,13 @@ class Lasso{
         }
         ctx.stroke(lassoPath);
 
-        for(var i = 1; i<this.guidePoints.length; i++)
-        {
-            guidePath.lineTo(this.guidePoints[i].x, this.guidePoints[i].y);
-        }
-
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
-           // this.lassoCollide(this.collideHorizon[i]);
-           // if(this.lassoPoints[i].y<canvas.height-5) //REPLACE WITH BOOLEAN OF IF IT CONTACTS WITH LINES
-            if(!this.lassoCollide(this.collideHorizon[i]))
+        
+            //checks if a) points have collided with anything, b) they are stretching too far apart and drops the string further down if not
+            if(!this.lassoCollide(this.collideHorizon[i]) && 
+             !(Math.abs(this.lassoPoints[i].y-this.lassoPoints[i-1])<=10||Math.abs(this.lassoPoints[i].y-this.lassoPoints[i+1])<=10))
             {
-               // this.guidePoints[i].y+=3;
                this.lassoPoints[i].y+=3;//can be changed to grav acceleration
              }
         }
