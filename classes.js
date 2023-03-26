@@ -145,7 +145,7 @@ class Lasso{
 	static incrementLassoStage()
 	{
 		this.lassoCounter++;
-		if(this.lassoCounter == 4)//this line will need to be changed as more of the lasso throw is implemented
+		if(this.lassoCounter == 5)//this line will need to be changed as more of the lasso throw is implemented
 		{
 			this.lassoCounter = 0;
 		}
@@ -173,9 +173,9 @@ class Lasso{
 				Lasso.drawLassoFall(ctx);
 			 break;
 
-			// case 4:
-			// 	lassoStage = "grabbing";
-			// break;
+			case 4:
+				Lasso.pullInLasso(ctx);
+			break;
 
 			// case 5:
 			// 	lassoStage = "at rest";
@@ -310,8 +310,10 @@ class Lasso{
     }
     
 
-    static pullInLasso()
+    //called when up arrow is pushed
+    static pullInLasso(ctx)
     {
+        console.log("hi");
     } 
 
 

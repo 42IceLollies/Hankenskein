@@ -832,6 +832,11 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 38:
 			keydown.up = true;
+			if(Lasso.lassoCounter == 3)
+			{
+				Lasso.incrementLassoStage();
+			}
+			// Lasso.pullInLasso();
 			break;
 		case 40:
 			keydown.down = true;
@@ -854,6 +859,11 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 87:
 			keydown.w = true;
+			if(Lasso.lassoCounter == 3)
+			{
+				Lasso.incrementLassoStage();
+			}
+			// Lasso.pullInLasso();
 			break;
 		case 83:
 			keydown.s = true;
@@ -921,7 +931,7 @@ document.addEventListener("mousedown", (e)=>{
 	//console.log(e.clientX, e.clientY);
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
-	if(Lasso.lassoCounter==0||Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3)
+	if(Lasso.lassoCounter==0||Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3 || Lasso.lassoCounter == 4)
 	{
 		Lasso.incrementLassoStage();
 	}
