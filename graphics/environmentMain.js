@@ -468,7 +468,6 @@ function collideWithPoints() {
 		}
 
 		const collideLine = collisionPointToLine(player, point);
-		// drawnLines.push(collideLine);
 		collideWithLine(collideLine);
 	}
 } // end of collideWithPoints
@@ -1162,7 +1161,7 @@ function atRest() {
 
 	for (let i = 0; i < points.length; i++) {
 		const point = points[i];
-		if (testForPointCollision(player.shape, point) && pointCollisionBelow(player, point)) {
+		if (testForPointCollision(player.shape, point) && pointCollisionBelow(player.shape, point)) {
 			atRest = true;
 		}
 	}
@@ -1561,7 +1560,7 @@ const animateID = setInterval(() => {
 		frictionPlayer();
 	}
 	collideWithLines();
-	// collideWithPoints();
+	collideWithPoints();
 
 	movePlayer();
 	moveLines();
@@ -1584,10 +1583,13 @@ const animateID = setInterval(() => {
 		// console.log(player.ySpeeds);
 	}
 
+	ctx.fillStyle = "red";
 	for (let i = 0; i < points.length; i++) {
-		console.log(points);
-		if (testForPointCollision(player, points[i])) {
-			console.log("bonk");
+		ctx.beginPath();
+		ctx.fillRect(points[i].x-2, points[i].y-2, 5, 5);
+		ctx.fill();
+		if (testForPointCollision(player.shape, points[i])) {
+			// console.log("bonk");
 		}
 	}
 	
