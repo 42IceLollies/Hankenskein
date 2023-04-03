@@ -1545,8 +1545,6 @@ function draw(ctx) {
 // =ANIMATE LOOP
 //==================================
 
-// setup(linePoints);
-// resize();
 
 let count = 0;
 
@@ -1584,6 +1582,13 @@ const animateID = setInterval(() => {
 
 	if (count % 10 == 0) {
 		// console.log(player.ySpeeds);
+	}
+
+	for (let i = 0; i < points.length; i++) {
+		console.log(points);
+		if (testForPointCollision(player, points[i])) {
+			console.log("bonk");
+		}
 	}
 	
 	count++;

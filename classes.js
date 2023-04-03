@@ -526,7 +526,9 @@ class Background {
     }
 
     draw(ctx) {
-        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        if (!this.img.src.includes("undefined")) {
+            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        }
     }
 }
 
