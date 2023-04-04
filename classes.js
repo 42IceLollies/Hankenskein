@@ -268,16 +268,7 @@ class Lasso{
     //called once the lasso has initially been drawn and animates its fall
     static drawLassoFall(ctx)
     {
-         //settings for string style
-         const tempLineWidth = ctx.lineWidth;
-         ctx.lineWidth = 5;
-         ctx.strokeStyle =  player.fillColor;
-         //path for lasso and path for controlling lasso fall
-         let lassoPath = new Path2D();
-
-         ctx.lineCap = 'round';
-
-         lassoPath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
+        this.displayLasso(ctx);
 
          //update collideHorizon
          for(var i = 0; i<this.lassoPoints.length; i++)
@@ -286,12 +277,7 @@ class Lasso{
          }
          
  
-         //draws lasso string
-       for(var i = 1; i<this.lassoPoints.length-3; i+=3)
-       {
-         lassoPath.bezierCurveTo(this.lassoPoints[i].x, this.lassoPoints[i].y, this.lassoPoints[i+1].x, this.lassoPoints[i+1].y, this.lassoPoints[i+2].x, this.lassoPoints[i+2].y);
-        }
-        ctx.stroke(lassoPath);
+      
 
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
@@ -304,17 +290,43 @@ class Lasso{
              }
         }
        
-    
-        ctx.lineWidth = tempLineWidth;
-        ctx.strokeStyle = "#000000";
     }
     
 
     //called when up arrow is pushed
     static pullInLasso(ctx)
     {
-        console.log("hi");
+        this.displayLasso(ctx);
+        
+        
     } 
+
+
+    static displayLasso(ctx)
+    {
+        
+         //settings for string style
+         const tempLineWidth = ctx.lineWidth;
+         ctx.lineWidth = 5;
+         ctx.strokeStyle =  player.fillColor;
+         //path for lasso and path for controlling lasso fall
+         let lassoPath = new Path2D();
+
+         ctx.lineCap = 'round';
+
+         lassoPath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
+
+            //draws lasso string
+       for(var i = 1; i<this.lassoPoints.length-3; i+=3)
+       {
+         lassoPath.bezierCurveTo(this.lassoPoints[i].x, this.lassoPoints[i].y, this.lassoPoints[i+1].x, this.lassoPoints[i+1].y, this.lassoPoints[i+2].x, this.lassoPoints[i+2].y);
+        }
+        ctx.stroke(lassoPath);
+         
+        ctx.lineWidth = tempLineWidth;
+        ctx.strokeStyle = "#000000";
+
+    }
 
 
     //can probably put in main class but a reels in and d adds slack
