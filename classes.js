@@ -296,9 +296,15 @@ class Lasso{
     //called when up arrow is pushed
     static pullInLasso(ctx)
     {
-        this.displayLasso(ctx);
+      
+        for(var i = 0; i<this.lassoPoints.length; i++)
+        {
+            this.lassoPoints[i].x = this.lassoPoints[i].x+10;
+            console.log(this.lassoPoints[i].x)
+           // this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].x+1 : this.lassoPoints[i].x-1;
+        }
         
-        
+         this.displayLasso(ctx); 
     } 
 
 
