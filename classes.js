@@ -259,6 +259,11 @@ class Lasso{
                 return(true);
             }
         }
+        for (var i = 0; i < points.length; i++) {
+            if (testForPointCollision(horizon, points[i])) {
+                return true;
+            }
+        }
 
         return (false);
 
@@ -300,7 +305,7 @@ class Lasso{
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
             this.lassoPoints[i].x = this.lassoPoints[i].x+10;
-            console.log(this.lassoPoints[i].x)
+            // console.log(this.lassoPoints[i].x)
            // this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].x+1 : this.lassoPoints[i].x-1;
         }
         
@@ -451,6 +456,7 @@ class Line {
 class Point {
     constructor(xStart, y, xOffset) {
         this.xStart = xStart;
+        // this.x = xStart + xOffset;
         this.x = xStart;
         this.y = y;
     }

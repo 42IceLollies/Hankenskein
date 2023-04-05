@@ -1076,6 +1076,7 @@ function resize() {
 
 	for (let i = 0; i < lassoPoints.length; i++) {
 		const x = (player.shape.x - game.xOffset) + lassoPoints[i][0] * player.shape.radius;
+		// const x = player.shape.x + (lassoPoints[i][0] * player.shape.radius);
 		const y = lassoPoints[i][1];
 		Lasso.lassoPoints[i].moveTo(x, y, game.xOffset);
 	}
