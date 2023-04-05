@@ -1004,8 +1004,16 @@ function resize() {
 	// divided by the player radius for scale
 	let backFraction = (background.x - player.shape.x) / player.shape.radius;
 
+	const lassoPoints = []; // add in [x, y] format for each point
+	if (Lasso.lassoPoints != undefined && Lasso.lassoPoints.length > 0) {
+		for (let i = 0; i < Lasso.lassoPoints.length; i++) {
+			const point = Lasso.lassoPoints[i];
+			lassoPoints.push([(point.x - player.shape.x) / player.shape.radius, point.y / canvas.height]);
+		}
+	}
+
 	// resize the canvas to fill the whole window
-	resizeCanvas(); // uncomment
+	resizeCanvas();
 
 	// compare the new and old dimensions
 	// if no change, end it now
@@ -1055,6 +1063,12 @@ function resize() {
 	background.setStartX(backXDistance);
 	// update offset after
 	background.updateOffset(game.xOffset);
+
+	for (let i = 0; i < lassoPoints.length; i++) {
+		const x = (player.shape.x - game.xOffset) + lassoPoints[i][0] * player.shape.radius;
+		const y = lassoPoints[i][1];
+		Lasso.lassoPoints[i].moveTo(x, y, game.xOffset);
+	}
 
 } // end of resize
 
@@ -1209,6 +1223,15 @@ function movePoints() {
 		points[i].adjustX(game.xOffset);
 	}
 } // end of movePoints
+
+
+function moveLassoPoints() {
+	if (Lasso.lassoPoints == undefined) {return;}
+	for (let i = 0; i < Lasso.lassoPoints.length; i++) {
+		// adjust every lasso point's location
+		Lasso.lassoPoints[i].adjustX(game.xOffset);
+	}
+}
 
 
 // updates the main speeds in player
@@ -1554,6 +1577,7 @@ const animateID = setInterval(() => {
 	updatePlayerSpeeds();
 	// called here so collision still works
 	moveLines();
+	moveLassoPoints();
 
 	propelPlayer();
 	if (atRest()) {

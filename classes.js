@@ -456,7 +456,7 @@ class Point {
     moveTo(x, y, xOffset) {
         this.xStart = x - xOffset;
         this.y = y;
-        this.updateOffset(xOffset);
+        this.adjustX(xOffset);
     }
 
     draw(ctx) {
