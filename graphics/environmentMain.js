@@ -84,7 +84,7 @@ function setup(linesArray, backgroundPath) {
 
 	// sets the background image with the file provided
 	background = new Background(backgroundPath, 0, 0, canvas.height);
-}
+} // end of setup
 
 
 // creates actual line objects from the [x, y], [x, y] points provided in the array
@@ -473,6 +473,15 @@ function collideWithPoints() {
 } // end of collideWithPoints
 
 
+function fillPoints() {
+    points = [];
+    for (let i = 0; i < lines.length; i++) {
+        points.push(new Point(lines[i].x1, lines[i].y1));
+        points.push(new Point(lines[i].x2, lines[i].y2))
+    }
+} // end of fillPoints
+
+
 // // stops the circle from overlapping the line it's just collided with
 // function resolveCollisionOverlap(circle, line) {
 // 	const bounceDegree = getBounceDegree(circle, line);
@@ -513,8 +522,7 @@ function resolveVerticalOverlap(circle, line) {
 	moveLines();
 	background.updateOffset(game.xOffset);
 	fillPoints();
-	// mark
-}
+} // end of resolveVerticalOverlap
 
 
 // tests for collision of a circle with a point
@@ -533,7 +541,8 @@ function pointCollisionBelow(circle, point) {
 	}
 	
 	return point.y > circle.y;
-}
+} // end of pointCollisionBelow
+
 
 //can be moved to physics
 // ==============
@@ -796,7 +805,7 @@ function getSign(num) {
 // based on how big the player is on screen, and how big it's supposed to be
 function getPxPerM() {
 	return player.shape.radius / player.radiusActual;
-}
+} // end of getPxPerM
 
 
 // ====================
@@ -817,7 +826,7 @@ const keydown = {
 	a: false,
 	d: false,
 	mouse: false,
-};
+}; // end of keydown object
 
 
 // logs when keys are pressed
@@ -878,7 +887,7 @@ document.addEventListener("keydown", (e) => {
 			keydown.d = true;
 			break;
 	}
-});
+}); // end of keydown listener
 
 var listener;
 
@@ -920,7 +929,7 @@ document.addEventListener("keyup", (e) => {
 			keydown.d = false;
 			break;
 	}
-});
+}); // end of keyup listener
 
 
 document.addEventListener("mousedown", (e)=>{
@@ -940,7 +949,8 @@ document.addEventListener("mousedown", (e)=>{
 		Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
 		//also add the mouse update in here
 	}
-});
+}); // end of mousedown listener
+
 
 document.addEventListener("mouseup", (e)=>{
 	keydown.mouse=false;
@@ -956,7 +966,7 @@ document.addEventListener("mouseup", (e)=>{
 			clearMouseMove();
 		}, 500);
 	}
-});
+}); // end of mouseup listener
 
 
 //external function for eventListener above so it's easier to cancel later
@@ -964,14 +974,14 @@ function mouseMove(e) {
 	//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
 	Lasso.changeMouseLocation(e);
 	//Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
-}
+} // end of mouseMove
 
 	//clears listener for mouse move whenever the lasso is launched
 function clearMouseMove() {
 	if(Lasso.lassoCounter==2){
 		document.removeEventListener('mousemove', mouseMove)
 	}
-}
+} // end of clearMouseMove
 
 
 // ================
@@ -1231,7 +1241,7 @@ function moveLassoPoints() {
 		// adjust every lasso point's location
 		Lasso.lassoPoints[i].adjustX(game.xOffset);
 	}
-}
+} // end of moveLassoPoints
 
 
 // updates the main speeds in player
@@ -1618,5 +1628,4 @@ const animateID = setInterval(() => {
 	}
 	
 	count++;
-}, 1000 / game.fps); // 1000 is 1 second
-
+}, 1000 / game.fps); // 1000 is 1 second // end of animate loop

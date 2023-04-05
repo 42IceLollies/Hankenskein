@@ -472,15 +472,6 @@ class Point {
 } // end of Point
 
 
-function fillPoints() {
-    points = [];
-    for (let i = 0; i < lines.length; i++) {
-        points.push(new Point(lines[i].x1, lines[i].y1));
-        points.push(new Point(lines[i].x2, lines[i].y2))
-    }
-} // end of fillPoints
-
-
 // ==================
 // =CIRCLE CLASS
 // ==================
