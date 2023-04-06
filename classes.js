@@ -304,9 +304,11 @@ class Lasso{
       
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
-            this.lassoPoints[i].x = this.lassoPoints[i].x+10;
-            // console.log(this.lassoPoints[i].x)
-           // this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].x+1 : this.lassoPoints[i].x-1;
+          //  this.lassoPoints[i].xStart-=8;
+          if(!(this.lassoPoints[i].x<= this.hankX-3 || this.lassoPoints[i].x<= this.hankX+3)){
+            this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].xStart+=1 : this.lassoPoints[i].xStart-=1;
+          }
+            
         }
         
          this.displayLasso(ctx); 
