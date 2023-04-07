@@ -177,9 +177,9 @@ class Lasso{
 				Lasso.pullInLasso(ctx);
 			break;
 
-			// case 5:
-			// 	lassoStage = "at rest";
-			// break;
+			 case 5:
+			 	Lasso.lassoCaught(ctx);
+			 break;
 		}
 	}
 	
@@ -248,24 +248,35 @@ class Lasso{
 
 
     //called to see if the lasso has fallen on anything 
-    static lassoCollide(horizon)
+    static lassoCollide(horizon, largerSlope)
     {
         //sees collision of horizon in reference to all registered obstructions
-
-        for(var i = 0; i<lines.length; i++)
-        {
-            if(testForLineCollision(horizon, lines[i]))
+        //larger slope is used to have the lasso catch on things, seeing if it collides with anything above a 70 degree slope
+        if(largerSlope){
+            for(var i = 0; i<lines.length; i++)
             {
-                return(true);
+                //if()//check slope of each line before running testForLineCollision on it
             }
-        }
-        for (var i = 0; i < points.length; i++) {
-            if (testForPointCollision(horizon, points[i])) {
-                return true;
+
+        } else{
+            //otherwise it just returns true if it collides with anything at all
+
+            for(var i = 0; i<lines.length; i++)
+            {
+                if(testForLineCollision(horizon, lines[i]))
+                {
+                    return(true);
+                }
             }
-        }
+            for (var i = 0; i < points.length; i++) {
+                if (testForPointCollision(horizon, points[i])) {
+                    return true;
+                }
+            }
+         }
 
         return (false);
+
 
     }
 
@@ -273,6 +284,7 @@ class Lasso{
     //called once the lasso has initially been drawn and animates its fall
     static drawLassoFall(ctx)
     {
+        //draws lasso
         this.displayLasso(ctx);
 
          //update collideHorizon
@@ -283,12 +295,12 @@ class Lasso{
          
  
       
-
+         //makes lasso move downwards 
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
         
             //checks if a) points have collided with anything, b) they are stretching too far apart and drops the string further down if not
-            if(!this.lassoCollide(this.collideHorizon[i]) && 
+            if(!this.lassoCollide(this.collideHorizon[i], false) && 
              !(Math.abs(this.lassoPoints[i].y-this.lassoPoints[i-1])<=10||Math.abs(this.lassoPoints[i].y-this.lassoPoints[i+1])<=10))
             {
                this.lassoPoints[i].y+=3;//can be changed to grav acceleration
@@ -301,18 +313,42 @@ class Lasso{
     //called when up arrow is pushed
     static pullInLasso(ctx)
     {
-      
+        var pointsMoved = false;
+
+        //makes the lasso point locations decrease/increase until they are in line with Hank 
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
-          //  this.lassoPoints[i].xStart-=8;
           if(!(this.lassoPoints[i].x<= this.hankX-3 || this.lassoPoints[i].x<= this.hankX+3)){
-            this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].xStart+=1 : this.lassoPoints[i].xStart-=1;
+            this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
+            pointsMoved = true;
           }
-            
+
+          //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
+          if(this.lassoCollide(this.collideHorizon[this.collideHorizon.length-1], true))
+          {
+            this.lassoCounter++;
+          }
+
         }
         
+        //if points are all lined up with hank, deletes the lasso
+        if(!pointsMoved)
+        {
+            this.lassoCounter = 0;
+        }
+        
+        //draws the lasso
          this.displayLasso(ctx); 
     } 
+
+    //called after lasso is pulled in and catches on something
+    static lassoCaught(ctx)
+    {
+        //draws lasso
+        this.displayLasso(ctx);
+
+
+    }
 
 
     static displayLasso(ctx)
