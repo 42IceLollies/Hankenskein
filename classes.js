@@ -145,7 +145,7 @@ class Lasso{
 	static incrementLassoStage()
 	{
 		this.lassoCounter++;
-		if(this.lassoCounter == 5)//this line will need to be changed as more of the lasso throw is implemented
+		if(this.lassoCounter == 6)//this line will need to be changed as more of the lasso throw is implemented
 		{
 			this.lassoCounter = 0;
 		}
@@ -256,7 +256,9 @@ class Lasso{
             for(var i = 0; i<lines.length; i++)
             {
                 //check slope of each line before running each one through line collision
-                if(Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=70)
+                console.log(Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2)));
+              // console.log(lines.length);
+                if(lines[i].x1-lines[i].x2 !=0 || Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=0.5)
                 {
                     if(testForLineCollision(horizon, lines[i]))
                     {
@@ -325,7 +327,7 @@ class Lasso{
         //makes the lasso point locations decrease/increase until they are in line with Hank 
         for(var i = 0; i<this.lassoPoints.length; i++)
         {
-          if(!(this.lassoPoints[i].x<= this.hankX-3 || this.lassoPoints[i].x<= this.hankX+3)){
+          if(!(this.lassoPoints[i].x>= this.hankX-3 && this.lassoPoints[i].x<= this.hankX+3)){
             this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
             pointsMoved = true;
           }
@@ -333,6 +335,7 @@ class Lasso{
           //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
           if(this.lassoCollide(this.collideHorizon[this.collideHorizon.length-1], true))
           {
+            console.log("entered");
             this.lassoCounter++;
           }
 
@@ -353,6 +356,8 @@ class Lasso{
     {
         //draws lasso
         this.displayLasso(ctx);
+
+        console.log("caught");
 
 
     }
