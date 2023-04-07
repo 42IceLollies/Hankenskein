@@ -526,7 +526,7 @@ function resolveVerticalOverlap(circle, line) {
 
 
 // tests for collision of a circle with a point
-function l(circle, point) {
+function testForPointCollision(circle, point) {
 	const side1 = point.x - circle.x;
 	const side2 = point.y - circle.y;
 	const hyp = getHyp(side1, side2);
