@@ -255,7 +255,14 @@ class Lasso{
         if(largerSlope){
             for(var i = 0; i<lines.length; i++)
             {
-                //if()//check slope of each line before running testForLineCollision on it
+                //check slope of each line before running each one through line collision
+                if(Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=70)
+                {
+                    if(testForLineCollision(horizon, lines[i]))
+                    {
+                        return(true);
+                    }
+                }
             }
 
         } else{
