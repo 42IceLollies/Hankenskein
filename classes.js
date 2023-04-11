@@ -72,7 +72,7 @@ class Physics{
 
 
 
-//==================LASSO CLASS============================
+// ==================LASSO CLASS============================ (classo)
 class Lasso{
     static lassoPoints;
     static collideHorizon = [];
@@ -82,7 +82,7 @@ class Lasso{
     static forceX = 0;
     static forceY = 0;
     // were causing loading issues, called resetForceBase() in start of other js file
-    // static forceX = player.shape.x;
+    // static forceX = player.shape.x - game.xOffset;
     // static forceY = player.shape.y;
     static mouseX = 0;
     static mouseY = 0;
@@ -94,46 +94,46 @@ class Lasso{
 
 	static setMouseCoordinates(x, y)
 	{
-		this.mouseX = x;
+		this.mouseX = x - game.xOffset;
 		this.mouseY = y;
 	}
 
 	static resetForceBase()
 	{
-		this.forceX = player.shape.x;
+		this.forceX = player.shape.x - game.xOffset;
 		this.forceY = player.shape.y;
 	}
 
     //called when mouse is pressed down to make force projection longer and how far the lasso is thrown
 	static incrementForce()
 	{	
-		Lasso.forceX+=(Lasso.mouseX-player.shape.x)/20;
+		Lasso.forceX+=(Lasso.mouseX-player.shape.x-game.xOffset)/20;
 		Lasso.forceY+=(Lasso.mouseY-player.shape.y)/20;
 
 		//updates the length of the force
-		var x = Lasso.forceX-player.shape.x;
+		var x = Lasso.forceX - (player.shape.x-game.xOffset);
 		var y = Lasso.forceY - player.shape.y;
 		Lasso.forceLength = Math.sqrt((x*x) + (y*y));
 		Lasso.slope = y/x;
 
-        Lasso.hankX = player.shape.x;
+        Lasso.hankX = player.shape.x - game.xOffset;
         Lasso.hankY = player.shape.y;
 	}
 
 	static changeMouseLocation(e)
 	{ 
 		//new location of cursor in reference to player
-		const newX = e.clientX - player.shape.x;
+		const newX = (e.clientX-game.xOffset) - (player.shape.x-game.xOffset);
 		const newY = e.clientY - player.shape.y;
 
 		//calculates length of force in reference to player's location
 		const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
 
 		//finds location of the end of the line
-		const finalX = player.shape.x + (newX*ratio);
+		const finalX = (player.shape.x-game.xOffset) + (newX*ratio);
 		const finalY = player.shape.y + (newY*ratio);
 
-		//set forceX & forceY to new values 
+		//set forceX & forceY to new values
 		this.forceX = finalX;
 		this.forceY = finalY;
 		this.slope = newY/newX;
@@ -215,10 +215,10 @@ class Lasso{
 
         //divides paths into segments to create curve
         var segments = 10;
-        var incrementX = (this.forceX-player.shape.x)/segments;
+        var incrementX = (this.forceX-player.shape.x-game.xOffset)/segments;
         var incrementY = (this.forceY-player.shape.y)/segments;
         var energyLoss = 0.85;
-        var currPoint = new Point(player.shape.x, player.shape.y);
+        var currPoint = new Point(player.shape.x-game.xOffset, player.shape.y);
         var squiggliness = 30;
 
      
@@ -235,7 +235,7 @@ class Lasso{
         var count = 0;
         for(var i = 1; i<segments*2-1; i+=2)
         {
-            var xTemp = player.shape.x + incrementX*count + (Math.random()*incrementX);
+            var xTemp = player.shape.x-game.xOffset + incrementX*count + (Math.random()*incrementX);
           
             var yTemp = this.lassoPoints[i-1].y + incrementY*Math.pow(energyLoss, i) - Math.random()*squiggliness;
             count++;
@@ -256,7 +256,7 @@ class Lasso{
             for(var i = 0; i<lines.length; i++)
             {
                 //check slope of each line before running each one through line collision
-                console.log(Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2)));
+                // console.log(Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2)));
               // console.log(lines.length);
                 if(lines[i].x1-lines[i].x2 !=0 || Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=0.5)
                 {
@@ -335,7 +335,7 @@ class Lasso{
           //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
           if(this.lassoCollide(this.collideHorizon[this.collideHorizon.length-1], true))
           {
-            console.log("entered");
+            // console.log("entered");
             this.lassoCounter++;
           }
 
