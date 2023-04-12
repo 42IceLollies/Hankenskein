@@ -939,7 +939,7 @@ document.addEventListener("mousedown", (e)=>{
 	//console.log(e.clientX, e.clientY);
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
-	if(Lasso.lassoCounter==0||Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3 || Lasso.lassoCounter == 4)
+	if(Lasso.lassoCounter==0||Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3 || Lasso.lassoCounter == 5)
 	{
 		Lasso.incrementLassoStage();
 	}

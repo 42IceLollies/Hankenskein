@@ -258,7 +258,8 @@ class Lasso{
                 //check slope of each line before running each one through line collision
                 // console.log(Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2)));
               // console.log(lines.length);
-                if(lines[i].x1-lines[i].x2 !=0 || Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=0.5)
+              //  if(lines[i].x1-lines[i].x2 !=0 || Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=0.5)
+                if(lines[i].degree>=70)
                 {
                     if(testForLineCollision(horizon, lines[i]))
                     {
@@ -330,19 +331,19 @@ class Lasso{
           if(!(this.lassoPoints[i].x>= this.hankX-3 && this.lassoPoints[i].x<= this.hankX+3)){
             this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
             pointsMoved = true;
-          }
+          }3
 
           //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
           if(this.lassoCollide(this.collideHorizon[this.collideHorizon.length-1], true))
           {
-            // console.log("entered");
             this.lassoCounter++;
+            break;
           }
 
         }
         
         //if points are all lined up with hank, deletes the lasso
-        if(!pointsMoved)
+        if(!pointsMoved && this.lassoCounter != 5)
         {
             this.lassoCounter = 0;
         }
@@ -356,10 +357,6 @@ class Lasso{
     {
         //draws lasso
         this.displayLasso(ctx);
-
-        console.log("caught");
-
-
     }
 
 
