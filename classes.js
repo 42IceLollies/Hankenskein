@@ -191,13 +191,16 @@ class Lasso{
     static drawPreLasso(ctx)
     {
         const tempLineWidth = ctx.lineWidth;
-        ctx.lineWidth = 5;
+        // ctx.lineWidth = 5;
+        // so the lasso looks small on small screens
+        ctx.lineWidth = canvas.height * .007;
+        if (ctx.lineWidth < 1) {ctx.lineWidth = 1};
         ctx.strokeStyle = "#8CA231";
         ctx.globalAlpha = 0.5;
         ctx.beginPath();
         ctx.lineCap = 'round';
         ctx.moveTo(player.shape.x, player.shape.y)
-       ctx.lineTo(this.forceX, this.forceY);
+        ctx.lineTo(this.forceX, this.forceY);
        
         ctx.stroke();
 
@@ -314,7 +317,8 @@ class Lasso{
             if(!this.lassoCollide(this.collideHorizon[i], false) && 
              !(Math.abs(this.lassoPoints[i].y-this.lassoPoints[i-1])<=10||Math.abs(this.lassoPoints[i].y-this.lassoPoints[i+1])<=10))
             {
-               this.lassoPoints[i].y+=3;//can be changed to grav acceleration
+               // this.lassoPoints[i].y+=3;//can be changed to grav acceleration
+               this.lassoPoints[i].y += canvas.height * .005;
              }
         }
        
@@ -366,7 +370,11 @@ class Lasso{
         
          //settings for string style
          const tempLineWidth = ctx.lineWidth;
-         ctx.lineWidth = 5;
+         // ctx.lineWidth = 5;
+         // so it shrinks with the screen
+         ctx.lineWidth = canvas.height * .009;
+         if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
+
          ctx.strokeStyle =  player.fillColor;
          //path for lasso and path for controlling lasso fall
          let lassoPath = new Path2D();
