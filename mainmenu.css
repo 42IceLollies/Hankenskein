@@ -32,3 +32,9 @@ body{
     padding:0;
     margin:0;
 }
+#button-style{
+    border-color:none;
+    background-color: none;
+    text-align: center;
+    outline:none;
+}

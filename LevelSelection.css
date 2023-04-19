@@ -1,0 +1,26 @@
+img{
+    height:auto;
+    width:100vh;
+    object-fit:cover;
+    float:left;
+}
+
+/* box of the level*/
+.boxes{
+    height:20vh;
+    width:100vh;
+    border:2px solid black;
+    text-align:center;
+    margin-left:5%;
+    margin-bottom:10%;
+}
+
+h1{
+    text-align:center;
+}
+
+h2{
+    text-align:center;
+    font-size:45px;
+    float:left;
+}
