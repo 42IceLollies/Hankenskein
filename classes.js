@@ -73,6 +73,7 @@ class Physics{
 
 
 // ==================LASSO CLASS============================ (classo)
+
 class Lasso{
     static lassoPoints;
     static collideHorizon = [];

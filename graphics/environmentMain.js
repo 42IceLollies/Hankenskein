@@ -1030,6 +1030,9 @@ function resize() {
 		}
 	}
 
+	// const mouseLocation = [(Lasso.mouseX - player.shape.x) / player.shape.radius, Lasso.mouseY / canvas.height];
+	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
+
 	// resize the canvas to fill the whole window
 	resizeCanvas();
 
@@ -1088,6 +1091,9 @@ function resize() {
 		const y = lassoPoints[i][1];
 		Lasso.lassoPoints[i].moveTo(x, y, game.xOffset);
 	}
+
+	Lasso.forceX = player.shape.x + (forceLocation[0] * player.shape.radius);
+	Lasso.forceY = forceLocation[1] * canvas.height;
 
 } // end of resize
 
@@ -1629,7 +1635,7 @@ const animateID = setInterval(() => {
 		// console.log(atRest());
 		// console.log(player.ySpeeds);
 	}
-	
+
 	count++;
 }, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 
