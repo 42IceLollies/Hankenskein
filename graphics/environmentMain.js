@@ -106,7 +106,7 @@ function createLines(pointsArray) {
 
 
 // reduces player's speed
-function frictionPlayer() {
+function frictionPlayerX() {
 	// for every xSpeed
 	for (key in player.xSpeeds) {
 		// apply friction
@@ -115,6 +115,14 @@ function frictionPlayer() {
 		if (Math.abs(player.xSpeeds[`${key}`]) < 1) {player.xSpeeds[`${key}`] = 0;}
 	}
 } // end of frictionPlayer
+
+
+function frictionPlayerY() {
+	player.ySpeeds.rollUp -= (player.ySpeeds.rollUp * game.frictionRate * 2) / game.fps;
+	player.ySpeeds.rollDown -= (player.ySpeeds.rollDown * game.frictionRate * 2) / game.fps;
+	if (Math.abs(player.ySpeeds.rollUp) < 1) {player.ySpeeds.rollUp = 0;}
+	if (Math.abs(player.ySpeeds.rollDown) < 1) {player.ySpeeds.rollDown = 0;} 
+}
 
 
 // can use arrows or aswd
@@ -1590,10 +1598,13 @@ const animateID = setInterval(() => {
 	moveLines();
 	moveLassoPoints();
 
-	propelPlayer();
 	if (atRest()) {
-		frictionPlayer();
+		frictionPlayerX();
 	}
+	frictionPlayerY();
+
+	propelPlayer();
+	
 	collideWithLines();
 	collideWithPoints();
 
@@ -1601,7 +1612,6 @@ const animateID = setInterval(() => {
 	moveLines();
 	background.updateOffset(game.xOffset);
 	fillPoints();
-
 
 	fall();
 	roll();
@@ -1614,19 +1624,12 @@ const animateID = setInterval(() => {
 
 	draw(ctx);
 
+	// print the ySpeeds every 10th run
 	if (count % 10 == 0) {
+		// console.log(atRest());
 		// console.log(player.ySpeeds);
-	}
-
-	ctx.fillStyle = "red";
-	for (let i = 0; i < points.length; i++) {
-		ctx.beginPath();
-		ctx.fillRect(points[i].x-2, points[i].y-2, 5, 5);
-		ctx.fill();
-		if (testForPointCollision(player.shape, points[i])) {
-			// console.log("bonk");
-		}
 	}
 	
 	count++;
 }, 1000 / game.fps); // 1000 is 1 second // end of animate loop
+
