@@ -997,7 +997,7 @@ function clearMouseMove() {
 // ================
 
 
-// resizes everything in the canvas to stay the same relative to each other
+// resizes everything in the canvas to stay the same relative to each other when the canvas changes size
 function resize() {
 	// saves the canvas dimensions for comparison after
 	const prevCanvas = canvas.width + " " + canvas.height;
@@ -1086,10 +1086,11 @@ function resize() {
 	background.updateOffset(game.xOffset);
 
 	for (let i = 0; i < lassoPoints.length; i++) {
-		const x = (player.shape.x - game.xOffset) + lassoPoints[i][0] * player.shape.radius;
+		const x = player.shape.x + (lassoPoints[i][0] * player.shape.radius);
 		// const x = player.shape.x + (lassoPoints[i][0] * player.shape.radius);
-		const y = lassoPoints[i][1];
+		const y = lassoPoints[i][1] * canvas.height;
 		Lasso.lassoPoints[i].moveTo(x, y, game.xOffset);
+		Lasso.lassoPoints[i].adjustX(game.xOffset);
 	}
 
 	Lasso.forceX = player.shape.x + (forceLocation[0] * player.shape.radius);
@@ -1595,7 +1596,7 @@ function draw(ctx) {
 
 let count = 0;
 
-// the animate loop, cycles everything
+// main! the animate loop, cycles everything
 const animateID = setInterval(() => {
 
 	resize();
