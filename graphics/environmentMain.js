@@ -71,11 +71,16 @@ let background; // background image
 
 // gathered all the loose setup code into this function, called from html file
 // input the lines to draw for that level
-function setup(linesArray, backgroundPath) {
+function setup(linesArray, backgroundPath, xOffsetStart, playerY) {
 	// center player
 	player.shape.x = canvas.width / 2;
 	// size the player correctly
 	player.shape.radius = canvas.height * player.screenPercent;
+	// sets the player's height
+	player.shape.y = playerY;
+
+	// sets the starting xOffset
+	game.xOffset = xOffsetStart;
 
 	// makes line objects from the (x, y) points in the array
 	createLines(linesArray);
@@ -1033,11 +1038,15 @@ function resize() {
 	// const mouseLocation = [(Lasso.mouseX - player.shape.x) / player.shape.radius, Lasso.mouseY / canvas.height];
 	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
 
+	const offsetRatio = game.xOffset / player.shape.radius;
+
+	// console.log(game.xOffset);
+
 	// resize the canvas to fill the whole window
 	resizeCanvas();
 
 	// compare the new and old dimensions
-	// if no change, end it now
+	// if there was no change, end it now
 	const currCanvas = canvas.width + " " + canvas.height;
 	if (prevCanvas == currCanvas) {
 		return;
@@ -1048,8 +1057,10 @@ function resize() {
 	// make radius the set fraction of the height
 	player.shape.radius = canvas.height * player.screenPercent;
 	player.shape.y = canvas.height * playerHeight;
-	// player.acceleration = player.shape.radius * 6;
 	player.acceleration = player.shape.radius * 10;
+
+	game.xOffset = offsetRatio * player.shape.radius;
+	// console.log(game.xOffset, "after");
 
 	// resizes the lines
 	for (let i = 0; i < lines.length; i++) {
