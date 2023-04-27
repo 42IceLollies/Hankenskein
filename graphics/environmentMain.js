@@ -72,7 +72,8 @@ let yarnTrail; // the player's yarn trail
 
 // gathered all the loose setup code into this function, called from each html file
 // input the lines to draw for that level, file path for background art, and x and y the player should start at
-function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
+function setup(linesArray, backgroundPath, xOffsetStart, playerY) {
+	xOffsetStart = 430;
 	// center player
 	player.shape.x = canvas.width / 2;
 	// size the player correctly
@@ -99,6 +100,7 @@ function createLines(pointsArray, offset) {
 		const set = pointsArray[i];
 		// pass the points into the constructor
 		const newLine = new Line(set[0][0] + offset, set[0][1], set[1][0] + offset, set[1][1], 0);
+		// console.log(offset);
 		lines.push(newLine);
 	}
 } // end of createLines
@@ -1039,7 +1041,7 @@ function resize() {
 	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
 
 	// resize the canvas to fill the whole window
-	// resizeCanvas();
+	resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
@@ -1179,7 +1181,7 @@ setInterval(()=>{
 // returns if the player is on top of a line
 function atRest() {
 	let atRest = false;
-
+	// console.log(lines);
 	// tests against every line
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];

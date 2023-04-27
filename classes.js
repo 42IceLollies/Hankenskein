@@ -260,6 +260,7 @@ class Lasso{
               //  if(lines[i].x1-lines[i].x2 !=0 || Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=0.5)
                 if(lines[i].degree>=70)
                 {
+                    console.log("yes");
                     if(testForLineCollision(horizon, lines[i]))
                     {
                         return(true);
@@ -357,6 +358,19 @@ class Lasso{
     {
         //draws lasso
         this.displayLasso(ctx);
+        //currently hay bugs in something I'm not sure how it works so I'm worried about messing it up but...
+        //here's some pseudocode
+        //call lassoCollide function, with true for larger slope and passing in collide horizon of the point at the end of the lasso
+        //method should return true if the point is in contact with a line steeper than a certain slope
+        //if it catches, move on to pull in hank method
+        //if it fully pulls in and the end reaches hank's coordinates, return to lassoCounter = 0
+    }
+
+    static pullInHank(ctx)
+    {
+        //this one I'm not so sure about how to do, will need to move hank's x value closer to the end of the lasso
+        //and kinda just reverse
+
     }
 
 
