@@ -67,11 +67,12 @@ const player = {
 const lines = [];
 let points = []; // holds all the points
 let background; // background image
+let yarnTrail; // the player's yarn trail
 
 
 // gathered all the loose setup code into this function, called from each html file
 // input the lines to draw for that level, file path for background art, and x and y the player should start at
-function setup(linesArray, backgroundPath, xOffsetStart, playerY) {
+function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
 	// center player
 	player.shape.x = canvas.width / 2;
 	// size the player correctly
@@ -79,16 +80,15 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY) {
 	// sets the player's height
 	player.shape.y = playerY;
 
-	// sets the starting xOffset
-	// game.xOffset = xOffsetStart;
-
 	// makes line objects from the (x, y) points in the array
 	createLines(linesArray, xOffsetStart);
 
-	Lasso.resetForceBase(linesArray);
+	Lasso.resetForceBase();
 
 	// sets the background image with the file provided
 	background = new Background(backgroundPath, xOffsetStart, 0, canvas.height);
+
+	// creates the yarn trail
 } // end of setup
 
 
@@ -97,7 +97,7 @@ function createLines(pointsArray, offset) {
 	// for every set (line)
 	for (let i = 0; i < pointsArray.length; i++) {
 		const set = pointsArray[i];
-		// put pass the points into the constructor
+		// pass the points into the constructor
 		const newLine = new Line(set[0][0] + offset, set[0][1], set[1][0] + offset, set[1][1], 0);
 		lines.push(newLine);
 	}
@@ -123,8 +123,9 @@ function frictionPlayerX() {
 
 
 function frictionPlayerY() {
-	player.ySpeeds.rollUp -= (player.ySpeeds.rollUp * game.frictionRate * 2) / game.fps;
-	player.ySpeeds.rollDown -= (player.ySpeeds.rollDown * game.frictionRate * 2) / game.fps;
+	const harshness = 4;
+	player.ySpeeds.rollUp -= (player.ySpeeds.rollUp * game.frictionRate * harshness) / game.fps;
+	player.ySpeeds.rollDown -= (player.ySpeeds.rollDown * game.frictionRate * harshness) / game.fps;
 	if (Math.abs(player.ySpeeds.rollUp) < 1) {player.ySpeeds.rollUp = 0;}
 	if (Math.abs(player.ySpeeds.rollDown) < 1) {player.ySpeeds.rollDown = 0;} 
 }
@@ -136,7 +137,6 @@ function propelPlayer() {
 	updatePlayerSpeeds();
 	// hold the speed seperately for testing
 	let xSpeed = player.xSpeeds.normal;
-	// let xSpeed = player.xSpeed;
 	// holds the change amount seperately
 	let speedChange = 0;
 	// add the new input speed - unless stopped in that direction (by vertical line)
@@ -946,7 +946,7 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousedown", (e)=>{
-	// console.log(e.x - game.xOffset, e.y);
+	console.log(e.x - game.xOffset, e.y); // leave for testing
 
 	keydown.mouse=true;
 	//console.log(e.clientX, e.clientY);
@@ -1038,12 +1038,8 @@ function resize() {
 	// const mouseLocation = [(Lasso.mouseX - player.shape.x) / player.shape.radius, Lasso.mouseY / canvas.height];
 	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
 
-	const offsetRatio = game.xOffset / player.shape.radius;
-
-	// console.log(game.xOffset);
-
 	// resize the canvas to fill the whole window
-	resizeCanvas();
+	// resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
@@ -1058,9 +1054,6 @@ function resize() {
 	player.shape.radius = canvas.height * player.screenPercent;
 	player.shape.y = canvas.height * playerHeight;
 	player.acceleration = player.shape.radius * 10;
-
-	// game.xOffset = offsetRatio * player.shape.radius;
-	// console.log(game.xOffset, "after");
 
 	// resizes the lines
 	for (let i = 0; i < lines.length; i++) {
@@ -1616,29 +1609,29 @@ const animateID = setInterval(() => {
 	moveLines();
 	moveLassoPoints();
 
+	// if it's touching ground, apply friction
 	if (atRest()) {
 		frictionPlayerX();
 	}
+	// decay the vertical friction to avoid bugs
 	frictionPlayerY();
 
 	propelPlayer();
-	
+	// collision
 	collideWithLines();
 	collideWithPoints();
-
+	// movement
 	movePlayer();
 	moveLines();
 	background.updateOffset(game.xOffset);
 	fillPoints();
-
+	// natural physics have a turn
 	fall();
 	roll();
-
+	// set new trajectories if needed
 	for (let i = 0; i < lines.length; i++) {
 		circleLineBounce(player, lines[i]);
-		// resolveVerticalOverlap(player, lines[i]);
 	}
-	// circlePointBounceAll(player);
 
 	draw(ctx);
 

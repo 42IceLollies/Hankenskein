@@ -57,17 +57,12 @@ class Physics{
     // arbitrary #'s, feel free to change
     static bounceMomentumLoss(speed) {
         speed -= speed * .7;
-        if (speed < 1 && speed > -1) {
+        if (Math.abs(speed) < 1) {
             speed = 0;
         }
         return speed;
     }
-    
-    //This returns the speed when it is slowing down
-    static bounce(theSpeed){
-        return -theSpeed;
-    }
-}
+} // end of Physics
 
 
 
@@ -397,7 +392,7 @@ class Lasso{
 
 
     //can probably put in main class but a reels in and d adds slack
-}
+} // end of Lasso
 
 
 
@@ -601,6 +596,18 @@ class Background {
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
         }
     }
-}
+} // end of Background
 
+
+// ==================
+// =YARN TRAIL CLASS
+// ==================
+
+
+class YarnTrail {
+    // basePoint [x, y]
+    constructor(basePoint) {
+        this.basePoint = new Point(basePoint[0], basePoint[1], xOffset);
+    }
+}
 
