@@ -16,33 +16,34 @@ const game = {
 };
 
 // holds all the player information
+// turns out hank is complicated
 const player = {
 	// for ease of drawing and moving (x, y, radius)
-	shape: new Circle(100, 100, 25),
-	// keeps track of where it just was
+	shape: new Circle(100, 100, 25), // the object that's drawn on the canvas, for simplicity
+	// keeps track of where it just was for trajectory calculations
 	prevX: 100,
 	prevY: 100,
-	xSpeed: 0,
+	xSpeed: 0, // horizontal speed in [px/s]
 	// the above is updated with the sum of the below
 	xSpeeds: {
-		rollDown: 0,
-		rollUp: 0,
-		// the regular moving-to-the-side force (from arrow keys directly)
-		normal: 0,
+		rollDown: 0, // x speed when rolling down a line
+		rollUp: 0, // x speed when rolling up a line
+		normal: 0, // the regular moving-to-the-side force (from arrow keys directly)
 	},
-	ySpeed: 0,
+	ySpeed: 0, // vertical speed in [px/s]
 	// the above is updated with the sum of the below
 	ySpeeds: {
 		gravity: 0,
+		// both y rolls updated to match their x counterparts
 		rollDown: 0,
 		rollUp: 0,
 	},
-	// how much speed it can gain, set elsewhere (probably resize)
+	// how much speed it can gain, set elsewhere [in resize()]
 	acceleration: 300,
 	fillColor: "#e2619f", // pink // this doesn't show when the drawing's in place
-	screenPercent: 0.04, // 4% of the height
+	screenPercent: 0.04, // 4% of the height of the canvas
 	radiusActual: 0.1016, // 4 inches in meters // used for physics calculations
-	// weightActual: "idk", // in kilograms? // never actually used it
+	unravelPercent: 1.0, // 1.0 = not unraveled, 0 = completely unraveled
 	// tracks which directions it's blocked by something
 	blocked: {
 		up: false,
@@ -50,27 +51,26 @@ const player = {
 		left: false,
 		right: false,
 	},
+	// tracks which directions it's stopped moving by something
 	stopped: {
 		up: false,
 		down: false,
 		left: false,
 		right: false,
 	},
-	rotation: 0, // degrees
-	pauseSpin: false,
+	rotation: 0, // degrees // keeps track of how much it's spun
+	pauseSpin: false, // if it should stop visually spinning
 };
 
 
 // holds all the lines and points the player can collide with
 const lines = [];
-const drawnLines = []; // for testing
-// const testPoints = [];
-let points = [];
+let points = []; // holds all the points
 let background; // background image
 
 
-// gathered all the loose setup code into this function, called from html file
-// input the lines to draw for that level
+// gathered all the loose setup code into this function, called from each html file
+// input the lines to draw for that level, file path for background art, and x and y the player should start at
 function setup(linesArray, backgroundPath, xOffsetStart, playerY) {
 	// center player
 	player.shape.x = canvas.width / 2;
@@ -80,25 +80,25 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY) {
 	player.shape.y = playerY;
 
 	// sets the starting xOffset
-	game.xOffset = xOffsetStart;
+	// game.xOffset = xOffsetStart;
 
 	// makes line objects from the (x, y) points in the array
-	createLines(linesArray);
+	createLines(linesArray, xOffsetStart);
 
 	Lasso.resetForceBase(linesArray);
 
 	// sets the background image with the file provided
-	background = new Background(backgroundPath, 0, 0, canvas.height);
+	background = new Background(backgroundPath, xOffsetStart, 0, canvas.height);
 } // end of setup
 
 
 // creates actual line objects from the [x, y], [x, y] points provided in the array
-function createLines(pointsArray) {
+function createLines(pointsArray, offset) {
 	// for every set (line)
 	for (let i = 0; i < pointsArray.length; i++) {
 		const set = pointsArray[i];
 		// put pass the points into the constructor
-		const newLine = new Line(set[0][0], set[0][1], set[1][0], set[1][1], 0);
+		const newLine = new Line(set[0][0] + offset, set[0][1], set[1][0] + offset, set[1][1], 0);
 		lines.push(newLine);
 	}
 } // end of createLines
@@ -1059,7 +1059,7 @@ function resize() {
 	player.shape.y = canvas.height * playerHeight;
 	player.acceleration = player.shape.radius * 10;
 
-	game.xOffset = offsetRatio * player.shape.radius;
+	// game.xOffset = offsetRatio * player.shape.radius;
 	// console.log(game.xOffset, "after");
 
 	// resizes the lines
@@ -1568,9 +1568,9 @@ function drawLines(ctx) {
 	for (let i = 0; i < lines.length; i++) {
 		lines[i].draw(ctx);
 	}
-	for (let i = 0; i < drawnLines.length; i++) {
-		drawnLines[i].draw(ctx);
-	}
+	// for (let i = 0; i < drawnLines.length; i++) {
+	// 	drawnLines[i].draw(ctx);
+	// }
 } // end of drawLines
 
 
@@ -1641,12 +1641,6 @@ const animateID = setInterval(() => {
 	// circlePointBounceAll(player);
 
 	draw(ctx);
-
-	// print the ySpeeds every 10th run
-	if (count % 10 == 0) {
-		// console.log(atRest());
-		// console.log(player.ySpeeds);
-	}
 
 	count++;
 }, 1000 / game.fps); // 1000 is 1 second // end of animate loop
