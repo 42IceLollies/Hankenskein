@@ -620,7 +620,7 @@ class Background {
 
 class YarnTrail {
     // basePoint [x, y]
-    constructor(basePoint) {
+    constructor(basePoint, xOffset) {
         this.basePoint = new Point(basePoint[0], basePoint[1], xOffset);
     }
 }

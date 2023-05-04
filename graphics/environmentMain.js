@@ -72,8 +72,8 @@ let yarnTrail; // the player's yarn trail
 
 // gathered all the loose setup code into this function, called from each html file
 // input the lines to draw for that level, file path for background art, and x and y the player should start at
-function setup(linesArray, backgroundPath, xOffsetStart, playerY) {
-	xOffsetStart = 430;
+function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
+	// xOffsetStart = 430; // cor if you have the issue again uncomment this line
 	// center player
 	player.shape.x = canvas.width / 2;
 	// size the player correctly
@@ -90,6 +90,7 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY) {
 	background = new Background(backgroundPath, xOffsetStart, 0, canvas.height);
 
 	// creates the yarn trail
+	yarnTrail = new YarnTrail(yarnCoords, game.xOffset);
 } // end of setup
 
 
@@ -844,6 +845,14 @@ const keydown = {
 }; // end of keydown object
 
 
+// keeps track of the mouse
+const mouse = {
+	down: false,
+	x: 0,
+	y: 0,
+}; // end of mouse object
+
+
 // logs when keys are pressed
 document.addEventListener("keydown", (e) => {
 	switch(e.keyCode) {
@@ -855,10 +864,10 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 38:
 			keydown.up = true;
-			if(Lasso.lassoCounter == 3)
-			{
+			if (Lasso.lassoCounter == 3) {
 				Lasso.incrementLassoStage();
 			}
+			if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			// Lasso.pullInLasso();
 			break;
 		case 40:
@@ -869,6 +878,7 @@ document.addEventListener("keydown", (e) => {
 			if(Lasso.lassoCounter == 1)
 			{
 				Lasso.incrementLassoStage();
+				Lasso.forceLength = 0;
 			}
 			// movePlayer();
 			// moveLines();
@@ -882,10 +892,10 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 87:
 			keydown.w = true;
-			if(Lasso.lassoCounter == 3)
-			{
+			if (Lasso.lassoCounter == 3) {
 				Lasso.incrementLassoStage();
 			}
+			if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			// Lasso.pullInLasso();
 			break;
 		case 83:
@@ -900,6 +910,13 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 68:
 			keydown.d = true;
+			break;
+		case 8: // backspace
+			Lasso.resetForceBase();
+			Lasso.forceLength = 0;
+			if (Lasso.lassoCounter == 1) {
+				Lasso.lassoCounter == 0;
+			}
 			break;
 	}
 }); // end of keydown listener
@@ -947,11 +964,12 @@ document.addEventListener("keyup", (e) => {
 }); // end of keyup listener
 
 
-document.addEventListener("mousedown", (e)=>{
-	console.log(e.x - game.xOffset, e.y); // leave for testing
+document.addEventListener("mousedown", (e) => {
+	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
 	keydown.mouse=true;
-	//console.log(e.clientX, e.clientY);
+	mouse.down = true;
+
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
 	if(Lasso.lassoCounter==0||Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3 || Lasso.lassoCounter == 5)
@@ -960,20 +978,36 @@ document.addEventListener("mousedown", (e)=>{
 	}
 		
 	if(Lasso.lassoCounter==1){
-		Lasso.resetForceBase();
-		Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
+		// Lasso.resetForceBase();
+		// Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
 		//also add the mouse update in here
 	}
 }); // end of mousedown listener
 
 
-document.addEventListener("mouseup", (e)=>{
-	keydown.mouse=false;
+document.addEventListener("mousemove", (e) => {
+	// console.log(e);
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
+});
 
-	//clears interval that grows the prospected lasso line
+
+wUpId = setInterval(() => {
+	if (keydown.up || keydown.w) {
+		Lasso.incrementForce();
+		console.log(wi)
+	}
+}, 100);
+
+
+document.addEventListener("mouseup", (e)=>{
+	keydown.mouse = false;
+	mouse.down = false;
+
+	// clears interval that grows the prospected lasso line
 	clearInterval(Lasso.intervalId);
 
-	if(Lasso.lassoCounter == 1){
+	if(Lasso.lassoCounter == 1) {
 		
 		//adds one that moves the line according to mouse location
 		Lasso.intervalId=setInterval(()=>{//Lasso.setHankProperties(player.shape.x, player.shape.y); 
