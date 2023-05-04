@@ -116,6 +116,20 @@ class Lasso{
         Lasso.hankY = player.shape.y;
 	}
 
+    static decrementForce() {
+        Lasso.forceX-=(Lasso.mouseX-player.shape.x-game.xOffset)/20;
+        Lasso.forceY-=(Lasso.mouseY-player.shape.y)/20;
+
+        //updates the length of the force
+        var x = Lasso.forceX - (player.shape.x-game.xOffset);
+        var y = Lasso.forceY - player.shape.y;
+        Lasso.forceLength = Math.sqrt((x*x) + (y*y));
+        Lasso.slope = y/x;
+
+        Lasso.hankX = player.shape.x - game.xOffset;
+        Lasso.hankY = player.shape.y;
+    }
+
 	static changeMouseLocation(e)
 	{ 
 		//new location of cursor in reference to player
