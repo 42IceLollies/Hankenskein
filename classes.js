@@ -88,9 +88,9 @@ class Lasso{
     static slope = 0;
 
 
-	static setMouseCoordinates(x, y)
+	static setMouseCoordinates(x, y, xOffset)
 	{
-		this.mouseX = x - game.xOffset;
+		this.mouseX = x - xOffset;
 		this.mouseY = y;
 	}
 
@@ -406,10 +406,10 @@ class Lasso{
 
          lassoPath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
 
-            //draws lasso string
-       for(var i = 1; i<this.lassoPoints.length-3; i+=3)
-       {
-         lassoPath.bezierCurveTo(this.lassoPoints[i].x, this.lassoPoints[i].y, this.lassoPoints[i+1].x, this.lassoPoints[i+1].y, this.lassoPoints[i+2].x, this.lassoPoints[i+2].y);
+        // draws lasso string
+        for(var i = 1; i<this.lassoPoints.length-3; i+=3)
+        {
+            lassoPath.bezierCurveTo(this.lassoPoints[i].x, this.lassoPoints[i].y, this.lassoPoints[i+1].x, this.lassoPoints[i+1].y, this.lassoPoints[i+2].x, this.lassoPoints[i+2].y);
         }
         ctx.stroke(lassoPath);
          
@@ -637,5 +637,7 @@ class YarnTrail {
     constructor(basePoint, xOffset) {
         this.basePoint = new Point(basePoint[0], basePoint[1], xOffset);
     }
+
+    
 }
 

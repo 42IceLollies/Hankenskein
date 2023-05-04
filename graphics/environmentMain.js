@@ -966,7 +966,7 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousedown", (e) => {
-	// console.log(e.x - game.xOffset, e.y); // leave for testing
+	console.log(e.x - game.xOffset, e.y); // leave for testing
 
 	mouse.down = true;
 
@@ -1078,7 +1078,7 @@ function resize() {
 	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
 
 	// resize the canvas to fill the whole window
-	resizeCanvas();
+	// resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
