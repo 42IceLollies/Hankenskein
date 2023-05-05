@@ -84,7 +84,6 @@ class Lasso{
     static mouseY = 0;
     static forceLength = 0;
     static intervalId = null;
-    static lassoStage = "not active";// I think this can  be gotten rid of eventually but might be useful for debugging
     static slope = 0;
 
 
@@ -255,7 +254,7 @@ class Lasso{
 
             this.lassoPoints[i] = new Point(xTemp, yTemp);
         }
-     
+        
         this.incrementLassoStage();
     }
 
@@ -274,7 +273,7 @@ class Lasso{
               //  if(lines[i].x1-lines[i].x2 !=0 || Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=0.5)
                 if(lines[i].degree>=70)
                 {
-                    console.log("yes");
+                   // console.log("yes");
                     if(testForLineCollision(horizon, lines[i]))
                     {
                         return(true);
@@ -317,6 +316,7 @@ class Lasso{
             this.collideHorizon[i] = {shape: new Circle(this.lassoPoints[i].x, this.lassoPoints[i].y, 5)};
          }
          
+         var pointsMoved = 0;
  
       
          //makes lasso move downwards 
@@ -329,7 +329,17 @@ class Lasso{
             {
                // this.lassoPoints[i].y+=3;//can be changed to grav acceleration
                this.lassoPoints[i].y += canvas.height * .005;
+               pointsMoved++;
              }
+
+            
+
+        }
+
+        if(pointsMoved ==0)
+        {
+            console.log("incrementing");
+            this.lassoCounter++;
         }
        
     }
@@ -338,6 +348,7 @@ class Lasso{
     //called when up arrow is pushed
     static pullInLasso(ctx)
     {
+        console.log("hi");
         var pointsMoved = false;
 
         //makes the lasso point locations decrease/increase until they are in line with Hank 
@@ -346,14 +357,14 @@ class Lasso{
           if(!(this.lassoPoints[i].x>= this.hankX-3 && this.lassoPoints[i].x<= this.hankX+3)){
             this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
             pointsMoved = true;
-          }3
-
-          //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
-          if(this.lassoCollide(this.collideHorizon[this.collideHorizon.length-1], true))
-          {
-            this.lassoCounter++;
-            break;
           }
+
+        //   //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
+        //   if(this.lassoCollide(this.collideHorizon[this.collideHorizon.length-1], true))
+        //   {
+        //     this.lassoCounter++;
+        //     break;
+        //   }
 
         }
         

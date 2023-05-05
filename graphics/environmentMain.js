@@ -79,7 +79,9 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
 	// size the player correctly
 	player.shape.radius = canvas.height * player.screenPercent;
 	// sets the player's height
-	player.shape.y = playerY;
+	
+	//MAY NEED TO UNCOMMENT THIS, CHANGED SO IT WORKS ON MY COMPUTER (comment in capitals so it's easier to find)
+	//player.shape.y = playerY;
 
 	// makes line objects from the (x, y) points in the array
 	createLines(linesArray, xOffsetStart);
@@ -89,8 +91,9 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
 	// sets the background image with the file provided
 	background = new Background(backgroundPath, xOffsetStart, 0, canvas.height);
 
+	//ALSO UNCOMMENTED THIS FOR THE MOMENT- IN CASE I FORGET TO REVERT IT BEFORE PUSHING
 	// creates the yarn trail
-	yarnTrail = new YarnTrail(yarnCoords, game.xOffset);
+	//yarnTrail = new YarnTrail(yarnCoords, game.xOffset);
 } // end of setup
 
 
@@ -915,7 +918,7 @@ document.addEventListener("keydown", (e) => {
 		case 8: // backspace
 			Lasso.resetForceBase();
 			Lasso.forceLength = 0;
-			if (Lasso.lassoCounter == 1) {
+			if (Lasso.lassoCounter > 0) {
 				Lasso.lassoCounter = 0;
 			}
 			break;
@@ -968,9 +971,11 @@ document.addEventListener("keyup", (e) => {
 document.addEventListener("mousedown", (e) => {
 	console.log(e.x - game.xOffset, e.y); // leave for testing
 
-	mouse.down = true;
+	//mouse.down = true;
 
-	Lasso.setMouseCoordinates(e.clientX, e.clientY);
+	//idk if this is needed still but it was doing weird stuff
+	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
+
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
 	if (Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3 || Lasso.lassoCounter == 5) {
 		Lasso.incrementLassoStage();
@@ -1078,7 +1083,7 @@ function resize() {
 	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
 
 	// resize the canvas to fill the whole window
-	// resizeCanvas();
+	 resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
