@@ -102,11 +102,11 @@ class Lasso{
     //called when mouse is pressed down to make force projection longer and how far the lasso is thrown
 	static incrementForce()
 	{	
-		Lasso.forceX+=(Lasso.mouseX-player.shape.x-game.xOffset)/20;
+		Lasso.forceX+=(Lasso.mouseX-player.shape.x)/20;
 		Lasso.forceY+=(Lasso.mouseY-player.shape.y)/20;
 
 		//updates the length of the force
-		var x = Lasso.forceX - (player.shape.x-game.xOffset);
+		var x = Lasso.forceX - (player.shape.x);
 		var y = Lasso.forceY - player.shape.y;
 		Lasso.forceLength = Math.sqrt((x*x) + (y*y));
 		Lasso.slope = y/x;
@@ -132,14 +132,14 @@ class Lasso{
 	static changeMouseLocation(e)
 	{ 
 		//new location of cursor in reference to player
-		const newX = (e.clientX-game.xOffset) - (player.shape.x-game.xOffset);
+		const newX = (e.clientX) - (player.shape.x);
 		const newY = e.clientY - player.shape.y;
 
 		//calculates length of force in reference to player's location
 		const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
 
 		//finds location of the end of the line
-		const finalX = (player.shape.x-game.xOffset) + (newX*ratio);
+		const finalX = (player.shape.x) + (newX*ratio);
 		const finalY = player.shape.y + (newY*ratio);
 
 		//set forceX & forceY to new values
@@ -348,7 +348,7 @@ class Lasso{
     //called when up arrow is pushed
     static pullInLasso(ctx)
     {
-        console.log("hi");
+        // console.log("hi");
         var pointsMoved = false;
 
         //makes the lasso point locations decrease/increase until they are in line with Hank 

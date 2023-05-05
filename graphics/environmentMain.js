@@ -984,11 +984,11 @@ document.addEventListener("mousedown", (e) => {
 		Lasso.incrementLassoStage();
 	}
 		
-	// if(Lasso.lassoCounter==1) {
-	// 	Lasso.resetForceBase();
+	if(Lasso.lassoCounter==1) {
+		Lasso.resetForceBase();
 	// 	Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
 	// 	also add the mouse update in here
-	// }
+	}
 }); // end of mousedown listener
 
 
