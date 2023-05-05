@@ -13,6 +13,7 @@ const game = {
 	fps: 35,
 	xOffset: 0,
 	frictionRate: .6,
+	idList: [],
 };
 
 // holds all the player information
@@ -94,6 +95,8 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
 	//ALSO UNCOMMENTED THIS FOR THE MOMENT- IN CASE I FORGET TO REVERT IT BEFORE PUSHING
 	// creates the yarn trail
 	//yarnTrail = new YarnTrail(yarnCoords, game.xOffset);
+
+	main();
 } // end of setup
 
 
@@ -969,7 +972,7 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousedown", (e) => {
-	console.log(e.x - game.xOffset, e.y); // leave for testing
+	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
 	//mouse.down = true;
 
@@ -995,17 +998,6 @@ document.addEventListener("mousemove", (e) => {
 	Lasso.setMouseCoordinates(e.clientX, e.clientY, game.xOffset);
 	Lasso.changeMouseLocation(e);
 });
-
-
-wUpId = setInterval(() => {
-	if (keydown.up || keydown.w) {
-		Lasso.incrementForce();
-	}
-
-	if (keydown.down || keydown.s) {
-		Lasso.decrementForce();
-	}
-}, 100);
 
 
 document.addEventListener("mouseup", (e)=>{
@@ -1214,10 +1206,6 @@ function movePlayer() {
 // counts the seconds
 // starts at 1 so there's always some gravity
 var timer = 1;
-
-setInterval(()=>{
-	timer += 0.1;
-}, 100);
 
 
 // returns if the player is on top of a line
@@ -1642,43 +1630,71 @@ function draw(ctx) {
 //==================================
 
 
-let count = 0;
+function main() {
+	// lengthens the lasso forceLength
+	const wUpId = setInterval(() => {
+		if (keydown.up || keydown.w) {
+			Lasso.incrementForce();
+		}
 
-// main! the animate loop, cycles everything
-const animateID = setInterval(() => {
+		if (keydown.down || keydown.s) {
+			Lasso.decrementForce();
+		}
+	}, 100); // end of wUp loop
 
-	resize();
-	updatePlayerSpeeds();
-	// called here so collision still works
-	moveLines();
-	moveLassoPoints();
 
-	// if it's touching ground, apply friction
-	if (atRest()) {
-		frictionPlayerX();
+	// the timer for gravity
+	const gravityId = setInterval(()=>{
+		timer += 0.1;
+	}, 100); // end of gravity timer loop
+
+
+	// main! the animate loop, cycles everything
+	const animateId = setInterval(() => {
+
+		resize();
+		updatePlayerSpeeds();
+		// called here so collision still works
+		moveLines();
+		moveLassoPoints();
+
+		// if it's touching ground, apply friction
+		if (atRest()) {
+			frictionPlayerX();
+		}
+		// decay the vertical friction to avoid bugs
+		frictionPlayerY();
+
+		propelPlayer();
+		// collision
+		collideWithLines();
+		collideWithPoints();
+		// movement
+		movePlayer();
+		moveLines();
+		background.updateOffset(game.xOffset);
+		fillPoints();
+		// natural physics have a turn
+		fall();
+		roll();
+		// set new trajectories if needed
+		for (let i = 0; i < lines.length; i++) {
+			circleLineBounce(player, lines[i]);
+		}
+
+		draw(ctx);
+
+	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
+
+	// saves them all so they can be turned off
+	game.idList = [wUpId, gravityId, animateId];
+} // end of main
+
+
+function stop() {
+	for (let i = 0; i < game.idList.length; i++) {
+		clearInterval(game.idList[i]);
 	}
-	// decay the vertical friction to avoid bugs
-	frictionPlayerY();
+} // end of stop
 
-	propelPlayer();
-	// collision
-	collideWithLines();
-	collideWithPoints();
-	// movement
-	movePlayer();
-	moveLines();
-	background.updateOffset(game.xOffset);
-	fillPoints();
-	// natural physics have a turn
-	fall();
-	roll();
-	// set new trajectories if needed
-	for (let i = 0; i < lines.length; i++) {
-		circleLineBounce(player, lines[i]);
-	}
-
-	draw(ctx);
-
-	count++;
-}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 
