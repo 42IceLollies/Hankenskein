@@ -647,8 +647,34 @@ class YarnTrail {
     // basePoint [x, y]
     constructor(basePoint, xOffset) {
         this.basePoint = new Point(basePoint[0], basePoint[1], xOffset);
+        this.trailPoints = [];
     }
 
-    
+    draw(ctx) {
+
+        //settings for string style
+        const tempLineWidth = ctx.lineWidth;
+        // so it shrinks with the screen
+        ctx.lineWidth = canvas.height * .009;
+        if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
+
+        ctx.strokeStyle =  player.fillColor;
+        // path for lasso and path for controlling lasso fall
+        let trailPath = new Path2D();
+
+        ctx.lineCap = 'round';
+
+        trailPath.moveTo(this.basePoint.x, this.basePoint.y);
+
+        // draws lasso string
+        for (let i = 1; i < this.lassoPoints.length; i++) {
+            // lassoPath.bezierCurveTo(this.trailPoints[i].x, this.trailPoints[i].y, this.trailPoints[i+1].x, this.trailPoints[i+1].y, this.trailPoints[i+2].x, this.trailPoints[i+2].y);
+        }
+        ctx.stroke(trailPath);
+         
+        ctx.lineWidth = tempLineWidth;
+        ctx.strokeStyle = "#000000";
+
+    } // end of draw
 }
 
