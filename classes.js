@@ -99,7 +99,7 @@ class Lasso{
 		this.forceY = player.shape.y;
 	}
 
-    //called when mouse is pressed down to make force projection longer and how far the lasso is thrown
+    //called when up arrow is pressed down to make force projection longer and how far the lasso is thrown
 	static incrementForce()
 	{	
 		Lasso.forceX+=(Lasso.mouseX-player.shape.x)/20;
@@ -168,6 +168,7 @@ class Lasso{
 		switch(this.lassoCounter)
 		{
 			case 0:
+                this.resetForceBase();
 			break;
 			
 			case 1:

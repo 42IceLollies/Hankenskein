@@ -1035,7 +1035,7 @@ function clearMouseMove() {
 
 // ================
 // =RESIZING
-// ================
+// =======
 
 
 // resizes everything in the canvas to stay the same relative to each other when the canvas changes size
@@ -1153,7 +1153,7 @@ function meterPixelRate() {
 } // end of meterPixelRate
 
 
-// =====================
+// ============
 // =MOVING
 // =====================
 
