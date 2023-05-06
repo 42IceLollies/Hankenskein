@@ -78,7 +78,7 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
 	// center player
 	player.shape.x = canvas.width / 2;
 	// size the player correctly
-	player.shape.radius = canvas.height * player.screenPercent;
+	player.shape.radius = canvas.height * player.screenPercent * player.unravelPercent;
 	// sets the player's height
 	
 	//MAY NEED TO UNCOMMENT THIS, CHANGED SO IT WORKS ON MY COMPUTER (comment in capitals so it's easier to find)
@@ -1075,7 +1075,7 @@ function resize() {
 	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
 
 	// resize the canvas to fill the whole window
-	 resizeCanvas();
+	resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
@@ -1087,7 +1087,7 @@ function resize() {
 	// center player horizontally
 	player.shape.x = canvas.width / 2;
 	// make radius the set fraction of the height
-	player.shape.radius = canvas.height * player.screenPercent;
+	player.shape.radius = canvas.height * player.screenPercent * player.unravelPercent;
 	player.shape.y = canvas.height * playerHeight;
 	player.acceleration = player.shape.radius * 10;
 
@@ -1588,6 +1588,14 @@ function drawPlayerEyes() {
 } // end of drawPlayerEyes
 
 
+// unravels the player and updates radius
+function unravelPlayer(percent) {
+	player.unravelPercent = percent;
+	player.shape.radius = canvas.height * player.screenPercent * percent;
+	player.acceleration = player.shape.radius * 10;
+}
+
+
 // draws in the lines
 function drawLines(ctx) {
 	for (let i = 0; i < lines.length; i++) {
@@ -1682,7 +1690,7 @@ function main() {
 			circleLineBounce(player, lines[i]);
 		}
 
-		console.log(Lasso.lassoCounter);
+		// console.log(Lasso.lassoCounter);
 
 		draw(ctx);
 
