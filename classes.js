@@ -89,7 +89,7 @@ class Lasso{
 
 	static setMouseCoordinates(x, y, xOffset)
 	{
-		this.mouseX = x - xOffset;
+		this.mouseX = x;
 		this.mouseY = y;
 	}
 
@@ -106,40 +106,40 @@ class Lasso{
 		Lasso.forceY+=(Lasso.mouseY-player.shape.y)/20;
 
 		//updates the length of the force
-		var x = Lasso.forceX - (player.shape.x);
+		var x = Lasso.forceX - player.shape.x;
 		var y = Lasso.forceY - player.shape.y;
 		Lasso.forceLength = Math.sqrt((x*x) + (y*y));
 		Lasso.slope = y/x;
 
-        Lasso.hankX = player.shape.x - game.xOffset;
+        Lasso.hankX = player.shape.x;
         Lasso.hankY = player.shape.y;
 	}
 
     static decrementForce() {
-        Lasso.forceX-=(Lasso.mouseX-player.shape.x-game.xOffset)/20;
+        Lasso.forceX-=(Lasso.mouseX-player.shape.x)/20;
         Lasso.forceY-=(Lasso.mouseY-player.shape.y)/20;
 
         //updates the length of the force
-        var x = Lasso.forceX - (player.shape.x-game.xOffset);
+        var x = Lasso.forceX - (player.shape.x);
         var y = Lasso.forceY - player.shape.y;
         Lasso.forceLength = Math.sqrt((x*x) + (y*y));
         Lasso.slope = y/x;
 
-        Lasso.hankX = player.shape.x - game.xOffset;
+        Lasso.hankX = player.shape.x;
         Lasso.hankY = player.shape.y;
     }
 
 	static changeMouseLocation(e)
 	{ 
 		//new location of cursor in reference to player
-		const newX = (e.clientX) - (player.shape.x);
+		const newX = e.clientX - player.shape.x;
 		const newY = e.clientY - player.shape.y;
 
 		//calculates length of force in reference to player's location
 		const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
 
 		//finds location of the end of the line
-		const finalX = (player.shape.x) + (newX*ratio);
+		const finalX = player.shape.x + (newX*ratio);
 		const finalY = player.shape.y + (newY*ratio);
 
 		//set forceX & forceY to new values
@@ -228,7 +228,7 @@ class Lasso{
 
         //divides paths into segments to create curve
         var segments = 10;
-        var incrementX = (this.forceX-player.shape.x-game.xOffset)/segments;
+        var incrementX = (this.forceX-player.shape.x)/segments;
         var incrementY = (this.forceY-player.shape.y)/segments;
         var energyLoss = 0.85;
         var currPoint = new Point(player.shape.x-game.xOffset, player.shape.y);
@@ -339,7 +339,7 @@ class Lasso{
 
         if(pointsMoved ==0)
         {
-            console.log("incrementing");
+            // console.log("incrementing");
             this.lassoCounter++;
         }
        
@@ -353,12 +353,14 @@ class Lasso{
         var pointsMoved = false;
 
         //makes the lasso point locations decrease/increase until they are in line with Hank 
-        for(var i = 0; i<this.lassoPoints.length; i++)
-        {
-          if(!(this.lassoPoints[i].x>= this.hankX-3 && this.lassoPoints[i].x<= this.hankX+3)){
-            this.lassoPoints[i].x = this.lassoPoints[i].x<Lasso.hankX? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
-            pointsMoved = true;
-          }
+        for(var i = 0; i<this.lassoPoints.length; i++) {
+            if(!(this.lassoPoints[i].x >= this.hankX-3 && this.lassoPoints[i].x <= this.hankX+3)) {
+                this.lassoPoints[i].xStart = this.lassoPoints[i].x < Lasso.hankX ? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
+                pointsMoved = true;
+            }
+            if (!(this.lassoPoints[i].y >= this.hankY+player.shape.radius-3 && this.lassoPoints[i].y <= this.hankY+player.shape.radius+3)) {
+                this.lassoPoints[i].y = this.lassoPoints[i].y < Lasso.hankY + player.shape.radius - 3 ? this.lassoPoints[i].y+=2 : this.lassoPoints[i].y-=2;
+            }
 
         //   //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
         //   if(this.lassoCollide(this.collideHorizon[this.collideHorizon.length-1], true))
@@ -367,7 +369,7 @@ class Lasso{
         //     break;
         //   }
 
-        }
+        } // end of lassoPoints loop
         
         //if points are all lined up with hank, deletes the lasso
         if(!pointsMoved && this.lassoCounter != 5)
@@ -376,7 +378,7 @@ class Lasso{
         }
         
         //draws the lasso
-         this.displayLasso(ctx); 
+        this.displayLasso(ctx);
     } 
 
     //called after lasso is pulled in and catches on something
@@ -545,9 +547,8 @@ class Line {
 // ===============
 
 class Point {
-    constructor(xStart, y, xOffset) {
+    constructor(xStart, y) {
         this.xStart = xStart;
-        // this.x = xStart + xOffset;
         this.x = xStart;
         this.y = y;
     }

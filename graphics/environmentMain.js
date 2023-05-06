@@ -921,7 +921,7 @@ document.addEventListener("keydown", (e) => {
 		case 8: // backspace
 			Lasso.resetForceBase();
 			Lasso.forceLength = 0;
-			if (Lasso.lassoCounter > 0) {
+			if (Lasso.lassoCounter == 1) {
 				Lasso.lassoCounter = 0;
 			}
 			break;
@@ -1681,6 +1681,8 @@ function main() {
 		for (let i = 0; i < lines.length; i++) {
 			circleLineBounce(player, lines[i]);
 		}
+
+		console.log(Lasso.lassoCounter);
 
 		draw(ctx);
 
