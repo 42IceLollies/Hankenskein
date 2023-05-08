@@ -398,6 +398,7 @@ class Lasso{
         Lasso.lassoPoints[0].moveTo(player.shape.x, player.shape.y, game.xOffset);
         // calculate the new added distance, sqrt of a^2 + b^2 = c
         const addedDistance = this.pythagorean(prevPoint.x - Lasso.lassoPoints[0].x, prevPoint.y - Lasso.lassoPoints[0].y);
+        // const addedDistance = 2;
         // console.log(prevPoint, this.lassoPoints[0], addedDistance);
         let resolvedDistance = 0;
 
@@ -417,6 +418,7 @@ class Lasso{
                 console.log("yeah");
                 Lasso.lassoPoints.splice(Lasso.lassoPoints.length-1);
                 resolvedDistance += pointDifference;
+                if (this.lassoPoints.length < 2) {this.lassoCounter = 0;}
             } else if (addedDistance - resolvedDistance > 0) {
                 // console.log("else");
                 // find the fraction of the distance we have to move
@@ -424,20 +426,24 @@ class Lasso{
                 // console.log("mark" + moveFraction);
                 // console.log(pointDifference);
                 const xMove = (currPoint.x - nextPoint.x) * moveFraction;
+                // console.log(xMove);
                 const yMove = (currPoint.y - nextPoint.y) * moveFraction;
                 // console.log(xMove, yMove);
 
-                // const currCopy = currPoint.copy();
-                // currCopy.adjustX(game.xOffset);
+                const currCopy = currPoint.copy();
+                currCopy.adjustX(game.xOffset);
 
-                this.lassoPoints[this.lassoPoints.length-1].moveTo(currPoint.x + xMove, currPoint.y + yMove, game.xOffset);
+                this.lassoPoints[this.lassoPoints.length-1].moveTo(currPoint.x - xMove, currPoint.y - yMove, game.xOffset);
                 this.lassoPoints[this.lassoPoints.length-1].adjustX(game.xOffset);
                 resolvedDistance += this.pythagorean(xMove, yMove);
+                // console.log(resolvedDistance);
 
-                // currPoint = this.lassoPoints[i];
-                // console.log(currCopy, currPoint);
+                currPoint = this.lassoPoints[i];
+                // console.log(currCopy.x - currPoint.x, currCopy.y - currPoint.y);
 
                 this.displayLasso(ctx);
+                // console.log("herrr");
+                
                 return;
             }
         }
@@ -507,6 +513,32 @@ class Lasso{
         ctx.strokeStyle = "#000000";
 
     }
+
+    // static displayLasso(ctx) {
+    //     //settings for string style
+    //      const tempLineWidth = ctx.lineWidth;
+    //     // ctx.lineWidth = 5;
+    //     // so it shrinks with the screen
+    //     ctx.lineWidth = canvas.height * .009;
+    //     if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
+
+    //     ctx.strokeStyle =  player.fillColor;
+    //     //path for lasso and path for controlling lasso fall
+    //     let lassoPath = new Path2D();
+
+    //     ctx.lineCap = 'round';
+
+    //     lassoPath.moveTo(this.lassoPoints[0].x, this.lassoPoints[0].y);
+
+    //     // draws lasso string
+    //     for(var i = 1; i<this.lassoPoints.length-2; i+=2) {
+    //         lassoPath.quadraticCurveTO(this.lassoPoints[i].x, this.lassoPoints[i].y, this.lassoPoints[i+1].x, this.lassoPoints[i+1].y);
+    //     }
+    //     ctx.stroke(lassoPath);
+         
+    //     ctx.lineWidth = tempLineWidth;
+    //     ctx.strokeStyle = "#000000";
+    // }
 
 
     //can probably put in main class but a reels in and d adds slack
