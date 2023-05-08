@@ -132,11 +132,11 @@ function frictionPlayerX() {
 
 
 function frictionPlayerY() {
-	const harshness = 4;
+	const harshness = 20;
 	player.ySpeeds.rollUp -= (player.ySpeeds.rollUp * game.frictionRate * harshness) / game.fps;
 	player.ySpeeds.rollDown -= (player.ySpeeds.rollDown * game.frictionRate * harshness) / game.fps;
 	if (Math.abs(player.ySpeeds.rollUp) < 1) {player.ySpeeds.rollUp = 0;}
-	if (Math.abs(player.ySpeeds.rollDown) < 1) {player.ySpeeds.rollDown = 0;} 
+	if (Math.abs(player.ySpeeds.rollDown) < 1) {player.ySpeeds.rollDown = 0;}
 }
 
 
@@ -159,6 +159,10 @@ function propelPlayer() {
 	}
 	// avoids dividing by zero in later function calls
 	if (xSpeed == 0) {xSpeed = 0.00001;}
+
+	// if (keydown.w) { // tried to jump
+	// 	player.ySpeeds.gravity -= 10 / game.fps;
+	// }
 
 	// keep track of if the energy's been used
 	let rollUpSignal = false;
@@ -972,11 +976,44 @@ document.addEventListener("keyup", (e) => {
 	}
 }); // end of keyup listener
 
+const newPoints = [];
+let count = 0;
 
 document.addEventListener("mousedown", (e) => {
-	console.log(e.x - game.xOffset, e.y); // leave for testing
+	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
-	//mouse.down = true;
+	if (count == 0) {
+		newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
+		count++;
+	} else if (count == 1) {
+		newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
+		count++;
+	} else {
+		newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
+		count++;
+	}
+	// let str = "[";
+	let str = "";
+	for (let j = 0; j < newPoints.length; j++) {
+		const line = newPoints[j];
+		str += "[";
+		for (let h = 0; h < line.length; h++) {
+			const point = line[h];
+			str += "[";
+			for (let i = 0; i < point.length; i++) {
+				str += point[i];
+				if (i != point.length-1) {str += ", ";}
+			}
+			str += "]";
+			if (h == 0) {str += ", ";}
+		}
+		str += "], ";
+	}
+	// str += "]"
+	console.log(str);
+	// console.log(newPoints);
+
+	mouse.down = true;
 
 	//idk if this is needed still but it was doing weird stuff
 	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
@@ -1077,7 +1114,7 @@ function resize() {
 	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
 
 	// resize the canvas to fill the whole window
-	resizeCanvas();
+	// resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
