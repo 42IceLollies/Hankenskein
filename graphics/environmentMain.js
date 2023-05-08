@@ -878,6 +878,7 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 40:
 			keydown.down = true;
+			if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			break;
 		case 32:
 			keydown.space = true;
@@ -907,6 +908,7 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 83:
 			keydown.s = true;
+			if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			break;
 		case 82:
 			keydown.r = true;
@@ -972,7 +974,7 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousedown", (e) => {
-	// console.log(e.x - game.xOffset, e.y); // leave for testing
+	console.log(e.x - game.xOffset, e.y); // leave for testing
 
 	//mouse.down = true;
 
@@ -985,7 +987,7 @@ document.addEventListener("mousedown", (e) => {
 	}
 		
 	if(Lasso.lassoCounter==1) {
-		Lasso.resetForceBase();
+		// Lasso.resetForceBase();
 	// 	Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
 	// 	also add the mouse update in here
 	}
@@ -1627,9 +1629,8 @@ function draw(ctx) {
 	background.updateDimensions(canvas.height);
 	background.draw(ctx);
 	drawLines(ctx);
-	drawPlayer(ctx);
-
 	Lasso.drawLasso(ctx);
+	drawPlayer(ctx);
 } // end of draw
 
 

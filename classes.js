@@ -85,6 +85,7 @@ class Lasso{
     static forceLength = 0;
     static intervalId = null;
     static slope = 0;
+    static maxSegmentLength;
 
 
 	static setMouseCoordinates(x, y, xOffset)
@@ -184,7 +185,11 @@ class Lasso{
 			 break;
 
 			case 4:
-				Lasso.pullInLasso(ctx);
+				// Lasso.pullInLasso(ctx);
+                Lasso.move(ctx);
+                // Lasso.lassoPoints[0].moveTo(player.shape.x, player.shape.y, game.xOffset);
+                // this.displayLasso(ctx);
+                // console.log(Lasso.lassoPoints[0]);
 			break;
 
 			 case 5:
@@ -308,20 +313,23 @@ class Lasso{
     //called once the lasso has initially been drawn and animates its fall
     static drawLassoFall(ctx)
     {
-        //draws lasso
-        this.displayLasso(ctx);
 
-         //update collideHorizon
-         for(var i = 0; i<this.lassoPoints.length; i++)
-         {
+        //update collideHorizon
+        for(var i = 0; i<this.lassoPoints.length; i++)
+        {
             this.collideHorizon[i] = {shape: new Circle(this.lassoPoints[i].x, this.lassoPoints[i].y, 5)};
-         }
+        }
          
-         var pointsMoved = 0;
+        var pointsMoved = 0;
+
+
+        // const xy = [player.shape.x, player.shape.y];
+        // move the base point to be following the player
+        this.lassoPoints[0].moveTo(player.shape.x, player.shape.y, game.xOffset);
  
       
-         //makes lasso move downwards 
-        for(var i = 0; i<this.lassoPoints.length; i++)
+        //makes lasso move downwards 
+        for(var i = 1; i<this.lassoPoints.length; i++)
         {
         
             //checks if a) points have collided with anything, b) they are stretching too far apart and drops the string further down if not
@@ -331,10 +339,7 @@ class Lasso{
                // this.lassoPoints[i].y+=3;//can be changed to grav acceleration
                this.lassoPoints[i].y += canvas.height * .005;
                pointsMoved++;
-             }
-
-            
-
+            }
         }
 
         if(pointsMoved ==0)
@@ -343,7 +348,8 @@ class Lasso{
             this.lassoCounter++;
         }
        
-    }
+        this.displayLasso(ctx);
+    } // end of drawFall
     
 
     //called when up arrow is pushed
@@ -354,12 +360,12 @@ class Lasso{
 
         //makes the lasso point locations decrease/increase until they are in line with Hank 
         for(var i = 0; i<this.lassoPoints.length; i++) {
-            if(!(this.lassoPoints[i].x >= this.hankX-3 && this.lassoPoints[i].x <= this.hankX+3)) {
+            if(!(this.lassoPoints[i].x >= this.hankX-5 && this.lassoPoints[i].x <= this.hankX+5)) {
                 this.lassoPoints[i].xStart = this.lassoPoints[i].x < Lasso.hankX ? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
                 pointsMoved = true;
             }
-            if (!(this.lassoPoints[i].y >= this.hankY+player.shape.radius-3 && this.lassoPoints[i].y <= this.hankY+player.shape.radius+3)) {
-                this.lassoPoints[i].y = this.lassoPoints[i].y < Lasso.hankY + player.shape.radius - 3 ? this.lassoPoints[i].y+=2 : this.lassoPoints[i].y-=2;
+            if (!(this.lassoPoints[i].y >= this.hankY+player.shape.radius-5 && this.lassoPoints[i].y <= this.hankY+player.shape.radius+5)) {
+                this.lassoPoints[i].y = this.lassoPoints[i].y < Lasso.hankY + player.shape.radius - 5 ? this.lassoPoints[i].y+=2 : this.lassoPoints[i].y-=2;
             }
 
         //   //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
@@ -379,14 +385,79 @@ class Lasso{
         
         //draws the lasso
         this.displayLasso(ctx);
-    } 
+    }
+
+    static move(ctx) {
+        // 19 points moving 2px each, 38 px movement == < for pullInLasso \/
+        // when it's small it retracts faster, at a rate of 9% of canvas.height when it's good
+        
+        // save a copy of the old point
+        const prevPoint = Lasso.lassoPoints[0].copy();
+        prevPoint.adjustX(game.xOffset);
+        // move the base point to the player
+        Lasso.lassoPoints[0].moveTo(player.shape.x, player.shape.y, game.xOffset);
+        // calculate the new added distance, sqrt of a^2 + b^2 = c
+        const addedDistance = this.pythagorean(prevPoint.x - Lasso.lassoPoints[0].x, prevPoint.y - Lasso.lassoPoints[0].y);
+        // console.log(prevPoint, this.lassoPoints[0], addedDistance);
+        let resolvedDistance = 0;
+
+        // drop a new point if it's longer than the max segment length
+
+        for (let i = Lasso.lassoPoints.length-1; i > 0; i--) {
+            if (resolvedDistance >= addedDistance) {return;}
+            // console.log(i);
+
+            let currPoint = Lasso.lassoPoints[i];
+            const nextPoint = Lasso.lassoPoints[i-1];
+
+            // find the distance to the next point
+            const pointDifference = this.pythagorean(currPoint.x - nextPoint.x, currPoint.y - nextPoint.y);
+            // if it's less than the amount moved, delete this point and reduce the distance
+            if (pointDifference < addedDistance - resolvedDistance) {
+                console.log("yeah");
+                Lasso.lassoPoints.splice(Lasso.lassoPoints.length-1);
+                resolvedDistance += pointDifference;
+            } else if (addedDistance - resolvedDistance > 0) {
+                // console.log("else");
+                // find the fraction of the distance we have to move
+                const moveFraction = (addedDistance - resolvedDistance) / pointDifference;
+                // console.log("mark" + moveFraction);
+                // console.log(pointDifference);
+                const xMove = (currPoint.x - nextPoint.x) * moveFraction;
+                const yMove = (currPoint.y - nextPoint.y) * moveFraction;
+                // console.log(xMove, yMove);
+
+                // const currCopy = currPoint.copy();
+                // currCopy.adjustX(game.xOffset);
+
+                this.lassoPoints[this.lassoPoints.length-1].moveTo(currPoint.x + xMove, currPoint.y + yMove, game.xOffset);
+                this.lassoPoints[this.lassoPoints.length-1].adjustX(game.xOffset);
+                resolvedDistance += this.pythagorean(xMove, yMove);
+
+                // currPoint = this.lassoPoints[i];
+                // console.log(currCopy, currPoint);
+
+                this.displayLasso(ctx);
+                return;
+            }
+        }
+
+        // for (let i = 1; i < Lasso.lassoPoints.length; i++) {
+        //     // move towards where the previous point was
+        //     // no, move towards where it is now, don't use the previous point
+        //     // old stuff ^
+        // }
+
+        // just shorten the end and make new points on the player end
+
+    }
 
     //called after lasso is pulled in and catches on something
     static lassoCaught(ctx)
     {
         //draws lasso
         this.displayLasso(ctx);
-        //currently hay bugs in something I'm not sure how it works so I'm worried about messing it up but...
+        //currently has bugs in something I'm not sure how it works so I'm worried about messing it up but...
         //here's some pseudocode
         //call lassoCollide function, with true for larger slope and passing in collide horizon of the point at the end of the lasso
         //method should return true if the point is in contact with a line steeper than a certain slope
@@ -399,6 +470,11 @@ class Lasso{
         //this one I'm not so sure about how to do, will need to move hank's x value closer to the end of the lasso
         //and kinda just reverse
 
+    }
+
+    // I used it a lot, and need it to be accessible
+    static pythagorean(a, b) {
+        return Math.sqrt(Math.pow(Math.abs(a), 2) + Math.pow(Math.abs(b), 2));
     }
 
 
@@ -566,6 +642,10 @@ class Point {
     draw(ctx) {
         ctx.fillStyle = "purple";
         ctx.fillRect(this.x - 2, this.y - 2, 5, 5);
+    }
+
+    copy() {
+        return new Point(this.xStart, this.y);
     }
 } // end of Point
 
