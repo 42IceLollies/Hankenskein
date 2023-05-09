@@ -110,6 +110,7 @@ class Lasso{
 		var x = Lasso.forceX - player.shape.x;
 		var y = Lasso.forceY - player.shape.y;
 		Lasso.forceLength = Math.sqrt((x*x) + (y*y));
+        if (this.forceLength > canvas.height * 6) {this.forceLength = canvas.height * 6;}
 		Lasso.slope = y/x;
 
         Lasso.hankX = player.shape.x;
@@ -135,6 +136,8 @@ class Lasso{
 		//new location of cursor in reference to player
 		const newX = e.clientX - player.shape.x;
 		const newY = e.clientY - player.shape.y;
+
+        if (this.forceLength > canvas.height * 6) {this.forceLength = canvas.height * 6;}
 
 		//calculates length of force in reference to player's location
 		const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
@@ -481,6 +484,8 @@ class Lasso{
                 this.lassoPoints[this.lassoPoints.length-1].adjustX(game.xOffset);
                 resolvedDistance += this.pythagorean(xMove, yMove);
                 // console.log(resolvedDistance);
+
+                // console.log(currCopy.x + ", " + currCopy.y + " || " + currPoint.x + ", " + currPoint.y);
 
                 currPoint = this.lassoPoints[i];
                 // console.log(currCopy.x - currPoint.x, currCopy.y - currPoint.y);
