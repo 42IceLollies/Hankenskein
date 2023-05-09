@@ -982,36 +982,33 @@ let count = 0;
 document.addEventListener("mousedown", (e) => {
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
-	if (count == 0) {
-		newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
-		count++;
-	} else if (count == 1) {
-		newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
-		count++;
-	} else {
-		newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
-		count++;
-	}
-	// let str = "[";
-	let str = "";
-	for (let j = 0; j < newPoints.length; j++) {
-		const line = newPoints[j];
-		str += "[";
-		for (let h = 0; h < line.length; h++) {
-			const point = line[h];
-			str += "[";
-			for (let i = 0; i < point.length; i++) {
-				str += point[i];
-				if (i != point.length-1) {str += ", ";}
-			}
-			str += "]";
-			if (h == 0) {str += ", ";}
-		}
-		str += "], ";
-	}
-	// str += "]"
-	console.log(str);
-	// console.log(newPoints);
+	// if (count == 0) {
+	// 	newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
+	// 	count++;
+	// } else if (count == 1) {
+	// 	newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
+	// 	count++;
+	// } else {
+	// 	newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
+	// 	count++;
+	// }
+	// let str = "";
+	// for (let j = 0; j < newPoints.length; j++) {
+	// 	const line = newPoints[j];
+	// 	str += "[";
+	// 	for (let h = 0; h < line.length; h++) {
+	// 		const point = line[h];
+	// 		str += "[";
+	// 		for (let i = 0; i < point.length; i++) {
+	// 			str += point[i];
+	// 			if (i != point.length-1) {str += ", ";}
+	// 		}
+	// 		str += "]";
+	// 		if (h == 0) {str += ", ";}
+	// 	}
+	// 	str += "], ";
+	// }
+	// console.log(str);
 
 	mouse.down = true;
 
@@ -1114,7 +1111,7 @@ function resize() {
 	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
 
 	// resize the canvas to fill the whole window
-	// resizeCanvas();
+	resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
