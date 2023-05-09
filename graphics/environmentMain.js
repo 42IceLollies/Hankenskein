@@ -1155,7 +1155,7 @@ function meterPixelRate() {
 } // end of meterPixelRate
 
 
-// ============
+// =====================
 // =MOVING
 // =====================
 

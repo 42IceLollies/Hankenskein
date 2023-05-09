@@ -185,8 +185,9 @@ class Lasso{
 			 break;
 
 			case 4:
-				// Lasso.pullInLasso(ctx);
-                Lasso.move(ctx);
+				Lasso.pullInLasso(ctx);
+                // Lasso.pullInLasso2(ctx);
+                // Lasso.move(ctx);
                 // Lasso.lassoPoints[0].moveTo(player.shape.x, player.shape.y, game.xOffset);
                 // this.displayLasso(ctx);
                 // console.log(Lasso.lassoPoints[0]);
@@ -387,6 +388,46 @@ class Lasso{
         this.displayLasso(ctx);
     }
 
+    static pullInLasso2(ctx) {
+        var pointsMoved = false;
+
+        this.lassoPoints[this.lassoPoints.length - 8].adjustX(game.xOffset);
+        const pointX = this.lassoPoints[this.lassoPoints.length - 8].x;
+        const pointY = this.lassoPoints[this.lassoPoints.length - 8].y;
+
+        // makes the lasso point locations decrease/increase until they are in line with Hank 
+        for (var i = this.lassoPoints.length-4; i < this.lassoPoints.length; i++) {
+            if(!(this.lassoPoints[i].x >= pointX-5 && this.lassoPoints[i].x <= this.pointX+5)) {
+                this.lassoPoints[i].xStart = this.lassoPoints[i].x < pointX ? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
+                pointsMoved = true;
+                console.log(this.lassoPoints[i].x + " | " + pointX);
+            }
+            // console.log(pointX, pointY);
+            // console.log(this.lassoPoints[i]);
+            // if (!(this.lassoPoints[i].y >= pointY + player.shape.radius-5 && this.lassoPoints[i].y <= pointY + player.shape.radius+5)) {
+            //     this.lassoPoints[i].y = this.lassoPoints[i].y < pointY + player.shape.radius - 5 ? this.lassoPoints[i].y+=2 : this.lassoPoints[i].y-=2;
+            //     pointsMoved = true;
+            // }
+
+        //   //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
+        //   if(this.lassoCollide(this.collideHorizon[this.collideHorizon.length-1], true))
+        //   {
+        //     this.lassoCounter++;
+        //     break;
+        //   }
+
+        } // end of lassoPoints loop
+        
+        //if points are all lined up with hank, deletes the lasso
+        if(!pointsMoved && this.lassoCounter != 5) {
+            console.log("yeahyeah");
+            this.lassoPoints.splice(this.lassoPoint.length-4);
+        }
+        
+        //draws the lasso
+        this.displayLasso(ctx);
+    }
+
     static move(ctx) {
         // 19 points moving 2px each, 38 px movement == < for pullInLasso \/
         // when it's small it retracts faster, at a rate of 9% of canvas.height when it's good
@@ -433,7 +474,10 @@ class Lasso{
                 const currCopy = currPoint.copy();
                 currCopy.adjustX(game.xOffset);
 
-                this.lassoPoints[this.lassoPoints.length-1].moveTo(currPoint.x - xMove, currPoint.y - yMove, game.xOffset);
+                this.lassoPoints[this.lassoPoints.length-1].xStart -= xMove; 
+                this.lassoPoints[this.lassoPoints.length-1].y -= yMove;
+
+                // this.lassoPoints[this.lassoPoints.length-1].moveTo(currPoint.x - xMove, currPoint.y - yMove, game.xOffset);
                 this.lassoPoints[this.lassoPoints.length-1].adjustX(game.xOffset);
                 resolvedDistance += this.pythagorean(xMove, yMove);
                 // console.log(resolvedDistance);
@@ -442,7 +486,6 @@ class Lasso{
                 // console.log(currCopy.x - currPoint.x, currCopy.y - currPoint.y);
 
                 this.displayLasso(ctx);
-                // console.log("herrr");
                 
                 return;
             }
@@ -678,6 +721,10 @@ class Point {
 
     copy() {
         return new Point(this.xStart, this.y);
+    }
+
+    equals(other) {
+        return this.x == other.x && this.y == other.y;
     }
 } // end of Point
 
