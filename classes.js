@@ -86,6 +86,7 @@ class Lasso{
     static intervalId = null;
     static slope = 0;
     static maxSegmentLength;
+    static moveNum = 4;
 
 
 	static setMouseCoordinates(x, y, xOffset)
@@ -232,6 +233,7 @@ class Lasso{
     //called when spacebar is pressed
     static throwLasso(ctx)
     {
+        this.moveNum = 4;
         this.lassoPoints = [];
 
 
@@ -394,12 +396,14 @@ class Lasso{
     static pullInLasso2(ctx) {
         var pointsMoved = false;
 
-        this.lassoPoints[this.lassoPoints.length - 8].adjustX(game.xOffset);
-        const pointX = this.lassoPoints[this.lassoPoints.length - 8].x;
-        const pointY = this.lassoPoints[this.lassoPoints.length - 8].y;
+        const nextPointNum = 7;
+
+        this.lassoPoints[this.lassoPoints.length - nextPointNum].adjustX(game.xOffset);
+        const pointX = this.lassoPoints[this.lassoPoints.length - nextPointNum].x;
+        const pointY = this.lassoPoints[this.lassoPoints.length - nextPointNum].y;
 
         // makes the lasso point locations decrease/increase until they are in line with Hank 
-        for (var i = this.lassoPoints.length-4; i < this.lassoPoints.length; i++) {
+        for (var i = this.lassoPoints.length-this.moveNum; i < this.lassoPoints.length; i++) {
             if(!(this.lassoPoints[i].x >= pointX-5 && this.lassoPoints[i].x <= this.pointX+5)) {
                 this.lassoPoints[i].xStart = this.lassoPoints[i].x < pointX ? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
                 pointsMoved = true;
@@ -420,15 +424,35 @@ class Lasso{
         //   }
 
         } // end of lassoPoints loop
+
+        if (this.withinRange(this.lassoPoints[this.lassoPoints.length-1].x, pointX-10, pointX+10)) {
+            this.lassoPoints.splice(this.lassoPoints.length-3);
+
+            // const nextPoint = this.lassoPoints[this.lassoPoints.length-this.moveNum-1];
+            // for (let i = this.lassoPoints.length-this.moveNum; i < this.lassoPoints.length; i++) {
+            //     this.lassoPoints[i].xStart = nextPoint.xStart;
+            //     this.lassoPoints[i].y = nextPoint.y;
+            // }
+            // this.moveNum+=3;
+        }
         
         //if points are all lined up with hank, deletes the lasso
-        if(!pointsMoved && this.lassoCounter != 5) {
-            console.log("yeahyeah");
-            this.lassoPoints.splice(this.lassoPoint.length-4);
-        }
+        // if(!pointsMoved && this.lassoCounter != 5) {
+        //     console.log("yeahyeah");
+        //     this.lassoPoints.splice(this.lassoPoint.length-4);
+        // }
         
         //draws the lasso
         this.displayLasso(ctx);
+    }
+
+
+    static withinRange(num, rangeStart, rangeEnd) {
+        if (rangeStart < rangeEnd) {
+            return (num >= rangeStart && num <= rangeEnd);
+        } else {
+            return (num >= rangeEnd && num <= rangeStart);
+        }
     }
 
     static move(ctx) {
