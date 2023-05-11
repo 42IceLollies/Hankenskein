@@ -247,7 +247,7 @@ class Lasso{
 
      
         //iterates through points to draw line with gradually decreasing slope
-        for(var i = 0; i<segments*2; i+=2)
+        for(var i = 0; i<segments*2; i+= 2)
         {
             this.lassoPoints[i] = currPoint;
             //this.guidePoints.push(currPoint);
@@ -257,7 +257,7 @@ class Lasso{
 
         //adds extra points to lassoPath to make squiggles
         var count = 0;
-        for(var i = 1; i<segments*2-1; i+=2)
+        for(var i = 1; i<segments*2-1; i+= 2)
         {
             var xTemp = player.shape.x-game.xOffset + incrementX*count + (Math.random()*incrementX);
           
@@ -367,11 +367,11 @@ class Lasso{
         //makes the lasso point locations decrease/increase until they are in line with Hank 
         for(var i = 0; i<this.lassoPoints.length; i++) {
             if(!(this.lassoPoints[i].x >= this.hankX-5 && this.lassoPoints[i].x <= this.hankX+5)) {
-                this.lassoPoints[i].xStart = this.lassoPoints[i].x < Lasso.hankX ? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
+                this.lassoPoints[i].xStart = this.lassoPoints[i].x < Lasso.hankX ? this.lassoPoints[i].xStart+= 2 : this.lassoPoints[i].xStart-= 2;
                 pointsMoved = true;
             }
             if (!(this.lassoPoints[i].y >= this.hankY+player.shape.radius-5 && this.lassoPoints[i].y <= this.hankY+player.shape.radius+5)) {
-                this.lassoPoints[i].y = this.lassoPoints[i].y < Lasso.hankY + player.shape.radius - 5 ? this.lassoPoints[i].y+=2 : this.lassoPoints[i].y-=2;
+                this.lassoPoints[i].y = this.lassoPoints[i].y < Lasso.hankY + player.shape.radius - 5 ? this.lassoPoints[i].y+= 2 : this.lassoPoints[i].y-= 2;
             }
 
         //   //if last lasso point catches on a line that has a slope steeper than like 70 degrees, send to next stage
@@ -405,14 +405,14 @@ class Lasso{
         // makes the lasso point locations decrease/increase until they are in line with Hank 
         for (var i = this.lassoPoints.length-this.moveNum; i < this.lassoPoints.length; i++) {
             if(!(this.lassoPoints[i].x >= pointX-5 && this.lassoPoints[i].x <= this.pointX+5)) {
-                this.lassoPoints[i].xStart = this.lassoPoints[i].x < pointX ? this.lassoPoints[i].xStart+=2 : this.lassoPoints[i].xStart-=2;
+                this.lassoPoints[i].xStart = this.lassoPoints[i].x < pointX ? this.lassoPoints[i].xStart+= 2 : this.lassoPoints[i].xStart-= 2;
                 pointsMoved = true;
                 console.log(this.lassoPoints[i].x + " | " + pointX);
             }
             // console.log(pointX, pointY);
             // console.log(this.lassoPoints[i]);
             // if (!(this.lassoPoints[i].y >= pointY + player.shape.radius-5 && this.lassoPoints[i].y <= pointY + player.shape.radius+5)) {
-            //     this.lassoPoints[i].y = this.lassoPoints[i].y < pointY + player.shape.radius - 5 ? this.lassoPoints[i].y+=2 : this.lassoPoints[i].y-=2;
+            //     this.lassoPoints[i].y = this.lassoPoints[i].y < pointY + player.shape.radius - 5 ? this.lassoPoints[i].y+= 2 : this.lassoPoints[i].y-= 2;
             //     pointsMoved = true;
             // }
 
@@ -619,6 +619,53 @@ class Lasso{
 
 
 // ==================
+// =2nd LASSO CLASS
+// ==================
+
+
+
+class Lasso2 {
+    constructor() {
+        // the radius of the circle used for collision around points
+        this.collideRadius = canvas.height * 0.015;
+        // the point that stays with player
+        this.start = new Point(0, 0);
+        // the point moving out
+        this.end = new Point(0, 0);
+        // circle that acts as collision detection for the point
+        this.endCircle = new Circle(0, 0, this.collideRadius);
+    } // end of constructor
+
+    // updates parts that need to be routinely updated
+    update(xOffset) {
+        // move endCircle to be over the end point, and update its radius
+        this.endCircle.moveTo(this.end.x, this.end.y, xOffset);
+        this.collideRadius = canvas.height * 0.015;
+        this.endCircle.radius = this.collideRadius;
+        // move start to be under the player
+        this.start.moveTo(player.shape.x, player.shape.y, xOffset);
+    } // end of update
+
+    // I used it a lot, and need it to be accessible
+    static pythagorean(a, b) {
+        return Math.sqrt(Math.pow(Math.abs(a), 2) + Math.pow(Math.abs(b), 2));
+    } // end of pythagorean
+
+    // test if num is within the given range
+    static withinRange(num, rangeStart, rangeEnd) {
+        if (rangeStart < rangeEnd) {
+            return (num >= rangeStart && num <= rangeEnd);
+        } else {
+            return (num >= rangeEnd && num <= rangeStart);
+        }
+    } // end of withinRange
+
+    
+}
+
+
+
+// ==================
 // =LINE CLASS
 // ==================
 
@@ -740,7 +787,8 @@ class Point {
     moveTo(x, y, xOffset) {
         this.xStart = x - xOffset;
         this.y = y;
-        this.adjustX(xOffset);
+        this.x = x;
+        // this.adjustX(xOffset);
     }
 
     draw(ctx) {
@@ -766,8 +814,21 @@ class Point {
 class Circle {
     constructor(x, y, radius) {
         this.x = x;
+        this.xStart = x;
         this.y = y;
         this.radius = radius;
+    }
+
+    // move according to the offset
+    adjustX(xOffset) {
+        this.x = this.xStart + xOffset;
+    }
+
+    // move to a new spot
+    moveTo(x, y, xOffset) {
+        this.x = x;
+        this.xStart = x - xOffset;
+        this.y = y;
     }
 
     // color as string word

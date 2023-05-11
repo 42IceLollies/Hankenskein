@@ -61,6 +61,7 @@ const player = {
 	},
 	rotation: 0, // degrees // keeps track of how much it's spun
 	pauseSpin: false, // if it should stop visually spinning
+	lasso: undefined,
 };
 
 
@@ -86,6 +87,9 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
 
 	// makes line objects from the (x, y) points in the array
 	createLines(linesArray, xOffsetStart);
+
+	// create the lasso
+	player.lasso = new Lasso2();
 
 	Lasso.resetForceBase();
 
