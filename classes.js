@@ -277,16 +277,16 @@ class Lasso{
         //sees collision of horizon in reference to all registered obstructions
         //larger slope is used to have the lasso catch on things, seeing if it collides with anything above a 70 degree slope
         if(largerSlope){
-            for(var i = 0; i<lines.length; i++)
+            for(var i = 0; i<game.lines.length; i++)
             {
                 //check slope of each line before running each one through line collision
                 // console.log(Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2)));
               // console.log(lines.length);
               //  if(lines[i].x1-lines[i].x2 !=0 || Math.abs((lines[i].y1 - lines[i].y2))/Math.abs((lines[i].x1-lines[i].x2))>=0.5)
-                if(lines[i].degree>=70)
+                if(game.lines[i].degree>=70)
                 {
                    // console.log("yes");
-                    if(testForLineCollision(horizon, lines[i]))
+                    if(testForLineCollision(horizon, game.lines[i]))
                     {
                         return(true);
                     }
@@ -296,15 +296,15 @@ class Lasso{
         } else{
             //otherwise it just returns true if it collides with anything at all
 
-            for(var i = 0; i<lines.length; i++)
+            for(var i = 0; i<game.lines.length; i++)
             {
-                if(testForLineCollision(horizon, lines[i]))
+                if(testForLineCollision(horizon, game.lines[i]))
                 {
                     return(true);
                 }
             }
-            for (var i = 0; i < points.length; i++) {
-                if (testForPointCollision(horizon, points[i])) {
+            for (var i = 0; i < game.points.length; i++) {
+                if (testForPointCollision(horizon, game.points[i])) {
                     return true;
                 }
             }
