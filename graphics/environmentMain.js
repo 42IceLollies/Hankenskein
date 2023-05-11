@@ -14,6 +14,9 @@ const game = {
 	xOffset: 0,
 	frictionRate: .6,
 	idList: [],
+	background: undefined,
+	lines: [],
+	points: [],
 };
 
 // holds all the player information
@@ -61,14 +64,16 @@ const player = {
 	},
 	rotation: 0, // degrees // keeps track of how much it's spun
 	pauseSpin: false, // if it should stop visually spinning
+	lasso: undefined,
+	yarnTrail: undefined,
 };
 
 
 // holds all the lines and points the player can collide with
-const lines = [];
-let points = []; // holds all the points
-let background; // background image
-let yarnTrail; // the player's yarn trail
+// const lines = [];
+// let points = []; // holds all the points
+// let background; // background image
+// let yarnTrail; // the player's yarn trail
 
 
 // gathered all the loose setup code into this function, called from each html file
@@ -87,14 +92,17 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
 	// makes line objects from the (x, y) points in the array
 	createLines(linesArray, xOffsetStart);
 
+	// create the lasso
+	player.lasso = new Lasso2();
+
 	Lasso.resetForceBase();
 
 	// sets the background image with the file provided
-	background = new Background(backgroundPath, xOffsetStart, 0, canvas.height);
+	game.background = new Background(backgroundPath, xOffsetStart, 0, canvas.height);
 
 	//ALSO UNCOMMENTED THIS FOR THE MOMENT- IN CASE I FORGET TO REVERT IT BEFORE PUSHING
 	// creates the yarn trail
-	//yarnTrail = new YarnTrail(yarnCoords, game.xOffset);
+	//player.yarnTrail = new YarnTrail(yarnCoords, game.xOffset);
 
 	main();
 } // end of setup
@@ -108,7 +116,7 @@ function createLines(pointsArray, offset) {
 		// pass the points into the constructor
 		const newLine = new Line(set[0][0] + offset, set[0][1], set[1][0] + offset, set[1][1], 0);
 		// console.log(offset);
-		lines.push(newLine);
+		game.lines.push(newLine);
 	}
 } // end of createLines
 
@@ -166,8 +174,8 @@ function propelPlayer() {
 
 	// keep track of if the energy's been used
 	let rollUpSignal = false;
-	for (let i = 0; i < lines.length; i++) {
-		if (rollUp(player, lines[i], xSpeed)) {
+	for (let i = 0; i < game.lines.length; i++) {
+		if (rollUp(player, game.lines[i], xSpeed)) {
 			rollUpSignal = true;
 			break;
 		}
@@ -181,8 +189,8 @@ function propelPlayer() {
 
 	// if not, try rolling down
 	let rollDownSignal = false;
-	for (let i = 0; i < lines.length; i++) {
-		if (rollDown(player, lines[i], xSpeed)) {
+	for (let i = 0; i < game.lines.length; i++) {
+		if (rollDown(player, game.lines[i], xSpeed)) {
 			rollDownSignal = true;
 		}
 	}
@@ -222,9 +230,9 @@ function collideWithLines() {
 		player.stopped[`${key}`] = false;
 	}
 	// tests the player against every line
-	for (let i = 0; i < lines.length; i++) {
+	for (let i = 0; i < game.lines.length; i++) {
 
-		const line = lines[i];
+		const line = game.lines[i];
 		collideWithLine(line);
 
 	}
@@ -486,8 +494,8 @@ function collideWithPoints() {
 	movePoints();
 
 	// for every point
-	for (let i = 0; i < points.length; i++) {
-		const point = points[i];
+	for (let i = 0; i < game.points.length; i++) {
+		const point = game.points[i];
 
 		if (!testForPointCollision(player.shape, point)) {
 			continue;
@@ -500,10 +508,10 @@ function collideWithPoints() {
 
 
 function fillPoints() {
-    points = [];
-    for (let i = 0; i < lines.length; i++) {
-        points.push(new Point(lines[i].x1, lines[i].y1));
-        points.push(new Point(lines[i].x2, lines[i].y2))
+    game.points = [];
+    for (let i = 0; i < game.lines.length; i++) {
+        game.points.push(new Point(game.lines[i].x1, game.lines[i].y1));
+        game.points.push(new Point(game.lines[i].x2, game.lines[i].y2))
     }
 } // end of fillPoints
 
@@ -546,7 +554,7 @@ function resolveVerticalOverlap(circle, line) {
 	}
 	movePlayer();
 	moveLines();
-	background.updateOffset(game.xOffset);
+	game.background.updateOffset(game.xOffset);
 	fillPoints();
 } // end of resolveVerticalOverlap
 
@@ -692,8 +700,8 @@ function circleLineBounce(circle, line) {
 function circlePointBounceAll(circle) {
 	movePoints();
 
-	for (let i = 0; i < points.length; i++) {
-		const collideLine = collisionPointToLine(circle, points[i]);
+	for (let i = 0; i < game.points.length; i++) {
+		const collideLine = collisionPointToLine(circle, game.points[i]);
 		// now just feed it into the line collision, since it already exists
 		circleLineBounce(circle, collideLine);
 	}
@@ -896,8 +904,8 @@ document.addEventListener("keydown", (e) => {
 			// moveLines();
 			// fall();
 			// roll();
-			// for (let i = 0; i < lines.length; i++) {
-			// 	circleLineBounce(player, lines[i]);
+			// for (let i = 0; i < game.lines.length; i++) {
+			// 	circleLineBounce(player, game.lines[i]);
 			// }
 			// updatePlayerSpeeds();
 			// console.log(player.xSpeeds, player.ySpeeds);
@@ -1085,19 +1093,19 @@ function resize() {
 	const lineYs = [];
 	const lineXs = [];
 	// save for all the lines
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
+	for (let i = 0; i < game.lines.length; i++) {
+		const line = game.lines[i];
 		// for y's, a fraction of the canvas height
 		lineYs.push([line.y1 / canvas.height, line.y2 / canvas.height]);
 		// for x's, the distance from player to line-point, divided by player.shape.radius
 		lineXs.push([(line.x1 - player.shape.x) / player.shape.radius, (line.x2 - player.shape.x) / player.shape.radius]);
 	}
 
-	background.updateDimensions(canvas.height);
+	game.background.updateDimensions(canvas.height);
 
 	// the difference between the background location and the player location,
 	// divided by the player radius for scale
-	let backFraction = (background.x - player.shape.x) / player.shape.radius;
+	let backFraction = (game.background.x - player.shape.x) / player.shape.radius;
 
 	const lassoPoints = []; // add in [x, y] format for each point
 	if (Lasso.lassoPoints != undefined && Lasso.lassoPoints.length > 0) {
@@ -1128,8 +1136,8 @@ function resize() {
 	player.acceleration = player.shape.radius * 10;
 
 	// resizes the lines
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
+	for (let i = 0; i < game.lines.length; i++) {
+		const line = game.lines[i];
 
 		line.y1 = lineYs[i][0] * canvas.height;
 		line.y2 = lineYs[i][1] * canvas.height;
@@ -1144,22 +1152,22 @@ function resize() {
 	// move the lines, so anything after this still works
 	moveLines();
 	
-	points = [];
+	game.points = [];
 	// every end of a line is a point to collide with
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i]
-		points.push(new Point(line.x1, line.y1, 0));
-		points.push(new Point(line.x2, line.y2, 0));
+	for (let i = 0; i < game.lines.length; i++) {
+		const line = game.lines[i]
+		game.points.push(new Point(line.x1, line.y1, 0));
+		game.points.push(new Point(line.x2, line.y2, 0));
 	}
 
 	// resize the image to fit height-wise
-	background.updateDimensions(canvas.height);
+	game.background.updateDimensions(canvas.height);
 	// the px amount of how far back the background should be from the player
 	const backXDistance = player.shape.x - game.xOffset + (backFraction * player.shape.radius);
 	// use this method cause setting it directly doesn't work
-	background.setStartX(backXDistance);
+	game.background.setStartX(backXDistance);
 	// update offset after
-	background.updateOffset(game.xOffset);
+	game.background.updateOffset(game.xOffset);
 
 	for (let i = 0; i < lassoPoints.length; i++) {
 		const x = player.shape.x + (lassoPoints[i][0] * player.shape.radius);
@@ -1247,10 +1255,10 @@ var timer = 1;
 // returns if the player is on top of a line
 function atRest() {
 	let atRest = false;
-	// console.log(lines);
+	// console.log(game.lines);
 	// tests against every line
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
+	for (let i = 0; i < game.lines.length; i++) {
+		const line = game.lines[i];
 		// if the line's vertical or there's no collision, skip this one
 		if (line.isVertical || !testForLineCollision(player, line)) {
 			continue;
@@ -1269,10 +1277,10 @@ function atRest() {
 		}
 	}
 
-	// collidePoint.moveTo(points[0].x, points[0].y);
+	// collidePoint.moveTo(game.points[0].x, game.points[0].y);
 
-	for (let i = 0; i < points.length; i++) {
-		const point = points[i];
+	for (let i = 0; i < game.points.length; i++) {
+		const point = game.points[i];
 		if (testForPointCollision(player.shape, point) && pointCollisionBelow(player.shape, point)) {
 			atRest = true;
 		}
@@ -1307,18 +1315,18 @@ function fall() {
 // moves the lines (based on player.xSpeed movement)
 function moveLines() {
 	// for every line
-	for (let i = 0; i < lines.length; i++) {
+	for (let i = 0; i < game.lines.length; i++) {
 		// adjust their x position
-		lines[i].adjustX(game.xOffset);
+		game.lines[i].adjustX(game.xOffset);
 	}
 } // end of moveLines
 
 
 // moves the points based on xOffset
 function movePoints() {
-	for (let i = 0; i < points.length; i++) {
+	for (let i = 0; i < game.points.length; i++) {
 		// adjust every point's x position
-		points[i].adjustX(game.xOffset);
+		game.points[i].adjustX(game.xOffset);
 	}
 } // end of movePoints
 
@@ -1360,8 +1368,8 @@ function roll() {
 	if (!atRest()) {return;}
 
 	// for every line
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
+	for (let i = 0; i < game.lines.length; i++) {
+		const line = game.lines[i];
 		rollDownNatural(player, line);
 	}
 } // end of roll
@@ -1634,8 +1642,8 @@ function unravelPlayer(percent) {
 
 // draws in the lines
 function drawLines(ctx) {
-	for (let i = 0; i < lines.length; i++) {
-		lines[i].draw(ctx);
+	for (let i = 0; i < game.lines.length; i++) {
+		game.lines[i].draw(ctx);
 	}
 	// for (let i = 0; i < drawnLines.length; i++) {
 	// 	drawnLines[i].draw(ctx);
@@ -1660,8 +1668,8 @@ function draw(ctx) {
 	ctx.rect(0, 0, canvas.width, canvas.height);
 	ctx.fillStyle = "#dad";
 	ctx.fill();
-	background.updateDimensions(canvas.height);
-	background.draw(ctx);
+	game.background.updateDimensions(canvas.height);
+	game.background.draw(ctx);
 	drawLines(ctx);
 	Lasso.drawLasso(ctx);
 	drawPlayer(ctx);
@@ -1715,14 +1723,14 @@ function main() {
 		// movement
 		movePlayer();
 		moveLines();
-		background.updateOffset(game.xOffset);
+		game.background.updateOffset(game.xOffset);
 		fillPoints();
 		// natural physics have a turn
 		fall();
 		roll();
 		// set new trajectories if needed
-		for (let i = 0; i < lines.length; i++) {
-			circleLineBounce(player, lines[i]);
+		for (let i = 0; i < game.lines.length; i++) {
+			circleLineBounce(player, game.lines[i]);
 		}
 
 		// console.log(Lasso.lassoCounter);
