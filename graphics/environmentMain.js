@@ -895,11 +895,14 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 32:
 			keydown.space = true;
-			if(Lasso.lassoCounter == 1)
-			{
-				Lasso.incrementLassoStage();
-				Lasso.forceLength = 0;
-			}
+
+			player.lasso.throw(); // only works in stage 1/aiming
+
+			// if(Lasso.lassoCounter == 1)
+			// {
+			// 	Lasso.incrementLassoStage();
+			// 	Lasso.forceLength = 0;
+			// }
 			// == this was here for stepping through the code 1 frame at a time for testing == 
 			// movePlayer();
 			// moveLines();

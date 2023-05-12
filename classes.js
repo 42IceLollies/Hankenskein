@@ -631,23 +631,27 @@ class Lasso2 {
         // the point that stays with player
         this.start = new Point(0, 0);
         // the point moving out
-        this.end = new Point(0, 0);
+        // this.endPoint = new Point(0, 0);
         // circle that acts as collision detection for the point
-        this.endCircle = new Circle(0, 0, this.collideRadius);
+        // this.endCircle = new Circle(0, 0, this.collideRadius);
+        this.end = {
+            shape: new Circle(0, 0, this.collideRadius),
+            xSpeed: 0, // horizontal speed in [px/s]
+            ySpeed: 0, // vertical speed in [px/s]
+        }
         this.forceX = 0;
         this.forceY = 0;
         this.mouseCoords = [0, 0];
         this.forceLength = 0;
         this.slope = 0;
+        // 0: nothing | 1: aiming | 2: 
         this.stage = 0;
     } // end of constructor
 
     // updates parts that need to be routinely updated
     update(xOffset) {
-        // move endCircle to be over the end point, and update its radius
-        this.endCircle.moveTo(this.end.x, this.end.y, xOffset);
         this.collideRadius = canvas.height * 0.015;
-        this.endCircle.radius = this.collideRadius;
+        this.end.shape.radius = this.collideRadius;
         // move start to be under the player
         this.start.moveTo(player.shape.x, player.shape.y, xOffset);
     } // end of update
@@ -745,6 +749,7 @@ class Lasso2 {
         ctx.globalAlpha = 1;
     } // end of drawAiming
 
+    // draws the lasso in all of it's stages
     draw(ctx) {
         switch(this.stage) {
             case 0:
@@ -752,7 +757,16 @@ class Lasso2 {
             case 1: // pre-lasso/aiming
                 this.drawAiming(ctx);
         }
-    }
+    } // end of draw
+
+    // throws the end point out | called in stage 1
+    throw() {
+        if (this.stage != 1) {return;} // only call in stage 1
+
+        this.end.moveTo(player.shape.x, player.shape.y, game.xOffset);
+
+
+    } // end of throw
 } // end of Lasso2
 
 
