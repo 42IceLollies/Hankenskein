@@ -96,6 +96,7 @@ function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
 	player.lasso = new Lasso2();
 
 	Lasso.resetForceBase();
+	player.lasso.resetForceBase();
 
 	// sets the background image with the file provided
 	game.background = new Background(backgroundPath, xOffsetStart, 0, canvas.height);
@@ -934,9 +935,13 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 8: // backspace
 			Lasso.resetForceBase();
+			player.lasso.resetForceBase();
 			Lasso.forceLength = 0;
 			if (Lasso.lassoCounter == 1) {
 				Lasso.lassoCounter = 0;
+			}
+			if (player.lasso.stage == 1) {
+				player.lasso.stage = 0;
 			}
 			break;
 	}
@@ -1030,6 +1035,7 @@ document.addEventListener("mousedown", (e) => {
 		
 	if(Lasso.lassoCounter==1) {
 		// Lasso.resetForceBase();
+		// player.lasso.resetForceBase();
 	// 	Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
 	// 	also add the mouse update in here
 	}
@@ -1039,8 +1045,10 @@ document.addEventListener("mousedown", (e) => {
 document.addEventListener("mousemove", (e) => {
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
-	Lasso.setMouseCoordinates(e.clientX, e.clientY, game.xOffset);
+	Lasso.setMouseCoordinates(e.clientX, e.clientY);
+	player.lasso.setMouseCoordinants(e.clientX, e.clientY);
 	Lasso.changeMouseLocation(e);
+	player.lasso.changeMouseLocation(e);
 });
 
 
@@ -1066,6 +1074,7 @@ document.addEventListener("mouseup", (e)=>{
 function mouseMove(e) {
 	//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
 	Lasso.changeMouseLocation(e);
+	player.lasso.changeMouseLocation(e);
 	//Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
 } // end of mouseMove
 
@@ -1671,7 +1680,8 @@ function draw(ctx) {
 	game.background.updateDimensions(canvas.height);
 	game.background.draw(ctx);
 	drawLines(ctx);
-	Lasso.drawLasso(ctx);
+	// Lasso.drawLasso(ctx);
+	player.lasso.draw(ctx);
 	drawPlayer(ctx);
 } // end of draw
 
@@ -1686,10 +1696,12 @@ function main() {
 	const wUpId = setInterval(() => {
 		if (keydown.up || keydown.w) {
 			Lasso.incrementForce();
+			player.lasso.incrementForce();
 		}
 
 		if (keydown.down || keydown.s) {
 			Lasso.decrementForce();
+			player.lasso.decrementForce();
 		}
 	}, 100); // end of wUp loop
 
@@ -1708,6 +1720,7 @@ function main() {
 		// called here so collision still works
 		moveLines();
 		moveLassoPoints();
+		player.lasso.update(game.xOffset);
 
 		// if it's touching ground, apply friction
 		if (atRest()) {

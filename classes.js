@@ -69,12 +69,12 @@ class Physics{
 
 // ==================LASSO CLASS============================ (classo)
 
-class Lasso{
+class Lasso {
     static lassoPoints;
     static collideHorizon = [];
     static lassoCounter = 0;
 
-    //copy of lasso's variables because it's not working for some reason? - Was this a note I wrote to myself or was it someone else? (-Cordelia)
+    //copy of lasso's variables because it's not working for some reason? - Was this a note I wrote to myself or was it someone else? (-Cordelia) - i dunno but I want to keep adding to this cause i think it's funny (-Ryan)
     static forceX = 0;
     static forceY = 0;
     // were causing loading issues, called resetForceBase() in start of other js file
@@ -634,6 +634,12 @@ class Lasso2 {
         this.end = new Point(0, 0);
         // circle that acts as collision detection for the point
         this.endCircle = new Circle(0, 0, this.collideRadius);
+        this.forceX = 0;
+        this.forceY = 0;
+        this.mouseCoords = [0, 0];
+        this.forceLength = 0;
+        this.slope = 0;
+        this.stage = 0;
     } // end of constructor
 
     // updates parts that need to be routinely updated
@@ -660,8 +666,94 @@ class Lasso2 {
         }
     } // end of withinRange
 
-    
-}
+    setMouseCoordinants(x, y) {
+        this.mouseCoords = [x, y];
+    } // end of setMouseCoordinants
+
+    resetForceBase() {
+        this.forceX = player.shape.x - game.xOffset;
+        this.forceY = player.shape.y;
+        this.forceLength = 0;
+    } // end of resetForceBase
+
+    // called when up arrow is pressed down to make force projection longer and how far the lasso is thrown
+    incrementForce() {   
+        this.forceX+=(this.mouseCoords[0]-player.shape.x)/20;
+        this.forceY+=(this.mouseCoords[1]-player.shape.y)/20;
+
+        //updates the length of the force
+        var x = this.forceX - player.shape.x;
+        var y = this.forceY - player.shape.y;
+        this.forceLength = Math.sqrt((x*x) + (y*y));
+        if (this.forceLength > canvas.height * 6) {this.forceLength = canvas.height * 6;}
+        this.slope = y/x;
+
+        if (this.stage == 0) {this.stage++;}
+    } // end of incrementForce
+
+    decrementForce() {
+        this.forceX-=(this.mouseX-player.shape.x)/20;
+        this.forceY-=(this.mouseY-player.shape.y)/20;
+
+        //updates the length of the force
+        var x = this.forceX - (player.shape.x);
+        var y = this.forceY - player.shape.y;
+        this.forceLength = Math.sqrt((x*x) + (y*y));
+        this.slope = y/x;
+
+        if (this.stage == 0) {this.stage++;}
+    } // end of decrementForce
+
+    changeMouseLocation(e) { 
+        //new location of cursor in reference to player
+        const newX = e.clientX - player.shape.x;
+        const newY = e.clientY - player.shape.y;
+
+        if (this.forceLength > canvas.height * 6) {this.forceLength = canvas.height * 6;}
+
+        //calculates length of force in reference to player's location
+        const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
+
+        //finds location of the end of the line
+        const finalX = player.shape.x + (newX*ratio);
+        const finalY = player.shape.y + (newY*ratio);
+
+        //set forceX & forceY to new values
+        this.forceX = finalX;
+        this.forceY = finalY;
+        this.slope = newY/newX;
+    } // end of changeMouseLocation
+
+    drawAiming(ctx) {
+        const tempLineWidth = ctx.lineWidth;
+        // ctx.lineWidth = 5;
+        // so the lasso looks small on small screens
+        ctx.lineWidth = canvas.height * .007;
+        if (ctx.lineWidth < 1) {ctx.lineWidth = 1};
+        ctx.strokeStyle = "#8CA231";
+        ctx.globalAlpha = 0.5;
+        ctx.beginPath();
+        ctx.lineCap = 'round';
+        ctx.moveTo(this.start.x, this.start.y);
+        ctx.lineTo(this.forceX, this.forceY);
+       
+        ctx.stroke();
+
+        //resetting everything for the rest of the code to work
+        ctx.lineWidth = tempLineWidth;
+        ctx.strokeStyle = "#000000"
+        ctx.globalAlpha = 1;
+    } // end of drawAiming
+
+    draw(ctx) {
+        switch(this.stage) {
+            case 0:
+                break;
+            case 1: // pre-lasso/aiming
+                this.drawAiming(ctx);
+        }
+    }
+} // end of Lasso2
 
 
 
