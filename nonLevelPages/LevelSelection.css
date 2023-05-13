@@ -1,26 +1,57 @@
+body{
+    background-color: #ffe0f0;
+}
+
 img{
     height:auto;
-    width:100vh;
-    object-fit:cover;
-    float:left;
+    width:40vw;
+    /* object-fit:cover; */
+    /* float:left; */
+    border:5px solid rgb(255, 255, 255);
 }
 
-/* box of the level*/
+/* Title settings (same as credits but adjusted for scrollbar) */
+h1.title{
+    color:black;
+    font-family: 'Raleway', sans-serif;
+    font-size:300%;
+    text-align: center;
+}
+
+div.title{
+    width:100.5%;
+    padding-top:2vh;
+    padding-bottom:2vh;
+    background-color:rgba(255,255,255,0.5);
+    margin-top:5vh;
+    margin-bottom:5vh;
+}
+
+/* box of the level image*/
 .boxes{
     height:20vh;
-    width:100vh;
-    border:2px solid black;
+    width:40vw;
     text-align:center;
-    margin-left:5%;
-    margin-bottom:10%;
+    margin-left:6%;
+    margin-bottom:7%;
+    float:left; 
+    
 }
 
-h1{
-    text-align:center;
+/* centers box in the last row */
+.lastRow{
+    float:none;
+    margin:auto;
 }
 
-h2{
-    text-align:center;
-    font-size:45px;
-    float:left;
+/* level labels */
+.label{
+    font-size:150%;
+    font-family: 'Ysabeau', sans-serif;
 }
+
+img:hover{
+    width:43vw;
+    
+}
+

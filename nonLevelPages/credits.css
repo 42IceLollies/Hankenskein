@@ -12,14 +12,48 @@ body{
 h1.title{
     color:black;
     font-family: 'Raleway', sans-serif;
-    font-size:200%;
+    font-size:300%;
     text-align: center;
 }
 
 div.title{
-    width:98vw;
-    padding:2vh;
+    width:100vw;
+    padding-top:2vh;
+    padding-bottom:2vh;
     background-color:rgba(255,255,255,0.5);
     margin-top:5vh;
     margin-bottom:5vh;
+}
+
+
+.credit{
+    text-align:center;
+    width:100vw;
+    /* font-family: 'Oswald', sans-serif; */
+     /* font-family: 'Raleway', sans-serif; */
+    font-family: 'Ysabeau', sans-serif;
+    font-size:200%;
+    font-weight:bold;
+    margin-top:3vh;
+    /* margin-bottom:3vh; */
+
+}
+
+.subCredit{
+    text-align:center;
+    width:100vw;
+    font-family: 'Ysabeau', sans-serif;
+    font-weight:bold;
+    margin-top:1vh;
+    margin-bottom:3vh;
+    font-size: 150%;
+
+}
+
+.colorOne{
+    color:rgb(108, 5, 5);
+}
+
+.colorTwo{
+    color:rgb(112, 43, 233);
 }

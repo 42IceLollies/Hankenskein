@@ -75,7 +75,30 @@ a.selection{
     /* margin:1px; */
 }
 
+button.selection{
+        color:white; 
+        text-decoration:none; 
+        text-align:center; 
+        font-family: 'Ysabeau', sans-serif;
+        font-size:100%;
+        /* margin:1px; */
+}
+
 a:hover{ 
     font-size:120%;
+}
 
+button:hover{ 
+    font-size:120%;
+
+}
+
+
+/* settings div */
+.hidden{
+    display:none;
+}
+
+#settings{
+    background-color:black;
 }
