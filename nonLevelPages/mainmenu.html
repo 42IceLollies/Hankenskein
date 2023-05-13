@@ -37,10 +37,40 @@
         <div id="settings" class="hidden">
             <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
             <div class="spacerDiv"></div>
-            <div class="soundSetting">Music</div>
-            <div class="soundSetting"">Sfx</div>
-            <div class="colorSetting">Color?</div>
+            <div class="soundSetting">
+                <div class="setSelection noBorder">Music</div> 
+                <div class="setSelection">ON</div>
+                <div class="setSelection">OFF</div>
+            </div>
+            <div class="soundSetting">
+                 <div class="setSelection noBorder">Sfx</div>
+                 <div class="setSelection">ON</div>
+                 <div class="setSelection">OFF</div>
+            </div>
+            <div class="colorSetting">
+                <div class="setSelection noBorder">Color?</div>
+                <!-- will eventually have small pictures of colors but may just comment this out if I don't get it working before competition -->
+                <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
+                 <div class="setSelection colorSelection" style="background-color:gray"></div>  
+                 <div class="setSelection colorSelection" style="background-color:blue" ></div>
+                 <div class="setSelection colorSelection" style="background-color:purple"></div>
+                 <div class="setSelection colorSelection" style="background-color:red"></div>
+                 <div class="setSelection colorSelection" style="background-color:green"></div>
+                 <div class="setSelection colorSelection" style="background-color:orange"></div>
+            </div>
         </div>
+
+        <script>
+            function toggleMusic()
+            {
+
+            }
+
+            function toggleSfx()
+            {
+
+            }
+        </script>
 
 <!-- </div id ="box">
     </div> -->
