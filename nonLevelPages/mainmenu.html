@@ -10,6 +10,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:wght@100&family=Ysabeau:wght@1&display=swap" rel="stylesheet">
+    <!--
+     font-family: 'Oswald', sans-serif;
+    font-family: 'Raleway', sans-serif;
+    font-family: 'Ysabeau', sans-serif;
+     -->
     <title>Main Menu</title>
 </head>
 <body>
@@ -21,19 +26,20 @@
     <div class="boxAboveTheBox"></div>
     <div id = "box"> 
         <a class="selection" href="/levels/level1.html"> <h1 class="selection">Start</h1></a> <!---will need to edit this to last saved level -->
-        <a class="selection" href=".levelSelection/.html"> <h1 class="selection">Select Level</h1></a> 
-        <p class="selection" href="" onclick="document.getElementById('settings').classList.remove('hidden')"> <h1 class="selection">Settings</h1> </p>
+        <a class="selection" href="./levelSelection.html"> <h1 class="selection">Select Level</h1></a> 
+        <div class="selection" href="" onclick="document.getElementById('settings').classList.remove('hidden')"> <h1 class="selection">Settings</h1> </div>
         <a class="selection" href="./credits.html"> <h1 class="selection">Credits</h1> </a>
      
-    <div>
+    </div>
 
 
     <!-- settings div - hidden until 'settings' is chosen -->
         <div id="settings" class="hidden">
-            <div>X</div>
-            <div>Music</div>
-            <div>Sfx</div>
-            <div>Color?</div>
+            <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
+            <div class="spacerDiv"></div>
+            <div class="soundSetting">Music</div>
+            <div class="soundSetting"">Sfx</div>
+            <div class="colorSetting">Color?</div>
         </div>
 
 <!-- </div id ="box">
