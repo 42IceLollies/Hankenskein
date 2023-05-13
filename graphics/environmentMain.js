@@ -3,6 +3,8 @@ const canvas = document.getElementById('canvas');
 // the part we'll actually call all the drawing on
 const ctx = canvas.getContext('2d');
 
+//I'm not sure where the background behind the level image is set but could we switch it to #ffe0f0 so that all the pink backgrounds are similar shades?
+
 
 // ==================
 // =DATA OBJECTS
@@ -44,7 +46,7 @@ const player = {
 	},
 	// how much speed it can gain, set elsewhere [in resize()]
 	acceleration: 300,
-	fillColor: "#e2619f", // pink // this doesn't show when the drawing's in place
+	fillColor: "#ffe0f0", // pink // this doesn't show when the drawing's in place
 	screenPercent: 0.04, // 4% of the height of the canvas
 	radiusActual: 0.1016, // 4 inches in meters // used for physics calculations
 	unravelPercent: 1.0, // 1.0 = not unraveled, 0 = completely unraveled

@@ -1,0 +1,25 @@
+html{
+    height:100%;
+    padding:0;
+}
+
+body{
+    background-color: #ffe0f0;
+    padding:0;
+    margin:0;
+}
+
+h1.title{
+    color:black;
+    font-family: 'Raleway', sans-serif;
+    font-size:200%;
+    text-align: center;
+}
+
+div.title{
+    width:98vw;
+    padding:2vh;
+    background-color:rgba(255,255,255,0.5);
+    margin-top:5vh;
+    margin-bottom:5vh;
+}
