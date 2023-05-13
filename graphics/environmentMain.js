@@ -80,10 +80,11 @@ const player = {
 
 // gathered all the loose setup code into this function, called from each html file
 // input the lines to draw for that level, file path for background art, and x and y the player should start at
-function setup(linesArray, backgroundPath, xOffsetStart, playerY, yarnCoords) {
+function setup(linesArray, backgroundPath) {
 	xOffsetStart = 430; // cor if you have the issue again uncomment this line
 	// center player
 	player.shape.x = canvas.width / 2;
+	player.shape.y = 400;
 	// size the player correctly
 	player.shape.radius = canvas.height * player.screenPercent * player.unravelPercent;
 	// sets the player's height
