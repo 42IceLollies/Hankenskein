@@ -874,12 +874,13 @@ class Line {
         this.y2 = y2;
         this.x1 = x1Start + xOffset;
         this.x2 = x2Start + xOffset;
-    }
+    } // end of constructor
 
     adjustX(xOffset) {
         this.x1 = this.x1Start + xOffset;
         this.x2 = this.x2Start + xOffset;
-    }
+    } // end of ajustX
+
 
     draw(ctx) {
         ctx.beginPath();
@@ -888,15 +889,20 @@ class Line {
         ctx.strokeStyle = "black";
         ctx.lineWidth = 2;
         ctx.stroke();
-    }
+    } // end of draw
 
+
+    // whether it's a totally vertical line
     get isVertical() {
         return (this.x1 == this.x2);
-    }
+    } // end of isVertical
 
+
+    // whether it's a totally horizontal line
     get isHorizontal() {
         return (this.y1 == this.y2);
-    }
+    } // end of isHorizontal
+
 
     static withinRange(num, rangeStart, rangeEnd) {
         if (rangeStart < rangeEnd) {
@@ -904,8 +910,10 @@ class Line {
         } else {
             return (num >= rangeEnd && num <= rangeStart);
         }
-    }
+    } // end of withinRange
 
+
+    // returns the y increase for every 1 x moved
     get yChangeRate() {
         const xChange = this.x2Start - this.x1Start;
         const yChange = this.y2 - this.y1;
@@ -915,7 +923,8 @@ class Line {
             return false;
         }
         return yChange / xChange;
-    }
+    } // end of yChangeRate
+
 
     // returns the y value on the line at the given x
     yAt(x) {
@@ -924,8 +933,10 @@ class Line {
 
         const y = this.y1 + (this.yChangeRate * (x - this.x1));
         return y;
-    }
+    } // end of yAt
 
+
+    // returns the x increase for every 1 y moved
     get xChangeRate() {
         const xChange = this.x2Start - this.x1Start;
         const yChange = this.y2 - this.y1;
@@ -934,7 +945,8 @@ class Line {
             return;
         }
         return xChange / yChange;
-    }
+    } // end of xChangeRate
+
 
     // returns the y value on the line at the given x
     xAt(y) {
@@ -943,8 +955,10 @@ class Line {
 
         const x = this.x1 + (this.xChangeRate * (y - this.y1));
         return x;
-    }
+    } // end of xAt
 
+
+    // returns the degree slope of the line
     get degree() {
         if (this.isVertical) {
             return 90;
@@ -954,14 +968,16 @@ class Line {
             degree = 180 + degree;
         }
         return degree;
-    }
+    } // end of degree
 
+
+    // returns the slope of the line in slope intercept form
     get slopeIntercept() {
         const equation = [this.yChangeRate];
         const yInt = this.y1 + (-this.x1 * equation[0]);
         equation.push(yInt);
         return equation;
-    }
+    } // end of slopeIntercept
 } // end of Line
 
 
@@ -974,31 +990,32 @@ class Point {
         this.xStart = xStart;
         this.x = xStart;
         this.y = y;
-    }
+    } // end of constructor
 
     adjustX(xOffset) {
         this.x = this.xStart + xOffset;
-    }
+    } // end of adjustX
 
     moveTo(x, y, xOffset) {
         this.xStart = x - xOffset;
         this.y = y;
         this.x = x;
         // this.adjustX(xOffset);
-    }
+    } // end of moveTo
 
     draw(ctx) {
         ctx.fillStyle = "purple";
         ctx.fillRect(this.x - 2, this.y - 2, 5, 5);
-    }
+    } // end of draw
 
+    // returns a copy of this point, passed by value
     copy() {
         return new Point(this.xStart, this.y);
-    }
+    } // end of copy
 
     equals(other) {
         return this.x == other.x && this.y == other.y;
-    }
+    } // end of equals
 } // end of Point
 
 
@@ -1013,36 +1030,34 @@ class Circle {
         this.xStart = x;
         this.y = y;
         this.radius = radius;
-    }
+    } // end of constructor
 
     // move according to the offset
     adjustX(xOffset) {
         this.x = this.xStart + xOffset;
-    }
+    } // end of adjustX
 
     // move to a new spot
     moveTo(x, y, xOffset) {
         this.x = x;
         this.xStart = x - xOffset;
         this.y = y;
-    }
+    } // end of moveTo
 
-    // color as string word
     fill(ctx, color) {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
         ctx.fillStyle = color;
         ctx.fill();
-    }
+    } // end of fill
 
-    // color as string word
     outline(ctx, color) {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
         ctx.strokeStyle = color;
         ctx.lineWidth = 1;
         ctx.stroke();
-    }
+    } // end of outline
 } // end of Circle
 
 
@@ -1055,33 +1070,36 @@ class Background {
     constructor(src, x, y, height) {
         this.img = new Image();
         this.img.src = src;
+        // holds the original ratio of height to width, since height is the consistent one
         this.widthFraction = this.img.width / this.img.height;
         this.startX = x;
         this.x = this.startX;
         this.y = 0;
         this.height = height;
         this.width = height * this.widthFraction;
-    }
+    } // end of constructor
 
     updateOffset(xOffset) {
         this.x = this.startX + xOffset;
-    }
+    } // end of updateOffset
 
+    // updates the dimensions of the image based on the height of the canvas
     updateDimensions(height) {
         const widthFraction = this.img.width / this.img.height;
         this.height = height;
         this.width = height * widthFraction;
-    }
+    } // end of updateDimensions
 
+    // changes the startX value
     setStartX(newX) {
         this.startX = newX;
-    }
+    } // end of setStartX
 
     draw(ctx) {
-        if (!this.img.src.includes("undefined")) {
+        if (!this.img.src.includes("undefined")) { // if there was a file path error don't draw it
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
         }
-    }
+    } // end of draw
 } // end of Background
 
 
@@ -1133,13 +1151,17 @@ class YarnTrail {
 
 
 
+// for saving values from an object, I think you could save a replica game object with the ones you want to save, like music and sfx
+// then when you retrieve it, use a for each loop on the replica to change the main object's matching keys to the replica's version
+
+// stores data in localStorage, and keeps track of the keys used
 class Backup {
     // if you change this, it'll lose all track of all the save data's location. Only change in the very beginning if you think of a better key
     // the key in local storage, for the array that holds all the keys that've been used
     static listKey = "saveDataKeyList!@!";
   
   
-    // saves parameter 2 under parameter 1 in local storage
+    // saves data under key in local storage
     static save(key, data) {
     // can't override the list of keys
     if (key == this.listKey) {
@@ -1153,7 +1175,7 @@ class Backup {
     
     // ====== LOG KEY =======
     // get the keylist
-    const keyList = Backup.getKeyList();
+    const keyList = this.getKeyList();
     // if the key's not in the list (it's not just being overwritten)
     if (!keyList.includes(key)) {
       // add the key name to the array
@@ -1232,4 +1254,5 @@ class Backup {
         return keyList;
     } // end of getKeyList
   
-} // end of Backup 
+} // end of Backup
+
