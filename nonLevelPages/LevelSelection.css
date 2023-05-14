@@ -2,7 +2,7 @@ body{
     background-color: #ffe0f0;
 }
 
-img{
+img.levelImg{
     height:auto;
     width:40vw;
     /* object-fit:cover; */
@@ -50,7 +50,7 @@ div.title{
     font-family: 'Ysabeau', sans-serif;
 }
 
-img:hover{
+img.levelImg:hover{
     /* width:43vw; */
     border-width:10px;
     

@@ -7,6 +7,7 @@
 
     <!-- css -->
     <link rel = "stylesheet" href = "./levelSelection.css">
+    <link rel="stylesheet" href="settings.css">
 
     <!-- fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,13 +19,55 @@
 </head>
 
 <body>
+
+     <!-- START OF SETTINGS -->
+    <!-- Home and settings buttons -->
+    <div class="buttonDiv">
+        <button class="settingsBtn" onClick="window.location.assign('/nonLevelPages/mainmenu.html')"><img src="/art/homeBtn.png" alt="Home" class="settingsImg"></button>
+        <button class="settingsBtn" onclick="document.getElementById('settings').classList.remove('hidden')"><img src="/art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
+    </div>
+
+    
+    <!-- settings div - hidden until 'settings' is chosen -->
+
+    <div id="settings" class="hidden">
+        <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
+        <div class="spacerDiv"></div>
+        <div class="soundSetting">
+            <div class="setSelection noBorder">Music</div> 
+            <div class="setSelection" id="musicOn" onclick="toggleMusic('on'); bold('music');">ON</div>
+            <div class="setSelection" id="musicOff" onclick="toggleMusic('off'); bold('music');">OFF</div>
+        </div>
+        <div class="soundSetting">
+             <div class="setSelection noBorder">Sfx</div>
+             <div class="setSelection" id="sfxOn" onclick="toggleSfx('on'); bold('sfx');">ON</div>
+             <div class="setSelection" id="sfxOff" onclick="toggleSfx('off'); bold('sfx');">OFF</div>
+        </div>
+        <div class="colorSetting">
+            <div class="setSelection noBorder">Color?</div>
+            <!-- will eventually have small pictures of colors but may just comment this out if I don't get it working before competition -->
+            <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
+             <div class="setSelection colorSelection" style="background-color:gray"></div>  
+             <div class="setSelection colorSelection" style="background-color:blue" ></div>
+             <div class="setSelection colorSelection" style="background-color:purple"></div>
+             <div class="setSelection colorSelection" style="background-color:red"></div>
+             <div class="setSelection colorSelection" style="background-color:green"></div>
+             <div class="setSelection colorSelection" style="background-color:orange"></div>
+        </div>
+    </div>
+
+    <!-- <script language="javascript" src="../graphics/gameAndPlayerObjects.js"></script> -->
+    <script language="javascript" src="../graphics/environmentMain.js"></script>
+    <script language="javascript" src="settings.js"> </script>
+    <!-- END OF SETTINGS -->
+
     <div class="title"><h1 class="title"> Levels </h1></div>
 
     <!-- level selections -->
-    <div class = "boxes" onclick="window.location.assign('../levels/level1.html')"><h1 class="label"> Level 1</h1><img src="../Art/Backgrounds/levelOneBackground.png" alt="Level 1"></div>
-    <div class = "boxes" onclick="window.location.assign('../levels/level2.html')"><h1 class="label">Level 2</h1><img src="../Art/Backgrounds/levelTwoBackground.png" alt="Level 2"></div>
-    <div class = "boxes" onclick="window.location.assign('../levels/level2.html')"><h1 class="label">Level 3</h1><img src="../Art/Backgrounds/levelTwoBackground.png" alt="Level 3"></div>
-    <div class = "boxes" onclick="window.location.assign('../levels/level2.html')"><h1 class="label">Level 4</h1><img src="../Art/Backgrounds/levelTwoBackground.png" alt="Level 4"></div>
-    <div class = "boxes lastRow" onclick="window.location.assign('../levels/level2.html')"><h1 class="label">Level 5</h1><img src="../Art/Backgrounds/levelTwoBackground.png" alt="Level 5"></div>
+    <div class = "boxes" onclick="window.location.assign('../levels/level1.html')"><h1 class="label"> Level 1</h1><img class="levelImg" src="../Art/Backgrounds/levelOneBackground.png" alt="Level 1"></div>
+    <div class = "boxes" onclick="window.location.assign('../levels/level2.html')"><h1 class="label">Level 2</h1><img class="levelImg" src="../Art/Backgrounds/levelTwoBackground.png" alt="Level 2"></div>
+    <div class = "boxes" onclick="window.location.assign('../levels/level2.html')"><h1 class="label">Level 3</h1><img class="levelImg" src="../Art/Backgrounds/levelTwoBackground.png" alt="Level 3"></div>
+    <div class = "boxes" onclick="window.location.assign('../levels/level2.html')"><h1 class="label">Level 4</h1><img class="levelImg" src="../Art/Backgrounds/levelTwoBackground.png" alt="Level 4"></div>
+    <div class = "boxes lastRow" onclick="window.location.assign('../levels/level2.html')"><h1 class="label">Level 5</h1><img class="levelImg" src="../Art/Backgrounds/levelTwoBackground.png" alt="Level 5"></div>
 </body>
 </html>

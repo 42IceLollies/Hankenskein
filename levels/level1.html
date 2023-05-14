@@ -6,6 +6,7 @@
 	<title>Level 1</title>
 	<!-- css -->
 	<link rel="stylesheet" type="text/css" href="level1.css">
+	<link rel="stylesheet" href="/nonLevelPages/settings.css">
 	<!-- favicon -->
 	<link rel="shortcut icon" href="../Art/hankenskein_favicon.ico" type="image/x-icon">
 	<link rel="icon" href="../Art/hankenskein_favicon.ico" type="image/x-icon">
@@ -27,7 +28,51 @@
 			];
 		setup(linePoints, backgroundPath);
 	}, 0);
+
 </script>
+
+
+
+
+    <!-- START OF SETTINGS -->
+    <!-- Home and settings buttons -->
+    <div class="buttonDiv">
+        <button class="settingsBtn" onClick="window.location.assign('/nonLevelPages/mainmenu.html')"><img src="/art/homeBtn.png" alt="Home" class="settingsImg"></button>
+        <button class="settingsBtn" onclick="document.getElementById('settings').classList.remove('hidden')"><img src="/art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
+    </div>
+
+    
+    <!-- settings div - hidden until 'settings' is chosen -->
+
+    <div id="settings" class="hidden">
+        <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
+        <div class="spacerDiv"></div>
+        <div class="soundSetting">
+            <div class="setSelection noBorder">Music</div> 
+            <div class="setSelection" id="musicOn" onclick="toggleMusic('on'); bold('music');">ON</div>
+            <div class="setSelection" id="musicOff" onclick="toggleMusic('off'); bold('music');">OFF</div>
+        </div>
+        <div class="soundSetting">
+             <div class="setSelection noBorder">Sfx</div>
+             <div class="setSelection" id="sfxOn" onclick="toggleSfx('on'); bold('sfx');">ON</div>
+             <div class="setSelection" id="sfxOff" onclick="toggleSfx('off'); bold('sfx');">OFF</div>
+        </div>
+        <div class="colorSetting">
+            <div class="setSelection noBorder">Color?</div>
+            <!-- will eventually have small pictures of colors but may just comment this out if I don't get it working before competition -->
+            <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
+             <div class="setSelection colorSelection" style="background-color:gray"></div>  
+             <div class="setSelection colorSelection" style="background-color:blue" ></div>
+             <div class="setSelection colorSelection" style="background-color:purple"></div>
+             <div class="setSelection colorSelection" style="background-color:red"></div>
+             <div class="setSelection colorSelection" style="background-color:green"></div>
+             <div class="setSelection colorSelection" style="background-color:orange"></div>
+        </div>
+    </div>
+
+    <!-- <script language="javascript" src="../graphics/gameAndPlayerObjects.js"></script> -->
+    <script language="javascript" src="/nonLevelPages/settings.js"> </script>
+    <!-- END OF SETTINGS -->
 
 </body>
 </html>

@@ -1,0 +1,128 @@
+
+/* =================== Settings Rulesets =================== */
+
+.buttonDiv{
+ position:fixed;
+ width:25vh;
+ height:10vh;
+ top:7vh;
+ left:3vh;
+}
+
+.settingsBtn
+{
+    width: 40%;
+    height:100%;
+    border-radius:100%;
+    border: 1px solid white;
+    background-color:rgba(193, 193, 193, .25);
+    padding:5%;
+
+}
+
+.settingsImg{
+    width:100%;
+    height:100%;
+}
+
+.settingsBtn:hover{
+    /* border:3px; */
+    background-color:rgba(193,193,193,.75);
+}
+
+.hidden{
+    display:none;
+}
+
+#settings{
+    position:absolute;
+    background-color:rgba(255,255,255,0.9);
+    width:70vw;
+    height:70vh;
+    border-radius:5%;
+    top:20vh;
+    left:15vw;
+    z-index:4;
+
+}
+
+.xButton{
+    width:5%;
+    /* height:10%; */
+    border-radius:100%;
+    border: 1px solid black;
+    text-align:center;
+    padding-top:1.5%;
+    padding-bottom:1.5%;
+    float:right;
+    margin:3%;
+    font-family: 'Raleway', sans-serif;
+    font-weight:bold;    
+}
+
+.xButton:hover{
+    /* width:6%;
+    border-width:3px;
+    padding-top:2%;
+    padding-bottom:2%; */
+
+    border-width:3px;
+    /* background-color:white; */
+}
+
+.spacerDiv{
+    width:100%;
+    height:25%;
+}
+
+/* parent soundSetting elements */
+.soundSetting
+{
+    text-align:center;
+    width:100%;
+    clear:left;
+    height:20%;
+    margin:auto;
+    
+}
+
+/* only the child soundSetting elements */
+.setSelection{
+    font-size:150%;
+    float:left;
+    text-align:center;
+    font-family: 'Raleway', sans-serif;
+    font-weight:bold;  
+    border:2px solid black;
+    margin:3%;
+    padding:1%;
+    border-radius:100%;
+
+}
+
+
+.colorSetting{
+    text-align:center;
+    width:100%;
+    clear:left;
+    height:20%;
+    
+}
+
+.colorSelection{
+    width:2vw;
+    height:2vw;
+}
+
+.setSelection:hover{
+    border-width:3px;
+}
+
+.noBorder{
+    border: 0;
+}
+
+.bold{
+    /* border: 3px solid black; */
+    background-color:rgba(148, 148, 148, .70);
+}
