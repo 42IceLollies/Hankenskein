@@ -1,3 +1,265 @@
+// ==================
+// =LINE CLASS
+// ==================
+
+
+class Line {
+    constructor(x1Start, y1, x2Start, y2, xOffset) {
+        this.x1Start = x1Start;
+        this.x2Start = x2Start;
+        this.y1 = y1;
+        this.y2 = y2;
+        this.x1 = x1Start + xOffset;
+        this.x2 = x2Start + xOffset;
+    } // end of constructor
+
+
+    adjustX(xOffset) {
+        this.x1 = this.x1Start + xOffset;
+        this.x2 = this.x2Start + xOffset;
+    } // end of ajustX
+
+
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(this.x2, this.y2);
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    } // end of draw
+
+
+    // whether it's a totally vertical line
+    get isVertical() {
+        return (this.x1 == this.x2);
+    } // end of isVertical
+
+
+    // whether it's a totally horizontal line
+    get isHorizontal() {
+        return (this.y1 == this.y2);
+    } // end of isHorizontal
+
+
+    static withinRange(num, rangeStart, rangeEnd) {
+        if (rangeStart < rangeEnd) {
+            return (num >= rangeStart && num <= rangeEnd);
+        } else {
+            return (num >= rangeEnd && num <= rangeStart);
+        }
+    } // end of withinRange
+
+
+    // returns the y increase for every 1 x moved
+    get yChangeRate() {
+        const xChange = this.x2Start - this.x1Start;
+        const yChange = this.y2 - this.y1;
+        //is this bit of code stil in use for redundancy or was it just for testing?
+        if (xChange == 0) {
+            console.log("ERROR: 0 value for xChange in yChangeRate()");
+            return false;
+        }
+        return yChange / xChange;
+    } // end of yChangeRate
+
+
+    // returns the y value on the line at the given x
+    yAt(x) {
+        if (!Line.withinRange(x, this.x1, this.x2) || this.isVertical) {return;}
+        if (this.isHorizontal) {return this.y1;}
+
+        const y = this.y1 + (this.yChangeRate * (x - this.x1));
+        return y;
+    } // end of yAt
+
+
+    // returns the x increase for every 1 y moved
+    get xChangeRate() {
+        const xChange = this.x2Start - this.x1Start;
+        const yChange = this.y2 - this.y1;
+        if (yChange == 0) {
+            console.log("ERROR: 0 value in yChange");
+            return;
+        }
+        return xChange / yChange;
+    } // end of xChangeRate
+
+
+    // returns the y value on the line at the given x
+    xAt(y) {
+        if (!Line.withinRange(y, this.y1, this.y2) || this.isHorizontal) {return;}
+        if (this.isVertical) {return this.x1;}
+
+        const x = this.x1 + (this.xChangeRate * (y - this.y1));
+        return x;
+    } // end of xAt
+
+
+    // returns the degree slope of the line
+    get degree() {
+        if (this.isVertical) {
+            return 90;
+        }
+        let degree = Math.atan(-this.yChangeRate) * (180 / Math.PI);
+        if (degree < 0) {
+            degree = 180 + degree;
+        }
+        return degree;
+    } // end of degree
+
+
+    // returns the slope of the line in slope intercept form
+    get slopeIntercept() {
+        const equation = [this.yChangeRate];
+        const yInt = this.y1 + (-this.x1 * equation[0]);
+        equation.push(yInt);
+        return equation;
+    } // end of slopeIntercept
+} // end of Line
+
+
+// ===============
+// =POINT CLASS
+// ===============
+
+class Point {
+    constructor(xStart, y) {
+        this.xStart = xStart;
+        this.x = xStart;
+        this.y = y;
+    } // end of constructor
+
+
+    adjustX(xOffset) {
+        this.x = this.xStart + xOffset;
+    } // end of adjustX
+
+
+    moveTo(x, y, xOffset) {
+        this.xStart = x - xOffset;
+        this.y = y;
+        this.x = x;
+        // this.adjustX(xOffset);
+    } // end of moveTo
+
+
+    draw(ctx) {
+        ctx.fillStyle = "purple";
+        ctx.fillRect(this.x - 2, this.y - 2, 5, 5);
+    } // end of draw
+
+
+    // returns a copy of this point, passed by value
+    copy() {
+        return new Point(this.xStart, this.y);
+    } // end of copy
+
+
+    equals(other) {
+        return this.x == other.x && this.y == other.y;
+    } // end of equals
+} // end of Point
+
+
+// ==================
+// =CIRCLE CLASS
+// ==================
+
+
+class Circle {
+    constructor(x, y, radius) {
+        this.x = x;
+        this.xStart = x;
+        this.y = y;
+        this.radius = radius;
+    } // end of constructor
+
+
+    // move according to the offset
+    adjustX(xOffset) {
+        this.x = this.xStart + xOffset;
+    } // end of adjustX
+
+
+    // move to a new spot
+    moveTo(x, y, xOffset) {
+        this.x = x;
+        this.xStart = x - xOffset;
+        this.y = y;
+    } // end of moveTo
+
+
+    fill(ctx, color) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+    } // end of fill
+
+
+    outline(ctx, color) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    } // end of outline
+} // end of Circle
+
+
+// ==================
+// =BACKGROUND CLASS
+// ==================
+
+
+class Background {
+    constructor(src, x, y, height) {
+        this.img = new Image();
+        this.img.src = src;
+        // holds the original ratio of height to width, since height is the consistent one
+        this.widthFraction = this.img.width / this.img.height;
+        this.startX = x;
+        this.x = this.startX;
+        this.y = 0;
+        this.height = height;
+        this.width = height * this.widthFraction;
+    } // end of constructor
+
+
+    updateOffset(xOffset) {
+        this.x = this.startX + xOffset;
+    } // end of updateOffset
+
+
+    // updates the dimensions of the image based on the height of the canvas
+    updateDimensions(height) {
+        const widthFraction = this.img.width / this.img.height;
+        this.height = height;
+        this.width = height * widthFraction;
+    } // end of updateDimensions
+
+
+    // changes the startX value
+    setStartX(newX) {
+        this.startX = newX;
+    } // end of setStartX
+
+
+    draw(ctx) {
+        if (!this.img.src.includes("undefined")) { // if there was a file path error don't draw it
+            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        }
+    } // end of draw
+} // end of Background
+
+
+
+// ==================
+// =PHYSICS CLASS
+// ==================
+
+
 class Physics{
     //gravity is -9.8 m/s^2 but I'm not entirely sure what a meter is in this game so feel free to change it
     static g = 2.5;
@@ -7,7 +269,8 @@ class Physics{
     static getSeconds()
     {
         return this.seconds;
-    }
+    } // end of getSeconds
+
 
     // // pulls down player with gravitational accelleration
     // static affectGravity(initYSpeed, timeOffGround, metersToPixels)
@@ -20,6 +283,7 @@ class Physics{
 
     // }
 
+
     // pulls down player with gravitational accelleration
     static affectGravity(initYSpeed, timeOffGround)
     {
@@ -30,13 +294,14 @@ class Physics{
         // To Do: find a conversion between meters and pixels
         // px/m = player.shape.radius / player.radiusActual
 
-    }
+    } // end of affectGravity
+
 
     // gives the acceleration from gravity in pixels
     // takes the fps the game is running at, and the current meter to pixel rate
     static gravityAcceleration(fps, pxPerM) {
         return (this.g * pxPerM) / fps;
-    }
+    } // end of gravityAcceleration
 
 
     static friction()//not static friction tho, just a static method for friction
@@ -51,7 +316,8 @@ class Physics{
         
         //To Do: find the friction constant through experimentation, find mass/ radius and how it decays when it is unwound of ball of string
 
-    }
+    } // end of friction
+
 
     // when it bounces, it loses most of it's momentum
     // arbitrary #'s, feel free to change
@@ -61,13 +327,16 @@ class Physics{
             speed = 0;
         }
         return speed;
-    }
+    } // end of bounceMomentumLoss
 } // end of Physics
 
 
 
+// ==================
+// =LASSO CLASS (classo)
+// ==================
 
-// ==================LASSO CLASS============================ (classo)
+
 
 class Lasso {
     static lassoPoints;
@@ -75,14 +344,14 @@ class Lasso {
     static lassoCounter = 0;
 
     //copy of lasso's variables because it's not working for some reason? - Was this a note I wrote to myself or was it someone else? (-Cordelia) - i dunno but I want to keep adding to this cause i think it's funny (-Ryan)
+    // the coords of the end of the lasso aiming - set to 0 cause they're set in a different file
     static forceX = 0;
     static forceY = 0;
-    // were causing loading issues, called resetForceBase() in start of other js file
-    // static forceX = player.shape.x - game.xOffset;
-    // static forceY = player.shape.y;
+    static forceLength = 0;
+    // updated in other files
     static mouseX = 0;
     static mouseY = 0;
-    static forceLength = 0;
+    
     static intervalId = null;
     static slope = 0;
     static maxSegmentLength;
@@ -93,13 +362,15 @@ class Lasso {
 	{
 		this.mouseX = x;
 		this.mouseY = y;
-	}
+	} // end of setMouseCoordinates
+
 
 	static resetForceBase()
 	{
 		this.forceX = player.shape.x - game.xOffset;
 		this.forceY = player.shape.y;
-	}
+	} // end of resetForceBase
+
 
     //called when up arrow is pressed down to make force projection longer and how far the lasso is thrown
 	static incrementForce()
@@ -116,7 +387,7 @@ class Lasso {
 
         Lasso.hankX = player.shape.x;
         Lasso.hankY = player.shape.y;
-	}
+	} // end of incrementForce
 
     static decrementForce() {
         Lasso.forceX-=(Lasso.mouseX-player.shape.x)/20;
@@ -130,7 +401,7 @@ class Lasso {
 
         Lasso.hankX = player.shape.x;
         Lasso.hankY = player.shape.y;
-    }
+    } // end of decrementForce
 
 	static changeMouseLocation(e)
 	{ 
@@ -152,7 +423,7 @@ class Lasso {
 		this.forceY = finalY;
 		this.slope = newY/newX;
 		
-	}
+	} // end of changeMouseLocation
 
 
     //increments the parts of the animation to call different functions
@@ -164,7 +435,7 @@ class Lasso {
 			this.lassoCounter = 0;
 		}
 		
-	}
+	} // end of incrementLassoStage
 
 
     //calls the correct function for the stage of the animation
@@ -201,7 +472,7 @@ class Lasso {
 			 	Lasso.lassoCaught(ctx);
 			 break;
 		}
-	}
+	} // end of drawLasso
 	
 
 
@@ -227,7 +498,8 @@ class Lasso {
         ctx.lineWidth = tempLineWidth;
         ctx.strokeStyle = "#000000"
         ctx.globalAlpha = 1;
-    }
+    } // end of drawPreLasso
+
 
     //When space bar is pressed, lasso falls and pulls in until it catches on something 
     //called when spacebar is pressed
@@ -268,7 +540,7 @@ class Lasso {
         }
         
         this.incrementLassoStage();
-    }
+    } // end of throwLasso
 
 
     //called to see if the lasso has fallen on anything 
@@ -313,7 +585,7 @@ class Lasso {
         return (false);
 
 
-    }
+    } // end of lassoCollide
 
 
     //called once the lasso has initially been drawn and animates its fall
@@ -391,7 +663,8 @@ class Lasso {
         
         //draws the lasso
         this.displayLasso(ctx);
-    }
+    } // end of pullInLasso
+
 
     static pullInLasso2(ctx) {
         var pointsMoved = false;
@@ -444,7 +717,7 @@ class Lasso {
         
         //draws the lasso
         this.displayLasso(ctx);
-    }
+    } // end of pullInLasso2
 
 
     static withinRange(num, rangeStart, rangeEnd) {
@@ -453,7 +726,7 @@ class Lasso {
         } else {
             return (num >= rangeEnd && num <= rangeStart);
         }
-    }
+    } // end of withinRange
 
     static move(ctx) {
         // 19 points moving 2px each, 38 px movement == < for pullInLasso \/
@@ -528,7 +801,7 @@ class Lasso {
 
         // just shorten the end and make new points on the player end
 
-    }
+    } // end of move
 
     //called after lasso is pulled in and catches on something
     static lassoCaught(ctx)
@@ -541,19 +814,19 @@ class Lasso {
         //method should return true if the point is in contact with a line steeper than a certain slope
         //if it catches, move on to pull in hank method
         //if it fully pulls in and the end reaches hank's coordinates, return to lassoCounter = 0
-    }
+    } // end of lassoCaught
 
     static pullInHank(ctx)
     {
         //this one I'm not so sure about how to do, will need to move hank's x value closer to the end of the lasso
         //and kinda just reverse
 
-    }
+    } // end of pullInHank
 
     // I used it a lot, and need it to be accessible
     static pythagorean(a, b) {
         return Math.sqrt(Math.pow(Math.abs(a), 2) + Math.pow(Math.abs(b), 2));
-    }
+    } // end of pythagorean
 
 
     static displayLasso(ctx)
@@ -584,7 +857,7 @@ class Lasso {
         ctx.lineWidth = tempLineWidth;
         ctx.strokeStyle = "#000000";
 
-    }
+    } // end of displayLasso
 
     // static displayLasso(ctx) {
     //     //settings for string style
@@ -630,21 +903,21 @@ class Lasso2 {
         this.collideRadius = game.canvas.height * 0.015;
         // the point that stays with player
         this.start = new Point(0, 0);
-        // the point moving out
-        // this.endPoint = new Point(0, 0);
-        // circle that acts as collision detection for the point
-        // this.endCircle = new Circle(0, 0, this.collideRadius);
+        // the circle (invisible) that shoots out
         this.end = {
             shape: new Circle(0, 0, this.collideRadius),
             xSpeed: 0, // horizontal speed in [px/s]
             ySpeed: 0, // vertical speed in [px/s]
         }
+        // the coords of the end of the aiming beam
         this.forceX = 0;
         this.forceY = 0;
-        this.mouseCoords = [0, 0];
         this.forceLength = 0;
-        this.slope = 0;
-        // 0: nothing | 1: aiming | 2: 
+
+        this.mouseCoords = [0, 0];
+        
+        this.slope = 0; // not sure what this is used for
+        // 0: nothing | 1: aiming | 2: thrown/falling/shooting
         this.stage = 0;
     } // end of constructor
 
@@ -662,7 +935,7 @@ class Lasso2 {
     } // end of update
 
 
-    // I used it a lot, and need it to be accessible
+    // I used it a lot, and need it to be accessable
     static pythagorean(a, b) {
         return Math.sqrt(Math.pow(Math.abs(a), 2) + Math.pow(Math.abs(b), 2));
     } // end of pythagorean
@@ -699,8 +972,9 @@ class Lasso2 {
         var x = this.forceX - player.shape.x;
         var y = this.forceY - player.shape.y;
         this.forceLength = Math.sqrt((x*x) + (y*y));
-        if (this.forceLength > game.canvas.height * 6) {this.forceLength = game.canvas.height * 6;}
         this.slope = y/x;
+
+        if (this.forceLength > game.canvas.height * 6) {this.forceLength = game.canvas.height * 6;}
 
         if (this.stage == 0) {this.stage++;}
     } // end of incrementForce
@@ -715,6 +989,8 @@ class Lasso2 {
         var y = this.forceY - player.shape.y;
         this.forceLength = Math.sqrt((x*x) + (y*y));
         this.slope = y/x;
+
+        if (this.forceLength > game.canvas.height * 6) {this.forceLength = game.canvas.height * 6;}
 
         if (this.stage == 0) {this.stage++;}
     } // end of decrementForce
@@ -849,7 +1125,7 @@ class Lasso2 {
     endMove(fps) {
         this.end.shape.x += this.end.xSpeed / fps;
         this.end.shape.y += this.end.ySpeed / fps;
-    }
+    } // end of endMove
 
 
     // planning on testing for collision in the environment js file
@@ -862,250 +1138,9 @@ class Lasso2 {
 
 
 // ==================
-// =LINE CLASS
-// ==================
-
-
-class Line {
-    constructor(x1Start, y1, x2Start, y2, xOffset) {
-        this.x1Start = x1Start;
-        this.x2Start = x2Start;
-        this.y1 = y1;
-        this.y2 = y2;
-        this.x1 = x1Start + xOffset;
-        this.x2 = x2Start + xOffset;
-    } // end of constructor
-
-    adjustX(xOffset) {
-        this.x1 = this.x1Start + xOffset;
-        this.x2 = this.x2Start + xOffset;
-    } // end of ajustX
-
-
-    draw(ctx) {
-        ctx.beginPath();
-        ctx.moveTo(this.x1, this.y1);
-        ctx.lineTo(this.x2, this.y2);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-    } // end of draw
-
-
-    // whether it's a totally vertical line
-    get isVertical() {
-        return (this.x1 == this.x2);
-    } // end of isVertical
-
-
-    // whether it's a totally horizontal line
-    get isHorizontal() {
-        return (this.y1 == this.y2);
-    } // end of isHorizontal
-
-
-    static withinRange(num, rangeStart, rangeEnd) {
-        if (rangeStart < rangeEnd) {
-            return (num >= rangeStart && num <= rangeEnd);
-        } else {
-            return (num >= rangeEnd && num <= rangeStart);
-        }
-    } // end of withinRange
-
-
-    // returns the y increase for every 1 x moved
-    get yChangeRate() {
-        const xChange = this.x2Start - this.x1Start;
-        const yChange = this.y2 - this.y1;
-        //is this bit of code stil in use for redundancy or was it just for testing?
-        if (xChange == 0) {
-            console.log("ERROR: 0 value for xChange in yChangeRate()");
-            return false;
-        }
-        return yChange / xChange;
-    } // end of yChangeRate
-
-
-    // returns the y value on the line at the given x
-    yAt(x) {
-        if (!Line.withinRange(x, this.x1, this.x2) || this.isVertical) {return;}
-        if (this.isHorizontal) {return this.y1;}
-
-        const y = this.y1 + (this.yChangeRate * (x - this.x1));
-        return y;
-    } // end of yAt
-
-
-    // returns the x increase for every 1 y moved
-    get xChangeRate() {
-        const xChange = this.x2Start - this.x1Start;
-        const yChange = this.y2 - this.y1;
-        if (yChange == 0) {
-            console.log("ERROR: 0 value in yChange");
-            return;
-        }
-        return xChange / yChange;
-    } // end of xChangeRate
-
-
-    // returns the y value on the line at the given x
-    xAt(y) {
-        if (!Line.withinRange(y, this.y1, this.y2) || this.isHorizontal) {return;}
-        if (this.isVertical) {return this.x1;}
-
-        const x = this.x1 + (this.xChangeRate * (y - this.y1));
-        return x;
-    } // end of xAt
-
-
-    // returns the degree slope of the line
-    get degree() {
-        if (this.isVertical) {
-            return 90;
-        }
-        let degree = Math.atan(-this.yChangeRate) * (180 / Math.PI);
-        if (degree < 0) {
-            degree = 180 + degree;
-        }
-        return degree;
-    } // end of degree
-
-
-    // returns the slope of the line in slope intercept form
-    get slopeIntercept() {
-        const equation = [this.yChangeRate];
-        const yInt = this.y1 + (-this.x1 * equation[0]);
-        equation.push(yInt);
-        return equation;
-    } // end of slopeIntercept
-} // end of Line
-
-
-// ===============
-// =POINT CLASS
-// ===============
-
-class Point {
-    constructor(xStart, y) {
-        this.xStart = xStart;
-        this.x = xStart;
-        this.y = y;
-    } // end of constructor
-
-    adjustX(xOffset) {
-        this.x = this.xStart + xOffset;
-    } // end of adjustX
-
-    moveTo(x, y, xOffset) {
-        this.xStart = x - xOffset;
-        this.y = y;
-        this.x = x;
-        // this.adjustX(xOffset);
-    } // end of moveTo
-
-    draw(ctx) {
-        ctx.fillStyle = "purple";
-        ctx.fillRect(this.x - 2, this.y - 2, 5, 5);
-    } // end of draw
-
-    // returns a copy of this point, passed by value
-    copy() {
-        return new Point(this.xStart, this.y);
-    } // end of copy
-
-    equals(other) {
-        return this.x == other.x && this.y == other.y;
-    } // end of equals
-} // end of Point
-
-
-// ==================
-// =CIRCLE CLASS
-// ==================
-
-
-class Circle {
-    constructor(x, y, radius) {
-        this.x = x;
-        this.xStart = x;
-        this.y = y;
-        this.radius = radius;
-    } // end of constructor
-
-    // move according to the offset
-    adjustX(xOffset) {
-        this.x = this.xStart + xOffset;
-    } // end of adjustX
-
-    // move to a new spot
-    moveTo(x, y, xOffset) {
-        this.x = x;
-        this.xStart = x - xOffset;
-        this.y = y;
-    } // end of moveTo
-
-    fill(ctx, color) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
-        ctx.fillStyle = color;
-        ctx.fill();
-    } // end of fill
-
-    outline(ctx, color) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    } // end of outline
-} // end of Circle
-
-
-// ==================
-// =BACKGROUND CLASS
-// ==================
-
-
-class Background {
-    constructor(src, x, y, height) {
-        this.img = new Image();
-        this.img.src = src;
-        // holds the original ratio of height to width, since height is the consistent one
-        this.widthFraction = this.img.width / this.img.height;
-        this.startX = x;
-        this.x = this.startX;
-        this.y = 0;
-        this.height = height;
-        this.width = height * this.widthFraction;
-    } // end of constructor
-
-    updateOffset(xOffset) {
-        this.x = this.startX + xOffset;
-    } // end of updateOffset
-
-    // updates the dimensions of the image based on the height of the canvas
-    updateDimensions(height) {
-        const widthFraction = this.img.width / this.img.height;
-        this.height = height;
-        this.width = height * widthFraction;
-    } // end of updateDimensions
-
-    // changes the startX value
-    setStartX(newX) {
-        this.startX = newX;
-    } // end of setStartX
-
-    draw(ctx) {
-        if (!this.img.src.includes("undefined")) { // if there was a file path error don't draw it
-            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        }
-    } // end of draw
-} // end of Background
-
-
-// ==================
 // =YARN TRAIL CLASS
 // ==================
+
 
 
 class YarnTrail {
@@ -1113,11 +1148,10 @@ class YarnTrail {
     constructor(basePoint, xOffset) {
         this.basePoint = new Point(basePoint[0], basePoint[1], xOffset);
         this.trailPoints = [];
-    }
+    } // end of constructor
 
     draw(ctx) {
-
-        //settings for string style
+        // settings for string style
         const tempLineWidth = ctx.lineWidth;
         // so it shrinks with the screen
         ctx.lineWidth = game.canvas.height * .009;

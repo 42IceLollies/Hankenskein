@@ -18,27 +18,26 @@
 const game = {
 	fps: 35,
 	xOffset: 0,
-	frictionRate: .6,
-	idList: [],
-	background: undefined,
-	lines: [],
-	points: [],
-	level:undefined,
+	frictionRate: .6, // speeds loses 40% per second
+	idList: [], // holds the IDs for all active setInterval's
+	// === so much of this is undefined cause it's defined in setup() to avoid errors when things are still loading ===
+	background: undefined, // the background image
+	lines: [], // lines hank can collide with
+	points: [], // points hank collides with, which are the ends of the lines
+	level: undefined, // which level the player's on
 	levelEndPoint: undefined,
-	music: true,
-	sfx: true,
-	canvas: undefined,
-	ctx: undefined,
-	maxLevel: 2,
+	music: true, // if music is on
+	sfx: true, // if sound effects should be on
+	canvas: undefined, // the canvas object
+	ctx: undefined, // the context we draw on
+	maxLevel: 2, // the highest level available
 };
 
 // holds all the player information
 // turns out hank is complicated
 const player = {
-	// for ease of drawing and moving (x, y, radius)
-	// shape: new Circle(100, 100, 25), // the object that's drawn on the canvas, for simplicity
-	shape: undefined, // the object that's drawn on the canvas, for simplicity
-	// keeps track of where it just was for trajectory calculations
+	shape: undefined, // the object that's drawn on the canvas, for compartmentilization
+	// keeps track of where hank just was for trajectory calculations
 	prevX: 100,
 	prevY: 100,
 	xSpeed: 0, // horizontal speed in [px/s]
@@ -52,7 +51,7 @@ const player = {
 	// the above is updated with the sum of the below
 	ySpeeds: {
 		gravity: 0,
-		// both y rolls updated to match their x counterparts
+		// both y rolls updated to match their x counterparts elsewhere
 		rollDown: 0,
 		rollUp: 0,
 	},
@@ -93,21 +92,12 @@ function setup(linesArray, backgroundPath) {
 	xOffsetStart = 430; // cor if you have the issue again uncomment this line
 	// center player
 	player.shape = new Circle(game.canvas.width / 2, 400, game.canvas.height * player.screenPercent * player.unravelPercent);
-	// player.shape.x = game.canvas.width / 2;
-	// player.shape.y = 400;
-	// // size the player correctly
-	// player.shape.radius = game.canvas.height * player.screenPercent * player.unravelPercent;
-	
-	//MAY NEED TO UNCOMMENT THIS, CHANGED SO IT WORKS ON MY COMPUTER (comment in capitals so it's easier to find)
-	//player.shape.y = playerY;
 
 	// makes line objects from the (x, y) points in the array
 	createLines(linesArray, xOffsetStart);
 
 	// create the lasso
 	player.lasso = new Lasso2();
-
-	Lasso.resetForceBase();
 	player.lasso.resetForceBase();
 
 	// sets the background image with the file provided
@@ -1257,6 +1247,7 @@ function spinPlayer() {
 function movePlayer() {
 	updatePlayerSpeeds();
 
+	// save this location to be the new previous
 	// cause it doesn't actually move horizontally
 	player.prevX = -game.xOffset;
 	player.prevY = player.shape.y;
