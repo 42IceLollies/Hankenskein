@@ -870,6 +870,7 @@ const keydown = {
 // keeps track of the mouse
 const mouse = {
 	down: false,
+	out: true,
 	x: 0,
 	y: 0,
 }; // end of mouse object
@@ -999,8 +1000,12 @@ const newPoints = [];
 let count = 0;
 
 document.addEventListener("mousedown", (e) => {
+	mouse.down = true;
+
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
+
+	// KEEP THE STUFF BELOW
 	// if (count == 0) {
 	// 	newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
 	// 	count++;
@@ -1029,8 +1034,6 @@ document.addEventListener("mousedown", (e) => {
 	// }
 	// console.log(str);
 
-	mouse.down = true;
-
 	//idk if this is needed still but it was doing weird stuff
 	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
 
@@ -1051,6 +1054,7 @@ document.addEventListener("mousedown", (e) => {
 document.addEventListener("mousemove", (e) => {
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
+	mouse.out = false;
 
 	if (player.lasso == undefined) {return;}
 
@@ -1062,21 +1066,13 @@ document.addEventListener("mousemove", (e) => {
 
 
 document.addEventListener("mouseup", (e)=>{
-	keydown.mouse = false;
 	mouse.down = false;
-
-	// clears interval that grows the prospected lasso line
-	// clearInterval(Lasso.intervalId);
-
-	// if(Lasso.lassoCounter == 1) {
-		
-	// 	//adds one that moves the line according to mouse location
-	// 	Lasso.intervalId=setInterval(()=>{//Lasso.setHankProperties(player.shape.x, player.shape.y); 
-	// 		listener = document.addEventListener('mousemove', mouseMove);
-	// 		clearMouseMove();
-	// 	}, 500);
-	// }
 }); // end of mouseup listener
+
+
+document.addEventListener("mouseout", () => {
+	mouse.out = true;
+})
 
 
 //external function for eventListener above so it's easier to cancel later
@@ -1721,12 +1717,12 @@ function draw(ctx) {
 function main() {
 	// lengthens the lasso forceLength
 	const wUpId = setInterval(() => {
-		if (keydown.up || keydown.w) {
+		if ((keydown.up || keydown.w) && !mouse.out) {
 			Lasso.incrementForce();
 			player.lasso.incrementForce();
 		}
 
-		if (keydown.down || keydown.s) {
+		if ((keydown.down || keydown.s) && !mouse.out) {
 			Lasso.decrementForce();
 			player.lasso.decrementForce();
 		}
@@ -1751,7 +1747,7 @@ function main() {
 		// called here so collision still works
 		moveLines();
 		moveLassoPoints();
-		player.lasso.update(game.xOffset);
+		player.lasso.update(game.xOffset, [mouse.x, mouse.y], [player.shape.x, player.shape.y]);
 
 		// if it's touching ground, apply friction
 		if (atRest()) {

@@ -914,24 +914,29 @@ class Lasso2 {
         this.forceY = 0;
         this.forceLength = 0;
 
-        this.mouseCoords = [0, 0];
+        this.mouse = {x: 0, y: 0};
+        this.hank = {x: 0, y: 0};
         
         this.slope = 0; // not sure what this is used for
-        // 0: nothing | 1: aiming | 2: thrown/falling/shooting
+        // 0: nothing | 1: aiming | 2: thrown/falling/shooting | 3: hooked/pulling
         this.stage = 0;
     } // end of constructor
 
 
     // updates parts that need to be routinely updated
-    update(xOffset, mouse) {
+    update(xOffset, mouse, playerShape) {
         this.collideRadius = game.canvas.height * 0.015;
         this.end.shape.radius = this.collideRadius;
         // move start to be under the player
-        this.start.moveTo(player.shape.x, player.shape.y, xOffset);
+        this.start.moveTo(this.hank.x, this.hank.y, xOffset);
         // reset forceLength if not stage 1
         if (this.stage != 1) {this.resetForceBase();}
         // sets the mouse location
-        this.mouseCoords = mouse;
+        this.mouse.x = mouse[0];
+        this.mouse.y = mouse[1];
+
+        this.hank.x = playerShape[0];
+        this.hank.y = playerShape[1];
     } // end of update
 
 
@@ -952,25 +957,26 @@ class Lasso2 {
 
 
     setMouseCoordinants(x, y) {
-        this.mouseCoords = [x, y];
+        this.mouse.x = x;
+        this.mouse.y = y;
     } // end of setMouseCoordinants
 
 
     resetForceBase() {
-        this.forceX = player.shape.x - game.xOffset;
-        this.forceY = player.shape.y;
+        this.forceX = this.hank.x - game.xOffset;
+        this.forceY = this.hank.y;
         this.forceLength = 0;
     } // end of resetForceBase
 
 
     // called when up arrow is pressed down to make force projection longer and how far the lasso is thrown
     incrementForce() {   
-        this.forceX += (this.mouseCoords[0]-player.shape.x)/20;
-        this.forceY += (this.mouseCoords[1]-player.shape.y)/20;
+        this.forceX += (this.mouse.x-this.hank.x)/20;
+        this.forceY += (this.mouse.y-this.hank.y)/20;
 
         //updates the length of the force
-        var x = this.forceX - player.shape.x;
-        var y = this.forceY - player.shape.y;
+        var x = this.forceX - this.hank.x;
+        var y = this.forceY - this.hank.y;
         this.forceLength = Math.sqrt((x*x) + (y*y));
         this.slope = y/x;
 
@@ -981,12 +987,12 @@ class Lasso2 {
 
 
     decrementForce() {
-        this.forceX -= (this.mouseCoords[0]-player.shape.x)/20;
-        this.forceY -= (this.mouseCoords[1]-player.shape.y)/20;
+        this.forceX -= (this.mouse.x-this.hank.x)/20;
+        this.forceY -= (this.mouse.y-this.hank.y)/20;
 
         //updates the length of the force
-        var x = this.forceX - (player.shape.x);
-        var y = this.forceY - player.shape.y;
+        var x = this.forceX - (this.hank.x);
+        var y = this.forceY - this.hank.y;
         this.forceLength = Math.sqrt((x*x) + (y*y));
         this.slope = y/x;
 
@@ -998,8 +1004,8 @@ class Lasso2 {
 
     changeMouseLocation(e) { 
         //new location of cursor in reference to player
-        const newX = e.clientX - player.shape.x;
-        const newY = e.clientY - player.shape.y;
+        const newX = e.clientX - this.hank.x;
+        const newY = e.clientY - this.hank.y;
 
         if (this.forceLength > game.canvas.height * 6) {this.forceLength = game.canvas.height * 6;}
 
@@ -1007,8 +1013,8 @@ class Lasso2 {
         const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
 
         //finds location of the end of the line
-        const finalX = player.shape.x + (newX*ratio);
-        const finalY = player.shape.y + (newY*ratio);
+        const finalX = this.hank.x + (newX*ratio);
+        const finalY = this.hank.y + (newY*ratio);
 
         //set forceX & forceY to new values
         this.forceX = finalX;
@@ -1105,13 +1111,13 @@ class Lasso2 {
         if (this.stage != 1) {return;} // only call in stage 1
         this.stage++; // move to stage 2
 
-        this.end.shape.moveTo(player.shape.x, player.shape.y, game.xOffset);
+        this.end.shape.moveTo(this.hank.x, this.hank.y, game.xOffset);
 
-        // this.end.xSpeed = (this.forceX - player.shape.x) / 2;
-        // this.end.ySpeed = (this.forceY - player.shape.y) * 1.5;
+        // this.end.xSpeed = (this.forceX - this.hank.x) / 2;
+        // this.end.ySpeed = (this.forceY - this.hank.y) * 1.5;
 
-        this.end.xSpeed = (this.forceX - player.shape.x) / 1.5;
-        this.end.ySpeed = (this.forceY - player.shape.y);
+        this.end.xSpeed = (this.forceX - this.hank.x) / 1.5;
+        this.end.ySpeed = (this.forceY - this.hank.y);
     } // end of throw
 
 
