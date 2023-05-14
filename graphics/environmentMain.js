@@ -46,7 +46,7 @@ const player = {
 	},
 	// how much speed it can gain, set elsewhere [in resize()]
 	acceleration: 300,
-	fillColor: "#ffe0f0", // pink // this doesn't show when the drawing's in place
+	fillColor: "#ffe0f0", // pink // this doesn't show when the drawing's in place // i'm using it for yarn color
 	screenPercent: 0.04, // 4% of the height of the canvas
 	radiusActual: 0.1016, // 4 inches in meters // used for physics calculations
 	unravelPercent: 1.0, // 1.0 = not unraveled, 0 = completely unraveled
@@ -870,6 +870,7 @@ const keydown = {
 // keeps track of the mouse
 const mouse = {
 	down: false,
+	out: true,
 	x: 0,
 	y: 0,
 }; // end of mouse object
@@ -1051,6 +1052,7 @@ document.addEventListener("mousedown", (e) => {
 document.addEventListener("mousemove", (e) => {
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
+	mouse.out = false;
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	player.lasso.setMouseCoordinants(e.clientX, e.clientY);
 	Lasso.changeMouseLocation(e);
@@ -1058,8 +1060,12 @@ document.addEventListener("mousemove", (e) => {
 });
 
 
+document.addEventListener("mouseout", (e) => {
+	mouse.out = true;
+});
+
+
 document.addEventListener("mouseup", (e)=>{
-	keydown.mouse = false;
 	mouse.down = false;
 
 	// clears interval that grows the prospected lasso line
@@ -1571,17 +1577,17 @@ function drawPlayer(ctx) {
 	const ball = new Image();
 	ball.src = "../Art/Hankenskein.png";
 
-	// const x = player.shape.x - player.shape.radius;
-	// const y = player.shape.y - player.shape.radius;
 	const centerX = player.shape.x;
 	const centerY = player.shape.y;
 
 	// gets it to rotate (i don't really get it either)
-	ctx.translate(centerX, centerY);
-	ctx.rotate(degreesToRadians(player.rotation % 360));
-	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2);
-	ctx.rotate(-degreesToRadians(player.rotation % 360));
-	ctx.translate(-centerX, -centerY);
+	// it moves from (0, 0) to the center of the player, spins, draws the player, then unspins and moves back to (0, 0)
+	// ^ best way to explain it
+	ctx.translate(centerX, centerY); // move to player
+	ctx.rotate(degreesToRadians(player.rotation % 360)); // spin the context
+	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2); // draw player
+	ctx.rotate(-degreesToRadians(player.rotation % 360)); // spin back to normal
+	ctx.translate(-centerX, -centerY); // move back to default context position
 
 	drawPlayerEyes();
 } // end of drawPlayer
@@ -1700,12 +1706,12 @@ function draw(ctx) {
 function main() {
 	// lengthens the lasso forceLength
 	const wUpId = setInterval(() => {
-		if (keydown.up || keydown.w) {
+		if ((keydown.up || keydown.w) && !mouse.out) {
 			Lasso.incrementForce();
 			player.lasso.incrementForce();
 		}
 
-		if (keydown.down || keydown.s) {
+		if ((keydown.down || keydown.s) && !mouse.out) {
 			Lasso.decrementForce();
 			player.lasso.decrementForce();
 		}
@@ -1726,7 +1732,7 @@ function main() {
 		// called here so collision still works
 		moveLines();
 		moveLassoPoints();
-		player.lasso.update(game.xOffset);
+		player.lasso.update(game.xOffset, [mouse.x, mouse.y]);
 
 		// if it's touching ground, apply friction
 		if (atRest()) {
@@ -1742,17 +1748,19 @@ function main() {
 		// movement
 		movePlayer();
 		moveLines();
+		player.lasso.endMove(game.fps);
 		game.background.updateOffset(game.xOffset);
 		fillPoints();
 		// natural physics have a turn
 		fall();
+		player.lasso.endFall(Physics.gravityAcceleration(game.fps, getPxPerM()));
 		roll();
 		// set new trajectories if needed
 		for (let i = 0; i < game.lines.length; i++) {
 			circleLineBounce(player, game.lines[i]);
 		}
 
-		// console.log(Lasso.lassoCounter);
+		// console.log(player.lasso.forceX - player.shape.x);
 
 		draw(ctx);
 

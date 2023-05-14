@@ -648,18 +648,25 @@ class Lasso2 {
         this.stage = 0;
     } // end of constructor
 
+
     // updates parts that need to be routinely updated
-    update(xOffset) {
+    update(xOffset, mouse) {
         this.collideRadius = canvas.height * 0.015;
         this.end.shape.radius = this.collideRadius;
         // move start to be under the player
         this.start.moveTo(player.shape.x, player.shape.y, xOffset);
+        // reset forceLength if not stage 1
+        if (this.stage != 1) {this.resetForceBase();}
+        // sets the mouse location
+        this.mouseCoords = mouse;
     } // end of update
+
 
     // I used it a lot, and need it to be accessible
     static pythagorean(a, b) {
         return Math.sqrt(Math.pow(Math.abs(a), 2) + Math.pow(Math.abs(b), 2));
     } // end of pythagorean
+
 
     // test if num is within the given range
     static withinRange(num, rangeStart, rangeEnd) {
@@ -670,9 +677,11 @@ class Lasso2 {
         }
     } // end of withinRange
 
+
     setMouseCoordinants(x, y) {
         this.mouseCoords = [x, y];
     } // end of setMouseCoordinants
+
 
     resetForceBase() {
         this.forceX = player.shape.x - game.xOffset;
@@ -680,10 +689,11 @@ class Lasso2 {
         this.forceLength = 0;
     } // end of resetForceBase
 
+
     // called when up arrow is pressed down to make force projection longer and how far the lasso is thrown
     incrementForce() {   
-        this.forceX+=(this.mouseCoords[0]-player.shape.x)/20;
-        this.forceY+=(this.mouseCoords[1]-player.shape.y)/20;
+        this.forceX += (this.mouseCoords[0]-player.shape.x)/20;
+        this.forceY += (this.mouseCoords[1]-player.shape.y)/20;
 
         //updates the length of the force
         var x = this.forceX - player.shape.x;
@@ -695,9 +705,10 @@ class Lasso2 {
         if (this.stage == 0) {this.stage++;}
     } // end of incrementForce
 
+
     decrementForce() {
-        this.forceX-=(this.mouseX-player.shape.x)/20;
-        this.forceY-=(this.mouseY-player.shape.y)/20;
+        this.forceX -= (this.mouseCoords[0]-player.shape.x)/20;
+        this.forceY -= (this.mouseCoords[1]-player.shape.y)/20;
 
         //updates the length of the force
         var x = this.forceX - (player.shape.x);
@@ -707,6 +718,7 @@ class Lasso2 {
 
         if (this.stage == 0) {this.stage++;}
     } // end of decrementForce
+
 
     changeMouseLocation(e) { 
         //new location of cursor in reference to player
@@ -727,6 +739,7 @@ class Lasso2 {
         this.forceY = finalY;
         this.slope = newY/newX;
     } // end of changeMouseLocation
+
 
     drawAiming(ctx) {
         const tempLineWidth = ctx.lineWidth;
@@ -749,6 +762,52 @@ class Lasso2 {
         ctx.globalAlpha = 1;
     } // end of drawAiming
 
+
+    // for testing purposes
+    // draws the end point collision circle
+    endDraw(ctx) {
+        const prevFillColor = ctx.fillColor;
+        ctx.fillStyle = "#ff0000"
+        
+        ctx.beginPath();
+        
+        const x = this.end.shape.x - this.end.shape.radius;
+        const y = this.end.shape.y;
+        const radius = this.end.shape.radius;
+
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fill();
+
+        ctx.fillStyle = prevFillColor;
+    } // end of drawEnd
+
+
+    // draws the arc from start to end points
+    // color should be acceptable by ctx.fillStyle directly
+    drawArc(ctx, color) {
+        // MAKES A STRAIGHT LINE RIGHT NOW, NEED A CONSISTENT WAY TO FIND A CONTROL POINT
+        const prevColor = ctx.strokeStyle;
+
+        // const start = [this.start.x, this.start.y];
+        // const end = [this.end.shape.x, this.end.shape.y];
+        const start = {x: this.start.x, y: this.start.y};
+        const end = {x: this.end.shape.x, y: this.end.shape.y};
+
+        const middle = {x: start.x + (end.x - start.x)/2, y: start.y + (end.y - start.y)/2};
+        // const middle = {x: start.x + 2*(end.x - start.x), y: start.y + 2*(end.y - start.y)};
+
+        ctx.beginPath();
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = "dd0000";
+
+        ctx.moveTo(start.x, start.y);
+        ctx.quadraticCurveTo(middle.x, middle.y, end.x, end.y);
+        ctx.stroke();
+
+        ctx.strokeStyle = prevColor;
+    } // end of drawArc
+
+
     // draws the lasso in all of it's stages
     draw(ctx) {
         switch(this.stage) {
@@ -756,17 +815,48 @@ class Lasso2 {
                 break;
             case 1: // pre-lasso/aiming
                 this.drawAiming(ctx);
+                break;
+            case 2: // thrown and moving
+                this.endDraw(ctx);
+                this.drawArc(ctx, player.fillColor);
+                break;
         }
     } // end of draw
+
 
     // throws the end point out | called in stage 1
     throw() {
         if (this.stage != 1) {return;} // only call in stage 1
+        this.stage++; // move to stage 2
 
-        this.end.moveTo(player.shape.x, player.shape.y, game.xOffset);
+        this.end.shape.moveTo(player.shape.x, player.shape.y, game.xOffset);
 
+        // this.end.xSpeed = (this.forceX - player.shape.x) / 2;
+        // this.end.ySpeed = (this.forceY - player.shape.y) * 1.5;
 
+        this.end.xSpeed = (this.forceX - player.shape.x) / 1.5;
+        this.end.ySpeed = (this.forceY - player.shape.y);
     } // end of throw
+
+
+    // adds gravity to the end that's launched
+    endFall(gravityAmount) { // get gravity from Physics.gravity, same as player with adjustments as needed
+        this.end.ySpeed += gravityAmount / 1.8;
+    } // end of endFall
+
+
+    // moves the end's x and y based on their respective speeds
+    endMove(fps) {
+        this.end.shape.x += this.end.xSpeed / fps;
+        this.end.shape.y += this.end.ySpeed / fps;
+    }
+
+
+    // planning on testing for collision in the environment js file
+    // grabs the end onto a fixed point
+    endGrab() {
+
+    } // end of endGrab
 } // end of Lasso2
 
 
