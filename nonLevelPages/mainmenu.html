@@ -34,18 +34,19 @@
 
 
     <!-- settings div - hidden until 'settings' is chosen -->
+    <!-- START OF SETTINGS -->
         <div id="settings" class="hidden">
             <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
             <div class="spacerDiv"></div>
             <div class="soundSetting">
                 <div class="setSelection noBorder">Music</div> 
-                <div class="setSelection">ON</div>
-                <div class="setSelection">OFF</div>
+                <div class="setSelection" id="musicOn" onclick="toggleMusic('on'); bold('music');">ON</div>
+                <div class="setSelection" id="musicOff" onclick="toggleMusic('off'); bold('music');">OFF</div>
             </div>
             <div class="soundSetting">
                  <div class="setSelection noBorder">Sfx</div>
-                 <div class="setSelection">ON</div>
-                 <div class="setSelection">OFF</div>
+                 <div class="setSelection" id="sfxOn" onclick="toggleSfx('on'); bold('sfx');">ON</div>
+                 <div class="setSelection" id="sfxOff" onclick="toggleSfx('off'); bold('sfx');">OFF</div>
             </div>
             <div class="colorSetting">
                 <div class="setSelection noBorder">Color?</div>
@@ -60,17 +61,9 @@
             </div>
         </div>
 
-        <script>
-            function toggleMusic()
-            {
-
-            }
-
-            function toggleSfx()
-            {
-
-            }
-        </script>
+        <script language="javascript" src="/graphics/gameAndPlayerObjects.js"></script>
+        <script language="javascript" src="/nonLevelPages/settings.js"> </script>
+        <!-- END OF SETTINGS -->
 
 <!-- </div id ="box">
     </div> -->
