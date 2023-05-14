@@ -34,7 +34,8 @@ const game = {
 // turns out hank is complicated
 const player = {
 	// for ease of drawing and moving (x, y, radius)
-	shape: new Circle(100, 100, 25), // the object that's drawn on the canvas, for simplicity
+	// shape: new Circle(100, 100, 25), // the object that's drawn on the canvas, for simplicity
+	shape: undefined, // the object that's drawn on the canvas, for simplicity
 	// keeps track of where it just was for trajectory calculations
 	prevX: 100,
 	prevY: 100,
@@ -89,11 +90,11 @@ function setup(linesArray, backgroundPath) {
 
 	xOffsetStart = 430; // cor if you have the issue again uncomment this line
 	// center player
-	player.shape.x = game.canvas.width / 2;
-	player.shape.y = 400;
-	// size the player correctly
-	player.shape.radius = game.canvas.height * player.screenPercent * player.unravelPercent;
-	// sets the player's height
+	player.shape = new Circle(game.canvas.width / 2, 400, game.canvas.height * player.screenPercent * player.unravelPercent);
+	// player.shape.x = game.canvas.width / 2;
+	// player.shape.y = 400;
+	// // size the player correctly
+	// player.shape.radius = game.canvas.height * player.screenPercent * player.unravelPercent;
 	
 	//MAY NEED TO UNCOMMENT THIS, CHANGED SO IT WORKS ON MY COMPUTER (comment in capitals so it's easier to find)
 	//player.shape.y = playerY;
@@ -1041,25 +1042,28 @@ document.addEventListener("mousedown", (e) => {
 	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
 
 	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
-	if (Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3 || Lasso.lassoCounter == 5) {
-		Lasso.incrementLassoStage();
-	}
+	// if (Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3 || Lasso.lassoCounter == 5) {
+	// 	Lasso.incrementLassoStage();
+	// }
 		
-	if(Lasso.lassoCounter==1) {
+	// if(Lasso.lassoCounter==1) {
 		// Lasso.resetForceBase();
 		// player.lasso.resetForceBase();
 	// 	Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
 	// 	also add the mouse update in here
-	}
+	// }
 }); // end of mousedown listener
 
 
 document.addEventListener("mousemove", (e) => {
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
-	Lasso.setMouseCoordinates(e.clientX, e.clientY);
+
+	if (player.lasso == undefined) {return;}
+
+	// Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	player.lasso.setMouseCoordinants(e.clientX, e.clientY);
-	Lasso.changeMouseLocation(e);
+	// Lasso.changeMouseLocation(e);
 	player.lasso.changeMouseLocation(e);
 });
 
@@ -1069,16 +1073,16 @@ document.addEventListener("mouseup", (e)=>{
 	mouse.down = false;
 
 	// clears interval that grows the prospected lasso line
-	clearInterval(Lasso.intervalId);
+	// clearInterval(Lasso.intervalId);
 
-	if(Lasso.lassoCounter == 1) {
+	// if(Lasso.lassoCounter == 1) {
 		
-		//adds one that moves the line according to mouse location
-		Lasso.intervalId=setInterval(()=>{//Lasso.setHankProperties(player.shape.x, player.shape.y); 
-			listener = document.addEventListener('mousemove', mouseMove);
-			clearMouseMove();
-		}, 500);
-	}
+	// 	//adds one that moves the line according to mouse location
+	// 	Lasso.intervalId=setInterval(()=>{//Lasso.setHankProperties(player.shape.x, player.shape.y); 
+	// 		listener = document.addEventListener('mousemove', mouseMove);
+	// 		clearMouseMove();
+	// 	}, 500);
+	// }
 }); // end of mouseup listener
 
 
