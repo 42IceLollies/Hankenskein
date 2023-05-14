@@ -1739,8 +1739,8 @@ function main() {
 	}, 100); // end of gravity timer loop
 
 
-	//sets level in game object by calling level's html file
-	setLevel();
+	// sets level in game object by calling level's html file
+	// setLevel();
 
 
 	// main! the animate loop, cycles everything
