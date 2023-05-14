@@ -24,10 +24,12 @@ const game = {
 	lines: [],
 	points: [],
 	level:undefined,
+	levelEndPoint: undefined,
 	music: true,
 	sfx: true,
 	canvas: undefined,
 	ctx: undefined,
+	maxLevel: 2,
 };
 
 // holds all the player information
@@ -130,6 +132,7 @@ function createLines(pointsArray, offset) {
 		game.lines.push(newLine);
 	}
 } // end of createLines
+
 
 
 // can be moved to physics
@@ -1382,6 +1385,23 @@ function updatePlayerSpeeds() {
 } // end of updatePlayerSpeeds
 
 
+//when hank hits the end of the level (or a specified end point), the level changes
+function levelUp()
+{
+	// console.log(game.xOffset);
+
+	if(game.xOffset >= game.levelEndPoint-2 && game.xOffset<= game.levelEndPoint+2)
+	{
+		if(game.level!= game.maxLevel) {
+			window.location.assign("/levels/level" + (game.level+1) + ".html");
+		} else {
+			window.location.assign("/nonLevelPages/endPage.html");
+		}
+	}
+	
+}
+
+
 // =================
 // =ROLLING
 // =================
@@ -1728,6 +1748,10 @@ function main() {
 	}, 100); // end of gravity timer loop
 
 
+	//sets level in game object by calling level's html file
+	setLevel();
+
+
 	// main! the animate loop, cycles everything
 	const animateId = setInterval(() => {
 
@@ -1763,6 +1787,8 @@ function main() {
 		}
 
 		// console.log(Lasso.lassoCounter);
+
+		levelUp();
 
 		draw(game.ctx);
 
