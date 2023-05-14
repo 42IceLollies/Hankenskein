@@ -10,65 +10,6 @@ const ctx = canvas.getContext('2d');
 // =DATA OBJECTS
 // ==================
 
-// holds some general variables that are handy to keep together
-const game = {
-	fps: 35,
-	xOffset: 0,
-	frictionRate: .6,
-	idList: [],
-	background: undefined,
-	lines: [],
-	points: [],
-};
-
-// holds all the player information
-// turns out hank is complicated
-const player = {
-	// for ease of drawing and moving (x, y, radius)
-	shape: new Circle(100, 100, 25), // the object that's drawn on the canvas, for simplicity
-	// keeps track of where it just was for trajectory calculations
-	prevX: 100,
-	prevY: 100,
-	xSpeed: 0, // horizontal speed in [px/s]
-	// the above is updated with the sum of the below
-	xSpeeds: {
-		rollDown: 0, // x speed when rolling down a line
-		rollUp: 0, // x speed when rolling up a line
-		normal: 0, // the regular moving-to-the-side force (from arrow keys directly)
-	},
-	ySpeed: 0, // vertical speed in [px/s]
-	// the above is updated with the sum of the below
-	ySpeeds: {
-		gravity: 0,
-		// both y rolls updated to match their x counterparts
-		rollDown: 0,
-		rollUp: 0,
-	},
-	// how much speed it can gain, set elsewhere [in resize()]
-	acceleration: 300,
-	fillColor: "#ffe0f0", // pink // this doesn't show when the drawing's in place // i'm using it for yarn color
-	screenPercent: 0.04, // 4% of the height of the canvas
-	radiusActual: 0.1016, // 4 inches in meters // used for physics calculations
-	unravelPercent: 1.0, // 1.0 = not unraveled, 0 = completely unraveled
-	// tracks which directions it's blocked by something
-	blocked: {
-		up: false,
-		down: false,
-		left: false,
-		right: false,
-	},
-	// tracks which directions it's stopped moving by something
-	stopped: {
-		up: false,
-		down: false,
-		left: false,
-		right: false,
-	},
-	rotation: 0, // degrees // keeps track of how much it's spun
-	pauseSpin: false, // if it should stop visually spinning
-	lasso: undefined,
-	yarnTrail: undefined,
-};
 
 
 // holds all the lines and points the player can collide with
@@ -870,7 +811,6 @@ const keydown = {
 // keeps track of the mouse
 const mouse = {
 	down: false,
-	out: true,
 	x: 0,
 	y: 0,
 }; // end of mouse object
@@ -1052,7 +992,6 @@ document.addEventListener("mousedown", (e) => {
 document.addEventListener("mousemove", (e) => {
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
-	mouse.out = false;
 	Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	player.lasso.setMouseCoordinants(e.clientX, e.clientY);
 	Lasso.changeMouseLocation(e);
@@ -1060,12 +999,8 @@ document.addEventListener("mousemove", (e) => {
 });
 
 
-document.addEventListener("mouseout", (e) => {
-	mouse.out = true;
-});
-
-
 document.addEventListener("mouseup", (e)=>{
+	keydown.mouse = false;
 	mouse.down = false;
 
 	// clears interval that grows the prospected lasso line
@@ -1577,17 +1512,17 @@ function drawPlayer(ctx) {
 	const ball = new Image();
 	ball.src = "../Art/Hankenskein.png";
 
+	// const x = player.shape.x - player.shape.radius;
+	// const y = player.shape.y - player.shape.radius;
 	const centerX = player.shape.x;
 	const centerY = player.shape.y;
 
 	// gets it to rotate (i don't really get it either)
-	// it moves from (0, 0) to the center of the player, spins, draws the player, then unspins and moves back to (0, 0)
-	// ^ best way to explain it
-	ctx.translate(centerX, centerY); // move to player
-	ctx.rotate(degreesToRadians(player.rotation % 360)); // spin the context
-	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2); // draw player
-	ctx.rotate(-degreesToRadians(player.rotation % 360)); // spin back to normal
-	ctx.translate(-centerX, -centerY); // move back to default context position
+	ctx.translate(centerX, centerY);
+	ctx.rotate(degreesToRadians(player.rotation % 360));
+	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2);
+	ctx.rotate(-degreesToRadians(player.rotation % 360));
+	ctx.translate(-centerX, -centerY);
 
 	drawPlayerEyes();
 } // end of drawPlayer
@@ -1706,12 +1641,12 @@ function draw(ctx) {
 function main() {
 	// lengthens the lasso forceLength
 	const wUpId = setInterval(() => {
-		if ((keydown.up || keydown.w) && !mouse.out) {
+		if (keydown.up || keydown.w) {
 			Lasso.incrementForce();
 			player.lasso.incrementForce();
 		}
 
-		if ((keydown.down || keydown.s) && !mouse.out) {
+		if (keydown.down || keydown.s) {
 			Lasso.decrementForce();
 			player.lasso.decrementForce();
 		}
@@ -1732,7 +1667,7 @@ function main() {
 		// called here so collision still works
 		moveLines();
 		moveLassoPoints();
-		player.lasso.update(game.xOffset, [mouse.x, mouse.y]);
+		player.lasso.update(game.xOffset);
 
 		// if it's touching ground, apply friction
 		if (atRest()) {
@@ -1748,19 +1683,17 @@ function main() {
 		// movement
 		movePlayer();
 		moveLines();
-		player.lasso.endMove(game.fps);
 		game.background.updateOffset(game.xOffset);
 		fillPoints();
 		// natural physics have a turn
 		fall();
-		player.lasso.endFall(Physics.gravityAcceleration(game.fps, getPxPerM()));
 		roll();
 		// set new trajectories if needed
 		for (let i = 0; i < game.lines.length; i++) {
 			circleLineBounce(player, game.lines[i]);
 		}
 
-		// console.log(player.lasso.forceX - player.shape.x);
+		// console.log(Lasso.lassoCounter);
 
 		draw(ctx);
 

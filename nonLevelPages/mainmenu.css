@@ -95,7 +95,7 @@ a:hover, div.selection:hover{
     width:70vw;
     height:70vh;
     border-radius:5%;
-    top:15vh;
+    top:20vh;
     left:15vw;
     z-index:4;
 
@@ -174,4 +174,9 @@ a:hover, div.selection:hover{
 
 .noBorder{
     border: 0;
+}
+
+.bold{
+    /* border: 3px solid black; */
+    background-color:rgb(148, 148, 148, 70);
 }
