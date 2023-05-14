@@ -1,7 +1,7 @@
-// gets the canvas that we'll do everything on initialized
-const canvas = document.getElementById('canvas');
-// the part we'll actually call all the drawing on
-const ctx = canvas.getContext('2d');
+// // gets the canvas that we'll do everything on initialized
+// const canvas = document.getElementById('canvas');
+// // the part we'll actually call all the drawing on
+// const ctx = canvas.getContext('2d');
 
 //I'm not sure where the background behind the level image is set but could we switch it to #ffe0f0 so that all the pink backgrounds are similar shades?
 
@@ -11,23 +11,88 @@ const ctx = canvas.getContext('2d');
 // ==================
 
 
+//needed to move the variables since just linking the environment main file to 
+//other non-level files to access them throws errors since there's no canvas
 
-// holds all the lines and points the player can collide with
-// const lines = [];
-// let points = []; // holds all the points
-// let background; // background image
-// let yarnTrail; // the player's yarn trail
+// holds some general variables that are handy to keep together
+const game = {
+	fps: 35,
+	xOffset: 0,
+	frictionRate: .6,
+	idList: [],
+	background: undefined,
+	lines: [],
+	points: [],
+	level:undefined,
+	music: true,
+	sfx: true,
+	canvas: undefined,
+	ctx: undefined,
+};
+
+// holds all the player information
+// turns out hank is complicated
+const player = {
+	// for ease of drawing and moving (x, y, radius)
+	shape: new Circle(100, 100, 25), // the object that's drawn on the canvas, for simplicity
+	// keeps track of where it just was for trajectory calculations
+	prevX: 100,
+	prevY: 100,
+	xSpeed: 0, // horizontal speed in [px/s]
+	// the above is updated with the sum of the below
+	xSpeeds: {
+		rollDown: 0, // x speed when rolling down a line
+		rollUp: 0, // x speed when rolling up a line
+		normal: 0, // the regular moving-to-the-side force (from arrow keys directly)
+	},
+	ySpeed: 0, // vertical speed in [px/s]
+	// the above is updated with the sum of the below
+	ySpeeds: {
+		gravity: 0,
+		// both y rolls updated to match their x counterparts
+		rollDown: 0,
+		rollUp: 0,
+	},
+	// how much speed it can gain, set elsewhere [in resize()]
+	acceleration: 300,
+	fillColor: "#ffe0f0", // pink // this doesn't show when the drawing's in place // i'm using it for yarn color
+	screenPercent: 0.04, // 4% of the height of the canvas
+	radiusActual: 0.1016, // 4 inches in meters // used for physics calculations
+	unravelPercent: 1.0, // 1.0 = not unraveled, 0 = completely unraveled
+	// tracks which directions it's blocked by something
+	blocked: {
+		up: false,
+		down: false,
+		left: false,
+		right: false,
+	},
+	// tracks which directions it's stopped moving by something
+	stopped: {
+		up: false,
+		down: false,
+		left: false,
+		right: false,
+	},
+	rotation: 0, // degrees // keeps track of how much it's spun
+	pauseSpin: false, // if it should stop visually spinning
+	lasso: undefined,
+	yarnTrail: undefined,
+};
+
 
 
 // gathered all the loose setup code into this function, called from each html file
 // input the lines to draw for that level, file path for background art, and x and y the player should start at
 function setup(linesArray, backgroundPath) {
+	game.canvas = document.getElementById('canvas');
+	game.ctx = game.canvas.getContext('2d');
+
 	xOffsetStart = 430; // cor if you have the issue again uncomment this line
 	// center player
-	player.shape.x = canvas.width / 2;
+	player.shape.x = game.canvas.width / 2;
 	player.shape.y = 400;
 	// size the player correctly
-	player.shape.radius = canvas.height * player.screenPercent * player.unravelPercent;
+	player.shape.radius = game.canvas.height * player.screenPercent * player.unravelPercent;
 	// sets the player's height
 	
 	//MAY NEED TO UNCOMMENT THIS, CHANGED SO IT WORKS ON MY COMPUTER (comment in capitals so it's easier to find)
@@ -43,7 +108,7 @@ function setup(linesArray, backgroundPath) {
 	player.lasso.resetForceBase();
 
 	// sets the background image with the file provided
-	game.background = new Background(backgroundPath, xOffsetStart, 0, canvas.height);
+	game.background = new Background(backgroundPath, xOffsetStart, 0, game.canvas.height);
 
 	//ALSO UNCOMMENTED THIS FOR THE MOMENT- IN CASE I FORGET TO REVERT IT BEFORE PUSHING
 	// creates the yarn trail
@@ -1041,9 +1106,9 @@ function clearMouseMove() {
 // resizes everything in the canvas to stay the same relative to each other when the canvas changes size
 function resize() {
 	// saves the canvas dimensions for comparison after
-	const prevCanvas = canvas.width + " " + canvas.height;
+	const prevCanvas = game.canvas.width + " " + game.canvas.height;
 	// saves what fraction of canvas height player.shape.y is
-	const playerHeight = player.shape.y / canvas.height;
+	const playerHeight = player.shape.y / game.canvas.height;
 
 	// holds the fractions representing lines' x's and y's
 	const lineYs = [];
@@ -1052,12 +1117,12 @@ function resize() {
 	for (let i = 0; i < game.lines.length; i++) {
 		const line = game.lines[i];
 		// for y's, a fraction of the canvas height
-		lineYs.push([line.y1 / canvas.height, line.y2 / canvas.height]);
+		lineYs.push([line.y1 / game.canvas.height, line.y2 / game.canvas.height]);
 		// for x's, the distance from player to line-point, divided by player.shape.radius
 		lineXs.push([(line.x1 - player.shape.x) / player.shape.radius, (line.x2 - player.shape.x) / player.shape.radius]);
 	}
 
-	game.background.updateDimensions(canvas.height);
+	game.background.updateDimensions(game.canvas.height);
 
 	// the difference between the background location and the player location,
 	// divided by the player radius for scale
@@ -1067,36 +1132,36 @@ function resize() {
 	if (Lasso.lassoPoints != undefined && Lasso.lassoPoints.length > 0) {
 		for (let i = 0; i < Lasso.lassoPoints.length; i++) {
 			const point = Lasso.lassoPoints[i];
-			lassoPoints.push([(point.x - player.shape.x) / player.shape.radius, point.y / canvas.height]);
+			lassoPoints.push([(point.x - player.shape.x) / player.shape.radius, point.y / game.canvas.height]);
 		}
 	}
 
-	// const mouseLocation = [(Lasso.mouseX - player.shape.x) / player.shape.radius, Lasso.mouseY / canvas.height];
-	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / canvas.height];
+	// const mouseLocation = [(Lasso.mouseX - player.shape.x) / player.shape.radius, Lasso.mouseY / game.canvas.height];
+	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / game.canvas.height];
 
 	// resize the canvas to fill the whole window
 	resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
-	const currCanvas = canvas.width + " " + canvas.height;
+	const currCanvas = game.canvas.width + " " + game.canvas.height;
 	if (prevCanvas == currCanvas) {
 		return;
 	}
 
 	// center player horizontally
-	player.shape.x = canvas.width / 2;
+	player.shape.x = game.canvas.width / 2;
 	// make radius the set fraction of the height
-	player.shape.radius = canvas.height * player.screenPercent * player.unravelPercent;
-	player.shape.y = canvas.height * playerHeight;
+	player.shape.radius = game.canvas.height * player.screenPercent * player.unravelPercent;
+	player.shape.y = game.canvas.height * playerHeight;
 	player.acceleration = player.shape.radius * 10;
 
 	// resizes the lines
 	for (let i = 0; i < game.lines.length; i++) {
 		const line = game.lines[i];
 
-		line.y1 = lineYs[i][0] * canvas.height;
-		line.y2 = lineYs[i][1] * canvas.height;
+		line.y1 = lineYs[i][0] * game.canvas.height;
+		line.y2 = lineYs[i][1] * game.canvas.height;
 
 		// multiplied by player radius so it stays on the same scale as player
 		const x1Distance = lineXs[i][0] * player.shape.radius;
@@ -1117,7 +1182,7 @@ function resize() {
 	}
 
 	// resize the image to fit height-wise
-	game.background.updateDimensions(canvas.height);
+	game.background.updateDimensions(game.canvas.height);
 	// the px amount of how far back the background should be from the player
 	const backXDistance = player.shape.x - game.xOffset + (backFraction * player.shape.radius);
 	// use this method cause setting it directly doesn't work
@@ -1128,13 +1193,13 @@ function resize() {
 	for (let i = 0; i < lassoPoints.length; i++) {
 		const x = player.shape.x + (lassoPoints[i][0] * player.shape.radius);
 		// const x = player.shape.x + (lassoPoints[i][0] * player.shape.radius);
-		const y = lassoPoints[i][1] * canvas.height;
+		const y = lassoPoints[i][1] * game.canvas.height;
 		Lasso.lassoPoints[i].moveTo(x, y, game.xOffset);
 		Lasso.lassoPoints[i].adjustX(game.xOffset);
 	}
 
 	Lasso.forceX = player.shape.x + (forceLocation[0] * player.shape.radius);
-	Lasso.forceY = forceLocation[1] * canvas.height;
+	Lasso.forceY = forceLocation[1] * game.canvas.height;
 
 } // end of resize
 
@@ -1142,8 +1207,8 @@ function resize() {
 // resizes the canvas to the size of the window
 function resizeCanvas() {
 	// -20 to get around padding I can't find
-	canvas.width = window.innerWidth - 10; 
-	canvas.height = window.innerHeight - 10;
+	game.canvas.width = window.innerWidth - 10; 
+	game.canvas.height = window.innerHeight - 10;
 } // end of resizeCanvas
 
 
@@ -1503,7 +1568,7 @@ function rollDown(circle, line, force) {
 
 // clears the canvas to transparent
 function clearCanvas(ctx) {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
 } // end of clearCanvas
 
 
@@ -1524,11 +1589,11 @@ function drawPlayer(ctx) {
 	ctx.rotate(-degreesToRadians(player.rotation % 360));
 	ctx.translate(-centerX, -centerY);
 
-	drawPlayerEyes();
+	drawPlayerEyes(ctx);
 } // end of drawPlayer
 
 
-function drawPlayerEyes() {
+function drawPlayerEyes(ctx) {
 	// draw the big white circles with the black outline
 	ctx.beginPath();
 	const x1 = player.shape.x - player.shape.radius * (4/9);
@@ -1591,7 +1656,7 @@ function drawPlayerEyes() {
 // unravels the player and updates radius
 function unravelPlayer(percent) {
 	player.unravelPercent = percent;
-	player.shape.radius = canvas.height * player.screenPercent * percent;
+	player.shape.radius = game.canvas.height * player.screenPercent * percent;
 	player.acceleration = player.shape.radius * 10;
 }
 
@@ -1608,7 +1673,7 @@ function drawLines(ctx) {
 
 
 // function drawWalls(ctx, background) {
-// 	const thick = canvas.height / 10;
+// 	const thick = game.canvas.height / 10;
 
 // 	ctx.beginPath();
 // 	ctx.rect(background.x - thick, background.y - thick, background.width + thick*2, background.height + thick*2);
@@ -1621,10 +1686,10 @@ function drawLines(ctx) {
 function draw(ctx) {
 	clearCanvas(ctx);
 	ctx.beginPath();
-	ctx.rect(0, 0, canvas.width, canvas.height);
+	ctx.rect(0, 0, game.canvas.width, game.canvas.height);
 	ctx.fillStyle = "#dad";
 	ctx.fill();
-	game.background.updateDimensions(canvas.height);
+	game.background.updateDimensions(game.canvas.height);
 	game.background.draw(ctx);
 	drawLines(ctx);
 	// Lasso.drawLasso(ctx);
@@ -1695,7 +1760,7 @@ function main() {
 
 		// console.log(Lasso.lassoCounter);
 
-		draw(ctx);
+		draw(game.ctx);
 
 	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 

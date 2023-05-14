@@ -111,7 +111,7 @@ class Lasso {
 		var x = Lasso.forceX - player.shape.x;
 		var y = Lasso.forceY - player.shape.y;
 		Lasso.forceLength = Math.sqrt((x*x) + (y*y));
-        if (this.forceLength > canvas.height * 6) {this.forceLength = canvas.height * 6;}
+        if (this.forceLength > game.canvas.height * 6) {this.forceLength = game.canvas.height * 6;}
 		Lasso.slope = y/x;
 
         Lasso.hankX = player.shape.x;
@@ -138,7 +138,7 @@ class Lasso {
 		const newX = e.clientX - player.shape.x;
 		const newY = e.clientY - player.shape.y;
 
-        if (this.forceLength > canvas.height * 6) {this.forceLength = canvas.height * 6;}
+        if (this.forceLength > game.canvas.height * 6) {this.forceLength = game.canvas.height * 6;}
 
 		//calculates length of force in reference to player's location
 		const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
@@ -212,7 +212,7 @@ class Lasso {
         const tempLineWidth = ctx.lineWidth;
         // ctx.lineWidth = 5;
         // so the lasso looks small on small screens
-        ctx.lineWidth = canvas.height * .007;
+        ctx.lineWidth = game.canvas.height * .007;
         if (ctx.lineWidth < 1) {ctx.lineWidth = 1};
         ctx.strokeStyle = "#8CA231";
         ctx.globalAlpha = 0.5;
@@ -343,7 +343,7 @@ class Lasso {
              !(Math.abs(this.lassoPoints[i].y-this.lassoPoints[i-1])<=10||Math.abs(this.lassoPoints[i].y-this.lassoPoints[i+1])<=10))
             {
                // this.lassoPoints[i].y+=3;//can be changed to grav acceleration
-               this.lassoPoints[i].y += canvas.height * .005;
+               this.lassoPoints[i].y += game.canvas.height * .005;
                pointsMoved++;
             }
         }
@@ -457,7 +457,7 @@ class Lasso {
 
     static move(ctx) {
         // 19 points moving 2px each, 38 px movement == < for pullInLasso \/
-        // when it's small it retracts faster, at a rate of 9% of canvas.height when it's good
+        // when it's small it retracts faster, at a rate of 9% of game.canvas.height when it's good
         
         // save a copy of the old point
         const prevPoint = Lasso.lassoPoints[0].copy();
@@ -563,7 +563,7 @@ class Lasso {
          const tempLineWidth = ctx.lineWidth;
          // ctx.lineWidth = 5;
          // so it shrinks with the screen
-         ctx.lineWidth = canvas.height * .009;
+         ctx.lineWidth = game.canvas.height * .009;
          if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
 
          ctx.strokeStyle =  player.fillColor;
@@ -591,7 +591,7 @@ class Lasso {
     //      const tempLineWidth = ctx.lineWidth;
     //     // ctx.lineWidth = 5;
     //     // so it shrinks with the screen
-    //     ctx.lineWidth = canvas.height * .009;
+    //     ctx.lineWidth = game.canvas.height * .009;
     //     if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
 
     //     ctx.strokeStyle =  player.fillColor;
@@ -627,7 +627,7 @@ class Lasso {
 class Lasso2 {
     constructor() {
         // the radius of the circle used for collision around points
-        this.collideRadius = canvas.height * 0.015;
+        this.collideRadius = game.canvas.height * 0.015;
         // the point that stays with player
         this.start = new Point(0, 0);
         // the point moving out
@@ -651,7 +651,7 @@ class Lasso2 {
 
     // updates parts that need to be routinely updated
     update(xOffset, mouse) {
-        this.collideRadius = canvas.height * 0.015;
+        this.collideRadius = game.canvas.height * 0.015;
         this.end.shape.radius = this.collideRadius;
         // move start to be under the player
         this.start.moveTo(player.shape.x, player.shape.y, xOffset);
@@ -699,7 +699,7 @@ class Lasso2 {
         var x = this.forceX - player.shape.x;
         var y = this.forceY - player.shape.y;
         this.forceLength = Math.sqrt((x*x) + (y*y));
-        if (this.forceLength > canvas.height * 6) {this.forceLength = canvas.height * 6;}
+        if (this.forceLength > game.canvas.height * 6) {this.forceLength = game.canvas.height * 6;}
         this.slope = y/x;
 
         if (this.stage == 0) {this.stage++;}
@@ -725,7 +725,7 @@ class Lasso2 {
         const newX = e.clientX - player.shape.x;
         const newY = e.clientY - player.shape.y;
 
-        if (this.forceLength > canvas.height * 6) {this.forceLength = canvas.height * 6;}
+        if (this.forceLength > game.canvas.height * 6) {this.forceLength = game.canvas.height * 6;}
 
         //calculates length of force in reference to player's location
         const ratio = this.forceLength/Math.sqrt(newX*newX + newY*newY);
@@ -745,7 +745,7 @@ class Lasso2 {
         const tempLineWidth = ctx.lineWidth;
         // ctx.lineWidth = 5;
         // so the lasso looks small on small screens
-        ctx.lineWidth = canvas.height * .007;
+        ctx.lineWidth = game.canvas.height * .007;
         if (ctx.lineWidth < 1) {ctx.lineWidth = 1};
         ctx.strokeStyle = "#8CA231";
         ctx.globalAlpha = 0.5;
@@ -1102,7 +1102,7 @@ class YarnTrail {
         //settings for string style
         const tempLineWidth = ctx.lineWidth;
         // so it shrinks with the screen
-        ctx.lineWidth = canvas.height * .009;
+        ctx.lineWidth = game.canvas.height * .009;
         if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
 
         ctx.strokeStyle =  player.fillColor;
