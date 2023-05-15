@@ -24,30 +24,45 @@
             }
 
             //turns music on or off
-            function toggleMusic(onOrOff)
+            function toggleMusic(onOrOff, audioExists)
             {
                 if(onOrOff == "on")
                 {
                     game.music = true;
-                    playMusic();
-                    setDataObjects();
+                    
+                    if(audioExists){
+                        playMusic();
+                        setDataObjects();
+                    }
                 } else if(onOrOff=="off")
                 {
                     game.music = false;
-                    pauseMusic(); 
-                    storeData();
+
+                    if(audioExists){
+                        pauseMusic(); 
+                        storeData();
+                    }
                 }
             }
 
             //turns sound effects on or off
-            function toggleSfx(onOrOff)
+            function toggleSfx(onOrOff, audioExists)
             {
                 if(onOrOff == "on")
                 {
                     game.sfx = true;
+
+                    if(audioExists)
+                    {
+
+                    }
                 } else if(onOrOff=="off")
                 {
                     game.sfx = false; 
+                    if(audioExists)
+                    {
+                        
+                    }
                 }
             }
 

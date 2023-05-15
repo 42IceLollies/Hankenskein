@@ -80,7 +80,8 @@ const player = {
 	pauseSpin: false, // if it should stop visually spinning
 	lasso: undefined,
 	yarnTrail: undefined,
-	color: "pink",
+	color: "purple",
+	image: new Image(),
 };
 
 
@@ -156,6 +157,7 @@ function storeData()
 //retrieves values from local storage and resets them in the data objects
 function setDataObjects()
 {
+	//if it's not on a non level page??
 	const toSet = Backup.retrieve("gameAndPlayerData");
 
 	game.xOffset = toSet.xOffset;
@@ -165,6 +167,7 @@ function setDataObjects()
 	player.color = toSet.color;
 	
 	console.log(toSet);
+
 }
 
 
@@ -1642,8 +1645,7 @@ function clearCanvas(ctx) {
 
 // draws in the player, info from player{}
 function drawPlayer(ctx) {
-	const ball = new Image();
-	ball.src = "../Art/Hankenskein.png";
+	setPlayerColor("und");
 
 	// const x = player.shape.x - player.shape.radius;
 	// const y = player.shape.y - player.shape.radius;
@@ -1653,12 +1655,59 @@ function drawPlayer(ctx) {
 	// gets it to rotate (i don't really get it either)
 	ctx.translate(centerX, centerY);
 	ctx.rotate(degreesToRadians(player.rotation % 360));
-	ctx.drawImage(ball, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2);
+	ctx.drawImage(player.image, 0-player.shape.radius, 0-player.shape.radius, player.shape.radius*2 , player.shape.radius*2);
 	ctx.rotate(-degreesToRadians(player.rotation % 360));
 	ctx.translate(-centerX, -centerY);
 
 	drawPlayerEyes(ctx);
 } // end of drawPlayer
+
+
+function setPlayerColor(color)
+{
+	if(color!="und")
+	{
+		player.color = color;
+	}
+	
+	switch(player.color){
+		case "pink":
+			 player.image.src = "/Art/playerColors/Hankenskein.png";
+			 player.fillColor = "#e2619f";
+		break;
+
+		case "blue":
+			player.image.src="/Art/playerColors/blueHank.png";
+			player.fillColor = "blue";
+		break;
+
+		case "orange":
+			player.image.src="/Art/playerColors/orangeHank.png"
+			player.fillColor = "orange";
+		break;
+
+		case "red":
+			player.image.src="/Art/playerColors/redHank.png";
+			player.fillColor = "red";
+		break;
+
+		case "green":
+			player.image.src="/Art/playerColors/greenHank.png";
+			player.fillColor = "green";
+		break;
+
+		case "grey":
+			player.image.src="/Art/playerColors/greyHank.png";
+			player.fillColor = "black";
+		break;
+
+		case "purple":
+			player.image.src="/Art/playerColors/purpleHank.png";
+			player.fillColor = "purple";
+		break;
+	}
+
+}
 
 
 function drawPlayerEyes(ctx) {

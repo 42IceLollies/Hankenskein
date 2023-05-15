@@ -22,6 +22,7 @@
 <body>
 
     <!-- adding pause, play and home buttons => use home to go to settings  -->
+
     <img id = "title" src = "../Art/menuTitle.png">
     <img id = "bg" src = "../Art/menuBackground.png">
     <img id = "flowers" src = "../Art/menuFlowers.png">
@@ -37,34 +38,36 @@
 
     <!-- settings div - hidden until 'settings' is chosen -->
     <!-- START OF SETTINGS -->
+    <script language="javascript" src="../graphics/environmentMain.js"></script>
+    <script language="javascript" src="settings.js"> </script>
+    <script language="javascript" src="/classes.js"></script>
+    
         <div id="settings" class="hidden">
             <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
             <div class="spacerDiv"></div>
             <div class="soundSetting">
                 <div class="setSelection noBorder">Music</div> 
-                <div class="setSelection hand" id="musicOn" onclick="toggleMusic('on'); bold('music');">ON</div>
-                <div class="setSelection hand" id="musicOff" onclick="toggleMusic('off'); bold('music');">OFF</div>
+                <div class="setSelection hand" id="musicOn" onclick="toggleMusic('on', false); bold('music');">ON</div>
+                <div class="setSelection hand" id="musicOff" onclick="toggleMusic('off', false); bold('music');">OFF</div>
             </div>
             <div class="soundSetting">
                  <div class="setSelection noBorder">Sfx</div>
-                 <div class="setSelection hand" id="sfxOn" onclick="toggleSfx('on'); bold('sfx');">ON</div>
-                 <div class="setSelection hand" id="sfxOff" onclick="toggleSfx('off'); bold('sfx');">OFF</div>
+                 <div class="setSelection hand" id="sfxOn" onclick="toggleSfx('on', false); bold('sfx');">ON</div>
+                 <div class="setSelection hand" id="sfxOff" onclick="toggleSfx('off', false); bold('sfx');">OFF</div>
             </div>
             <div class="colorSetting">
                 <div class="setSelection noBorder">Color?</div>
                 <!-- will eventually have small pictures of colors but may just comment this out if I don't get it working before competition -->
                 <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
-                 <div class="setSelection colorSelection hand" style="background-color:gray"></div>  
-                 <div class="setSelection colorSelection hand" style="background-color:blue" ></div>
-                 <div class="setSelection colorSelection hand" style="background-color:purple"></div>
-                 <div class="setSelection colorSelection hand" style="background-color:red"></div>
-                 <div class="setSelection colorSelection hand" style="background-color:green"></div>
-                 <div class="setSelection colorSelection hand" style="background-color:orange"></div>
+                 <div class="setSelection colorSelection hand" style="background-color:gray" onclick="setPlayerColor('grey')"></div>  
+                 <div class="setSelection colorSelection hand" style="background-color:blue" onclick="setPlayerColor('blue')" ></div>
+                 <div class="setSelection colorSelection hand" style="background-color:purple" onclick="setPlayerColor('purple')"></div>
+                 <div class="setSelection colorSelection hand" style="background-color:red" onclick="setPlayerColor('red')"></div>
+                 <div class="setSelection colorSelection hand" style="background-color:green" onclick="setPlayerColor('green')"></div>
+                 <div class="setSelection colorSelection hand" style="background-color:orange" onclick="setPlayerColor('orange')"></div>
+                 <div class="setSelection colorSelection hand" style="background-color:pink" onclick="setPlayerColor('pink')"></div>
             </div>
         </div>
-
-        <script language="javascript" src="../graphics/environmentMain.js"></script>
-        <script language="javascript" src="settings.js"> </script>
         <!-- END OF SETTINGS -->
 
 <!-- </div id ="box">
