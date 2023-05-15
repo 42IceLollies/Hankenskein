@@ -29,9 +29,13 @@
                 if(onOrOff == "on")
                 {
                     game.music = true;
+                    playMusic();
+                    setDataObjects();
                 } else if(onOrOff=="off")
                 {
-                    game.music = false; 
+                    game.music = false;
+                    pauseMusic(); 
+                    storeData();
                 }
             }
 
