@@ -57,7 +57,7 @@ const player = {
 	},
 	// how much speed it can gain, set elsewhere [in resize()]
 	acceleration: 300,
-	fillColor: "e2619f", // pink // this doesn't show when the drawing's in place // i'm using it for yarn color // #ffe0f0
+	fillColor: "#e2619f", // pink // this doesn't show when the drawing's in place // i'm using it for yarn color // #ffe0f0
 	screenPercent: 0.04, // 4% of the height of the canvas
 	radiusActual: 0.1016, // 4 inches in meters // used for physics calculations
 	unravelPercent: 1.0, // 1.0 = not unraveled, 0 = completely unraveled
@@ -1574,9 +1574,13 @@ function rollDown(circle, line, force) {
 } // end of rollUp
 
 
+
 // ================
 // =SOUND
 //=================
+
+
+
 let musicPlaying = undefined;
 let audio = document.getElementById("mainTheme");
 // audio.playbackRate = 0.75;
@@ -1608,10 +1612,10 @@ if(game.music)
 //=================
 
 //when page changes, the data is stored as page unloads
-window.addEventListener('unload', storeData());
+window.addEventListener('unload', storeData);
 
 //when it loads, data is updated in objects
-window.onload(setDataObjects())
+window.onload(setDataObjects());
 
 //makes a copy of the needed values from data objects and sends them to local storage
 function storeData()
@@ -1851,6 +1855,8 @@ function main() {
 		levelUp();
 
 		draw(game.ctx);
+
+		console.log(player.lasso.stage);
 
 	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 

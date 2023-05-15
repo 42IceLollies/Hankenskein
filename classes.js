@@ -1040,12 +1040,14 @@ class Lasso2 {
 
     // adds gravity to the end that's launched
     endFall(gravityAmount) { // get gravity from Physics.gravity, same as player with adjustments as needed
+        if (this.stage != 2) {return;}
         this.end.ySpeed += gravityAmount / 1.8; // numbers found through trial and error, it looked about right
     } // end of endFall
 
 
     // moves the end's x and y based on their respective speeds
     endMove(fps) {
+        if (this.stage != 2) {return;}
         this.end.shape.xStart += this.end.xSpeed / fps;
         this.end.shape.y += this.end.ySpeed / fps;
     } // end of endMove
@@ -1060,6 +1062,14 @@ class Lasso2 {
 
     // draws the lasso in all of it's stages
     draw(ctx, color) {
+        const prevColor = ctx.strokeStyle;
+        const tempLineWidth = ctx.lineWidth;
+
+        ctx.lineWidth = game.canvas.height * .009;
+        if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
+        ctx.strokeStyle = color;
+        ctx.lineCap = "round";
+
         switch(this.stage) {
             case 0:
                 break;
@@ -1068,19 +1078,21 @@ class Lasso2 {
                 break;
             case 2: // thrown and moving
                 this.endDraw(ctx);
-                this.drawArc(ctx, color);
+                this.drawArc(ctx);
                 break;
             case 3: // grabbed and pulling
-                this.drawGrabbed(ctx, color);
-                // this.drawLine(ctx, color);
+                // this.drawGrabbed(ctx, color);
+                this.drawLine(ctx);
                 break;
         }
+
+        // reset the settings
+        ctx.strokeStyle = prevColor;
+        ctx.lineWidth = tempLineWidth;
     } // end of draw
 
 
     drawAiming(ctx) {
-        const tempLineWidth = ctx.lineWidth;
-        // ctx.lineWidth = 5;
         // so the lasso looks small on small screens
         ctx.lineWidth = game.canvas.height * .007;
         if (ctx.lineWidth < 1) {ctx.lineWidth = 1};
@@ -1094,8 +1106,6 @@ class Lasso2 {
         ctx.stroke();
 
         //resetting everything for the rest of the code to work
-        ctx.lineWidth = tempLineWidth;
-        ctx.strokeStyle = "#000000"
         ctx.globalAlpha = 1;
     } // end of drawAiming
 
@@ -1103,7 +1113,6 @@ class Lasso2 {
     // for testing purposes
     // draws the end point collision circle
     endDraw(ctx) {
-        const prevFillColor = ctx.fillColor;
         ctx.fillStyle = "#ff0000"
         
         ctx.beginPath();
@@ -1114,18 +1123,14 @@ class Lasso2 {
 
         ctx.arc(x, y, radius, 0, 2 * Math.PI);
         ctx.fill();
-
-        ctx.fillStyle = prevFillColor;
     } // end of drawEnd
 
 
     // draws the arc from start to end points
     // color should be acceptable by ctx.fillStyle directly
-    drawArc(ctx, color) {
+    drawArc(ctx) {
         // MAKES A STRAIGHT LINE RIGHT NOW, NEED A CONSISTENT WAY TO FIND A CONTROL POINT
-        const prevColor = ctx.strokeStyle;
 
-        const tempLineWidth = ctx.lineWidth;
         // so it shrinks with the screen
         ctx.lineWidth = game.canvas.height * .009;
         if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
@@ -1136,27 +1141,25 @@ class Lasso2 {
         const middle = {x: start.x + (end.x - start.x)/2, y: start.y + (end.y - start.y)/2};
 
         ctx.beginPath();
-        ctx.lineCap = 'round';
-
-        ctx.strokeStyle = "#e2619f";
-        console.log(ctx.strokeStyle);
-        // console.log(color);
-        // ctx.strokeStyle = color;
 
         ctx.moveTo(start.x, start.y);
         ctx.quadraticCurveTo(middle.x, middle.y, end.x, end.y);
 
         ctx.stroke();
-
-        // reset the settings
-        ctx.strokeStyle = prevColor;
-        ctx.lineWidth = tempLineWidth;
     } // end of drawArc
 
 
-    drawGrabbed(ctx) {
+    drawLine(ctx) {
+        ctx.beginPath();
+        ctx.moveTo(this.start.x, this.start.y);
+        ctx.lineTo(this.end.shape.x, this.end.shape.y);
+        ctx.stroke();
+    } // end of drawLine
 
-    }
+
+    // drawGrabbed(ctx) {
+
+    // }
 } // end of Lasso2
 
 
