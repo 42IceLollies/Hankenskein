@@ -57,7 +57,7 @@ const player = {
 	},
 	// how much speed it can gain, set elsewhere [in resize()]
 	acceleration: 300,
-	fillColor: "#ffe0f0", // pink // this doesn't show when the drawing's in place // i'm using it for yarn color
+	fillColor: "e2619f", // pink // this doesn't show when the drawing's in place // i'm using it for yarn color // #ffe0f0
 	screenPercent: 0.04, // 4% of the height of the canvas
 	radiusActual: 0.1016, // 4 inches in meters // used for physics calculations
 	unravelPercent: 1.0, // 1.0 = not unraveled, 0 = completely unraveled
@@ -582,6 +582,26 @@ function pointCollisionBelow(circle, point) {
 } // end of pointCollisionBelow
 
 
+function lassoCollision() {
+	if (player.lasso.stage != 2) {return;}
+
+	for (let i = 0; i < game.lines.length; i++) {
+		if (testForLineCollision(player.lasso.end, game.lines[i])) {
+			player.lasso.endGrab();
+			return;
+		}
+	}
+
+	for (let i = 0; i < game.points.length; i++) {
+		if (testForPointCollision(player.lasso.end, game.points[i])) {
+			player.lasso.endGrab();
+			return;
+		}
+	}
+} // end of lassoCollision
+
+
+
 //can be moved to physics
 // ==============
 // =BOUNCE
@@ -887,48 +907,31 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 38:
 			keydown.up = true;
-			if (Lasso.lassoCounter == 3) {
-				Lasso.incrementLassoStage();
-			}
-			if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
+			// if (Lasso.lassoCounter == 3) {
+			// 	Lasso.incrementLassoStage();
+			// }
+			// if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			// Lasso.pullInLasso();
 			break;
 		case 40:
 			keydown.down = true;
-			if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
+			// if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			break;
 		case 32:
 			keydown.space = true;
-
 			player.lasso.throw(); // only works in stage 1/aiming
-
-			// if(Lasso.lassoCounter == 1)
-			// {
-			// 	Lasso.incrementLassoStage();
-			// 	Lasso.forceLength = 0;
-			// }
-			// == this was here for stepping through the code 1 frame at a time for testing == 
-			// movePlayer();
-			// moveLines();
-			// fall();
-			// roll();
-			// for (let i = 0; i < game.lines.length; i++) {
-			// 	circleLineBounce(player, game.lines[i]);
-			// }
-			// updatePlayerSpeeds();
-			// console.log(player.xSpeeds, player.ySpeeds);
 			break;
 		case 87:
 			keydown.w = true;
-			if (Lasso.lassoCounter == 3) {
-				Lasso.incrementLassoStage();
-			}
-			if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
+			// if (Lasso.lassoCounter == 3) {
+			// 	Lasso.incrementLassoStage();
+			// }
+			// if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			// Lasso.pullInLasso();
 			break;
 		case 83:
 			keydown.s = true;
-			if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
+			// if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			break;
 		case 82:
 			keydown.r = true;
@@ -941,12 +944,12 @@ document.addEventListener("keydown", (e) => {
 			keydown.d = true;
 			break;
 		case 8: // backspace
-			Lasso.resetForceBase();
+			// Lasso.resetForceBase();
 			player.lasso.resetForceBase();
-			Lasso.forceLength = 0;
-			if (Lasso.lassoCounter == 1) {
-				Lasso.lassoCounter = 0;
-			}
+			// Lasso.forceLength = 0;
+			// if (Lasso.lassoCounter == 1) {
+			// 	Lasso.lassoCounter = 0;
+			// }
 			if (player.lasso.stage == 1) {
 				player.lasso.stage = 0;
 			}
@@ -973,10 +976,10 @@ document.addEventListener("keyup", (e) => {
 			break;
 		case 32:
 			keydown.space = false;
-			if(Lasso.lassoStage==1){
-				clearInterval(Lasso.intervalId);
-				document.removeEventListener('mousemove', mouseMove);
-			}
+			// if(Lasso.lassoStage==1){
+			// 	clearInterval(Lasso.intervalId);
+			// 	document.removeEventListener('mousemove', mouseMove);
+			// }
 			break;
 		case 87:
 			keydown.w = false;
@@ -1375,8 +1378,6 @@ function updatePlayerSpeeds() {
 //when hank hits the end of the level (or a specified end point), the level changes
 function levelUp()
 {
-	// console.log(game.xOffset);
-
 	if(game.xOffset >= game.levelEndPoint-2 && game.xOffset<= game.levelEndPoint+2)
 	{
 		if(game.level!= game.maxLevel) {
@@ -1703,8 +1704,7 @@ function draw(ctx) {
 	game.background.updateDimensions(game.canvas.height);
 	game.background.draw(ctx);
 	drawLines(ctx);
-	// Lasso.drawLasso(ctx);
-	player.lasso.draw(ctx);
+	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
 } // end of draw
 
@@ -1744,9 +1744,10 @@ function main() {
 
 		resize();
 		updatePlayerSpeeds();
+
 		// called here so collision still works
 		moveLines();
-		moveLassoPoints();
+		// moveLassoPoints();
 		player.lasso.update(game.xOffset, [mouse.x, mouse.y], [player.shape.x, player.shape.y]);
 
 		// if it's touching ground, apply friction
@@ -1757,23 +1758,28 @@ function main() {
 		frictionPlayerY();
 
 		propelPlayer();
+
 		// collision
 		collideWithLines();
 		collideWithPoints();
+		lassoCollision();
+
 		// movement
 		movePlayer();
+		player.lasso.endMove(game.fps);
 		moveLines();
 		game.background.updateOffset(game.xOffset);
 		fillPoints();
+
 		// natural physics have a turn
 		fall();
+		player.lasso.endFall(Physics.gravityAcceleration(game.fps, getPxPerM()));
+
 		roll();
 		// set new trajectories if needed
 		for (let i = 0; i < game.lines.length; i++) {
 			circleLineBounce(player, game.lines[i]);
 		}
-
-		// console.log(Lasso.lassoCounter);
 
 		levelUp();
 

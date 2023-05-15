@@ -839,7 +839,7 @@ class Lasso {
          ctx.lineWidth = game.canvas.height * .009;
          if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
 
-         ctx.strokeStyle =  player.fillColor;
+         ctx.strokeStyle = player.fillColor;
          //path for lasso and path for controlling lasso fall
          let lassoPath = new Path2D();
 
@@ -927,6 +927,7 @@ class Lasso2 {
     update(xOffset, mouse, playerShape) {
         this.collideRadius = game.canvas.height * 0.015;
         this.end.shape.radius = this.collideRadius;
+        this.end.shape.adjustX(xOffset);
         // move start to be under the player
         this.start.moveTo(this.hank.x, this.hank.y, xOffset);
         // reset forceLength if not stage 1
@@ -1023,6 +1024,60 @@ class Lasso2 {
     } // end of changeMouseLocation
 
 
+    // throws the end point out | called in stage 1
+    throw() {
+        if (this.stage != 1) {return;} // only call in stage 1
+        this.stage++; // move to stage 2
+        // move the throwable to player's center to start
+        this.end.shape.moveTo(this.hank.x, this.hank.y, game.xOffset);
+        // add velocity to it, with less xSpeed
+        this.end.xSpeed = (this.forceX - this.hank.x) / 1.5;
+        this.end.ySpeed = (this.forceY - this.hank.y);
+
+        this.resetForceBase();
+    } // end of throw
+
+
+    // adds gravity to the end that's launched
+    endFall(gravityAmount) { // get gravity from Physics.gravity, same as player with adjustments as needed
+        this.end.ySpeed += gravityAmount / 1.8; // numbers found through trial and error, it looked about right
+    } // end of endFall
+
+
+    // moves the end's x and y based on their respective speeds
+    endMove(fps) {
+        this.end.shape.xStart += this.end.xSpeed / fps;
+        this.end.shape.y += this.end.ySpeed / fps;
+    } // end of endMove
+
+
+    // planning on testing for collision in the environment js file
+    // grabs the end onto a fixed point
+    endGrab() {
+        if (this.stage == 2) {this.stage++;}
+    } // end of endGrab
+
+
+    // draws the lasso in all of it's stages
+    draw(ctx, color) {
+        switch(this.stage) {
+            case 0:
+                break;
+            case 1: // pre-lasso/aiming
+                this.drawAiming(ctx);
+                break;
+            case 2: // thrown and moving
+                this.endDraw(ctx);
+                this.drawArc(ctx, color);
+                break;
+            case 3: // grabbed and pulling
+                this.drawGrabbed(ctx, color);
+                // this.drawLine(ctx, color);
+                break;
+        }
+    } // end of draw
+
+
     drawAiming(ctx) {
         const tempLineWidth = ctx.lineWidth;
         // ctx.lineWidth = 5;
@@ -1070,75 +1125,38 @@ class Lasso2 {
         // MAKES A STRAIGHT LINE RIGHT NOW, NEED A CONSISTENT WAY TO FIND A CONTROL POINT
         const prevColor = ctx.strokeStyle;
 
-        // const start = [this.start.x, this.start.y];
-        // const end = [this.end.shape.x, this.end.shape.y];
+        const tempLineWidth = ctx.lineWidth;
+        // so it shrinks with the screen
+        ctx.lineWidth = game.canvas.height * .009;
+        if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
+
         const start = {x: this.start.x, y: this.start.y};
         const end = {x: this.end.shape.x, y: this.end.shape.y};
 
         const middle = {x: start.x + (end.x - start.x)/2, y: start.y + (end.y - start.y)/2};
-        // const middle = {x: start.x + 2*(end.x - start.x), y: start.y + 2*(end.y - start.y)};
 
         ctx.beginPath();
         ctx.lineCap = 'round';
-        ctx.strokeStyle = "dd0000";
+
+        ctx.strokeStyle = "#e2619f";
+        console.log(ctx.strokeStyle);
+        // console.log(color);
+        // ctx.strokeStyle = color;
 
         ctx.moveTo(start.x, start.y);
         ctx.quadraticCurveTo(middle.x, middle.y, end.x, end.y);
+
         ctx.stroke();
 
+        // reset the settings
         ctx.strokeStyle = prevColor;
+        ctx.lineWidth = tempLineWidth;
     } // end of drawArc
 
 
-    // draws the lasso in all of it's stages
-    draw(ctx) {
-        switch(this.stage) {
-            case 0:
-                break;
-            case 1: // pre-lasso/aiming
-                this.drawAiming(ctx);
-                break;
-            case 2: // thrown and moving
-                this.endDraw(ctx);
-                this.drawArc(ctx, player.fillColor);
-                break;
-        }
-    } // end of draw
+    drawGrabbed(ctx) {
 
-
-    // throws the end point out | called in stage 1
-    throw() {
-        if (this.stage != 1) {return;} // only call in stage 1
-        this.stage++; // move to stage 2
-
-        this.end.shape.moveTo(this.hank.x, this.hank.y, game.xOffset);
-
-        // this.end.xSpeed = (this.forceX - this.hank.x) / 2;
-        // this.end.ySpeed = (this.forceY - this.hank.y) * 1.5;
-
-        this.end.xSpeed = (this.forceX - this.hank.x) / 1.5;
-        this.end.ySpeed = (this.forceY - this.hank.y);
-    } // end of throw
-
-
-    // adds gravity to the end that's launched
-    endFall(gravityAmount) { // get gravity from Physics.gravity, same as player with adjustments as needed
-        this.end.ySpeed += gravityAmount / 1.8;
-    } // end of endFall
-
-
-    // moves the end's x and y based on their respective speeds
-    endMove(fps) {
-        this.end.shape.x += this.end.xSpeed / fps;
-        this.end.shape.y += this.end.ySpeed / fps;
-    } // end of endMove
-
-
-    // planning on testing for collision in the environment js file
-    // grabs the end onto a fixed point
-    endGrab() {
-
-    } // end of endGrab
+    }
 } // end of Lasso2
 
 
