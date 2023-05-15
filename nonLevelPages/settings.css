@@ -131,3 +131,47 @@
 .hand{
     cursor:pointer;
 }
+
+
+/* ======================RULESETS THAT ONLY APPLY IN LEVEL PAGES=============================== */
+
+#pauseAndPlay.container{
+    position:fixed;
+    width:25vh;
+    height:10vh;
+    top:7vh;
+    left:7vh;
+    z-index:3;
+}
+
+
+/* only the child soundSetting elements */
+#pauseAndPlay.settingsBtn, #pauseAndPlay.settingsImg{
+    font-size:150%;
+    float:left;
+    text-align:center;
+    font-family: 'Raleway', sans-serif;
+    font-weight:bold;  
+    border:2px solid black;
+    margin:3%;
+    padding:1%;
+    border-radius:100%;
+
+}
+
+.buttonDiv.level{
+    left: 20% ;
+}
+
+#pauseDiv{
+    position:absolute;
+    width:100vw;
+    height:100vh;
+    z-index:2;
+    top:0;
+    left:0;
+    background-color:rgba(0,0,0,0.25);
+}
+
+
+

@@ -52,3 +52,19 @@
             }
 
             bold("all");
+
+
+            function pauseGame()
+            {
+                document.getElementById("hiddenBtns").classList.remove("hidden");
+                document.getElementById("pauseDiv").classList.remove("hidden");
+                stop();
+            }
+
+            function playGame()
+            {
+                console.log("play");
+                document.getElementById("hiddenBtns").classList.add("hidden");
+                document.getElementById("pauseDiv").classList.add("hidden");
+                main();
+            }

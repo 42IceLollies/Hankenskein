@@ -31,6 +31,7 @@ const game = {
 	canvas: undefined, // the canvas object
 	ctx: undefined, // the context we draw on
 	maxLevel: 2, // the highest level available
+	paused: false,
 };
 
 // holds all the player information
@@ -1767,7 +1768,6 @@ function draw(ctx) {
 //==================================
 // =ANIMATE LOOP
 //==================================
-
 
 function main() {
 	// lengthens the lasso forceLength
