@@ -30,10 +30,12 @@
                 {
                     game.music = true;
                     playMusic();
+                    setDataObjects();
                 } else if(onOrOff=="off")
                 {
                     game.music = false;
                     pauseMusic(); 
+                    storeData();
                 }
             }
 

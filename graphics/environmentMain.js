@@ -79,6 +79,7 @@ const player = {
 	pauseSpin: false, // if it should stop visually spinning
 	lasso: undefined,
 	yarnTrail: undefined,
+	color: "pink",
 };
 
 
@@ -1573,7 +1574,7 @@ function rollDown(circle, line, force) {
 
 
 // ================
-// =MUSIC
+// =SOUND
 //=================
 let musicPlaying = undefined;
 let audio = document.getElementById("mainTheme");
@@ -1594,10 +1595,46 @@ function pauseMusic()
 }
 
 
-//turns on music first time through
+//turns on music first time through code
 if(game.music)
 {
 	playMusic();
+}
+
+
+//=================
+//=SAVING DATA
+//=================
+
+//when page changes, the data is stored as page unloads
+window.addEventListener('unload', storeData());
+
+//when it loads, data is updated in objects
+window.onload(setDataObjects())
+
+//makes a copy of the needed values from data objects and sends them to local storage
+function storeData()
+{
+	const toSave =
+	{
+		xOffset: game.xOffset,
+		level: game.level,
+		music: game.music,
+		sfx: game.sfx,
+		color:player.color,
+	}
+
+	console.log(toSave);
+
+	Backup.save("gameAndPlayerData", toSave);
+}
+
+
+//retrieves values from local storage and resets them in the data objects
+function setDataObjects()
+{
+	const toSet = Backup.retrieve("gameAndPlayerData");
+	console.log(toSet);
 }
 
 

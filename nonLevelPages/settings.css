@@ -126,3 +126,8 @@
     /* border: 3px solid black; */
     background-color:rgba(148, 148, 148, .70);
 }
+
+/* changes the cursor to a hand on hover */
+.hand{
+    cursor:pointer;
+}
