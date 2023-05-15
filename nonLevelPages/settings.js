@@ -29,9 +29,11 @@
                 if(onOrOff == "on")
                 {
                     game.music = true;
+                    playMusic();
                 } else if(onOrOff=="off")
                 {
-                    game.music = false; 
+                    game.music = false;
+                    pauseMusic(); 
                 }
             }
 

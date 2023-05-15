@@ -1572,6 +1572,36 @@ function rollDown(circle, line, force) {
 } // end of rollUp
 
 
+// ================
+// =MUSIC
+//=================
+let musicPlaying = undefined;
+let audio = document.getElementById("mainTheme");
+// audio.playbackRate = 0.75;
+audio.volume = 0.5;
+
+//loops music if music is turned on
+function playMusic()
+{	
+	audio.loop = true;
+	audio.play();
+}
+
+//pauses music
+function pauseMusic()
+{
+	audio.pause();
+}
+
+
+//turns on music first time through
+if(game.music)
+{
+	playMusic();
+}
+
+
+
 // =================
 // =DRAWING
 // =================
