@@ -125,6 +125,50 @@ function createLines(pointsArray, offset) {
 
 
 
+//=================
+//=SAVING DATA
+//=================
+
+//data is saved routinely and restored when page is reloaded
+setInterval(() => { storeData();	
+}, 5000);
+
+//objects are updated with saved values when code runs through the first time
+setDataObjects();
+
+//makes a copy of the needed values from data objects and sends them to local storage through backup class
+function storeData()
+{
+	const toSave =
+	{
+		xOffset: game.xOffset,
+		level: game.level,
+		music: game.music,
+		sfx: game.sfx,
+		color:player.color,
+	}
+	Backup.save("gameAndPlayerData", toSave);
+}
+
+
+//retrieves values from local storage and resets them in the data objects
+function setDataObjects()
+{
+	const toSet = Backup.retrieve("gameAndPlayerData");
+
+	game.xOffset = toSet.xOffset;
+	game.level = toSet.level;
+	game.music = toSet.music;
+	game.sfx = toSet.sfx;
+	player.color = toSet.color;
+	
+	console.log(toSet);
+}
+
+
+
+
+
 // can be moved to physics
 // ====================
 // =SPEED CHANGES
@@ -1575,21 +1619,19 @@ function pauseMusic()
 
 
 //turns on music first time through code
-if(game.music)
+if(game.music == true)
 {
+	console.log(game.music);
 	playMusic();
-}
+} 
 
 
-//=================
-//=SAVING DATA
-//=================
 
 //when page changes, the data is stored as page unloads
-window.addEventListener('unload', storeData);
+window.addEventListener('unload', storeData());
 
 //when it loads, data is updated in objects
-window.onload(setDataObjects());
+window.onload(setDataObjects())
 
 //makes a copy of the needed values from data objects and sends them to local storage
 function storeData()
