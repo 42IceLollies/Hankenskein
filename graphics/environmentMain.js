@@ -119,7 +119,6 @@ function createLines(pointsArray, offset) {
 		const set = pointsArray[i];
 		// pass the points into the constructor
 		const newLine = new Line(set[0][0] + offset, set[0][1], set[1][0] + offset, set[1][1], 0);
-		// console.log(offset);
 		game.lines.push(newLine);
 	}
 } // end of createLines
@@ -527,7 +526,6 @@ function fillPoints() {
 // 	const sides = getBounceSides(circle, line, bounceDegree);
 
 // 	if (sides == false) {
-// 		// console.log("resolveCollisionOverlap");
 // 		return;
 // 	}
 
@@ -544,7 +542,6 @@ function fillPoints() {
 
 function resolveVerticalOverlap(circle, line) {
 	if (!line.isVertical || !testForLineCollision(circle, line)) {return;}
-	console.log("here");
 
 	// if player's to the left, stop moving right
 	if (player.shape.x < line.x1 && player.xSpeed > 0) {
@@ -654,7 +651,6 @@ function getBounceSides(circle, line, bounceDegree) {
 		crossPoint = pointOfIntersection(line.slopeIntercept, currPath.slopeIntercept);
 	// if both are vertical, error
 	} else if (line.isVertical && currPath.isVertical) {
-		// console.log("2 vertical lines in getBounceSides");
 		return false;
 	// if one of them is vertical, pass it to a special intersection function
 	// since a vertical line doesn't have a slope intercept form
@@ -683,7 +679,6 @@ function getBounceSides(circle, line, bounceDegree) {
 
 function circleLineBounce(circle, line) {
 	if (!testForLineCollision(circle, line)) {return;}
-	// if (line.isVertical) {console.log(1);}
 	updatePlayerSpeeds();
 	const c = circle.shape;
 	// the degree the circle should bounce away at
@@ -1125,16 +1120,8 @@ function resize() {
 	// divided by the player radius for scale
 	let backFraction = (game.background.x - player.shape.x) / player.shape.radius;
 
-	const lassoPoints = []; // add in [x, y] format for each point
-	if (Lasso.lassoPoints != undefined && Lasso.lassoPoints.length > 0) {
-		for (let i = 0; i < Lasso.lassoPoints.length; i++) {
-			const point = Lasso.lassoPoints[i];
-			lassoPoints.push([(point.x - player.shape.x) / player.shape.radius, point.y / game.canvas.height]);
-		}
-	}
-
-	// const mouseLocation = [(Lasso.mouseX - player.shape.x) / player.shape.radius, Lasso.mouseY / game.canvas.height];
-	const forceLocation = [(Lasso.forceX - player.shape.x) / player.shape.radius, Lasso.forceY / game.canvas.height];
+	const lassoEnd = [(player.lasso.end.shape.x - player.shape.x)/player.shape.radius, player.lasso.end.shape.y/game.canvas.height];
+	const lassoForce = [(player.lasso.forceX - player.shape.x)/player.shape.radius, player.lasso.forceY/game.canvas.height];
 
 	// resize the canvas to fill the whole window
 	resizeCanvas();
@@ -1187,17 +1174,11 @@ function resize() {
 	// update offset after
 	game.background.updateOffset(game.xOffset);
 
-	for (let i = 0; i < lassoPoints.length; i++) {
-		const x = player.shape.x + (lassoPoints[i][0] * player.shape.radius);
-		// const x = player.shape.x + (lassoPoints[i][0] * player.shape.radius);
-		const y = lassoPoints[i][1] * game.canvas.height;
-		Lasso.lassoPoints[i].moveTo(x, y, game.xOffset);
-		Lasso.lassoPoints[i].adjustX(game.xOffset);
-	}
-
-	Lasso.forceX = player.shape.x + (forceLocation[0] * player.shape.radius);
-	Lasso.forceY = forceLocation[1] * game.canvas.height;
-
+	// resize lasso
+	player.lasso.update(game.xOffset, [mouse.x, mouse.y], [player.shape.x, player.shape.y]);
+	player.lasso.end.shape.moveTo((lassoEnd[0] * player.shape.radius) + (player.shape.x), lassoEnd[1]*game.canvas.height, game.xOffset);
+	player.lasso.forceX = (lassoForce[0] * player.shape.radius) + player.shape.x;
+	player.lasso.forceY = lassoForce[1] * game.canvas.height;
 } // end of resize
 
 
@@ -1210,7 +1191,6 @@ function resizeCanvas() {
 
 
 function meterPixelRate() {
-	// console.log(player.shape.radius, player.radiusActual, player.shape.radius / player.radiusActual);
 	return player.shape.radius / player.radiusActual;
 } // end of meterPixelRate
 
@@ -1260,8 +1240,6 @@ function movePlayer() {
 	let diff = Math.abs(player.prevX) - Math.abs(game.xOffset);
 	if (game.xOffset < 0) {diff = -diff;}
 
-	// console.log(diff);
-
 	spinPlayer();
 } // end of movePlayer
 
@@ -1274,7 +1252,6 @@ var timer = 1;
 // returns if the player is on top of a line
 function atRest() {
 	let atRest = false;
-	// console.log(game.lines);
 	// tests against every line
 	for (let i = 0; i < game.lines.length; i++) {
 		const line = game.lines[i];
@@ -1498,14 +1475,12 @@ function rollUp(circle, line, force) {
 	// zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
 	if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
 	(circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
-		// console.log("hereye");
 		// circle.xSpeeds.rollUp = 0;
 	}
 
 	// // // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
 	// if ((circle.xSpeeds.rollUp > 0 && circle.blocked.left) || 
 	// (circle.xSpeeds.rollUp < 0 && circle.blocked.right)) {
-	// 	// console.log("hereye");
 	// 	circle.xSpeeds.rollUp = 0;
 	// }
 
@@ -1560,7 +1535,6 @@ function rollDown(circle, line, force) {
 	// // zero out rollUp if it's hit another line, so it doesn't accumulate speed wrong
 	// if ((circle.xSpeeds.rollDown > 0 && circle.blocked.right) || 
 	// (circle.xSpeeds.rollDown < 0 && circle.blocked.left)) {
-	// 	// console.log("hereye2");
 	// 	circle.xSpeeds.rollDown = 0;
 	// }
 
@@ -1855,8 +1829,6 @@ function main() {
 		levelUp();
 
 		draw(game.ctx);
-
-		console.log(player.lasso.stage);
 
 	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 
