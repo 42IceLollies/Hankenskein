@@ -127,14 +127,16 @@ function createLines(pointsArray, offset) {
 
 
 
-
 //=================
 //=SAVING DATA
 //=================
 
+
+
 //data is saved routinely and restored when page is reloaded
-setInterval(() => {storeData();}, 5000);
-setTimeout(() => {setDataObjects();}, 500);
+setInterval(() => {storeData();}, 500);
+// data is pulled as soon as everything loads
+setTimeout(() => {setDataObjects();}, 100);
 
 //objects are updated with saved values when code runs through the first time
 // setDataObjects(); // can't run first time, hasn't loaded
@@ -148,10 +150,10 @@ function storeData()
 		level: game.level,
 		music: game.music,
 		sfx: game.sfx,
-		color:player.color,
+		color: player.color,
 	}
 	Backup.save("gameAndPlayerData", toSave);
-}
+} // end of storeData
 
 
 //retrieves values from local storage and resets them in the data objects
@@ -160,7 +162,7 @@ function setDataObjects()
 	//if it's not on a non level page??
 	const toSet = Backup.retrieve("gameAndPlayerData");
 
-	game.xOffset = toSet.xOffset;
+	// game.xOffset = toSet.xOffset;
 	game.level = toSet.level;
 	game.music = toSet.music;
 	game.sfx = toSet.sfx;
@@ -168,12 +170,8 @@ function setDataObjects()
 	// player.fillColor = player.color;
 	// player.image.src = "../Art/playerColors/" + player.color + "Hank.png";
 	
-	console.log(toSet);
-
-}
-
-
-
+	// console.log(toSet);
+} // end of setDataObjects
 
 
 
@@ -1053,7 +1051,7 @@ let count = 0;
 document.addEventListener("mousedown", (e) => {
 	mouse.down = true;
 
-	if (game.music) {audio.play();}
+	if (window.location.href.includes("/levels/level") && game.music) {audio.play();}
 
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
@@ -1612,7 +1610,12 @@ function rollDown(circle, line, force) {
 let musicPlaying = undefined;
 let audio = document.getElementById("mainTheme");
 // audio.playbackRate = 0.75;
-audio.volume = 0.5;
+setTimeout(() => {
+	if (window.location.href.includes("/levels/level")) {
+		audio.volume = 0.5;
+	}
+}, 100);
+// audio.volume = 0.5;
 
 //loops music if music is turned on
 function playMusic()
