@@ -23,40 +23,43 @@ function bold(sound)
     }
 
     if(sound=="color" || sound=="all"){
-            // document.getElementsByClassName("selectX").forEach(()=>this.classList.add("hidden"));
-            // for each loop on all selectX objects
 
-        // switch(game.color)
-        // {
-        //     case "grey":
-        //         document.getElementById("greyX").classList.remove("hidden");
-        //     break;
+            //goes through all the x divs in the selection and hides them
+            let elements =  document.getElementsByClassName("selectX");
+            Array.prototype.forEach.call(elements, function(el){el.classList.add("hidden")});
+            
+            switch(player.color)
+            {
+            // for each loop on all selectX objects 
+            case "grey":
+                document.getElementById("greyX").classList.remove("hidden");
+            break;
 
-        //     case "blue": 
-        //         document.getElementById("blueX").classList.remove("hidden");
-        //     break;
+            case "blue": 
+                document.getElementById("blueX").classList.remove("hidden");
+            break;
 
-        //     case "purple": 
-        //         document.getElementById("purpleX").classList.remove("hidden");
-        //     break;
+            case "purple": 
+                document.getElementById("purpleX").classList.remove("hidden");
+            break;
 
-        //     case "red":
-        //         document.getElementById("redX").classList.remove("hidden");
-        //     break;
+            case "red":
+                document.getElementById("redX").classList.remove("hidden");
+            break;
 
-        //     case "green":
-        //         document.getElementById("greenX").classList.remove("hidden");
-        //     break;
+            case "green":
+                document.getElementById("greenX").classList.remove("hidden");
+            break;
 
-        //     case "orange":
-        //         document.getElementById("orangeX").classList.remove("hidden");
-        //     break;
+            case "orange":
+                document.getElementById("orangeX").classList.remove("hidden");
+            break;
 
-        //     case "pink":
-        //         document.getElementById("pinkX").classList.remove("hidden");
-        //     break;
+            case "pink":
+                document.getElementById("pinkX").classList.remove("hidden");
+            break;
 
-        // }
+        }
     }
 }
 

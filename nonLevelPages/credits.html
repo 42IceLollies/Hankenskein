@@ -10,47 +10,47 @@
         <link rel="icon" href="../Art/hankenskein_favicon.ico" type="image/x-icon"> <!-- favicon -->
     </head>
     <body>
-            <!-- START OF SETTINGS -->
+          <!-- START OF SETTINGS -->
     <!-- Home and settings buttons -->
     <div class="buttonDiv">
-        <button class="settingsBtn" onClick="window.location.assign('/nonLevelPages/mainmenu.html')"><img src="../art/homeBtn.png" alt="Home" class="settingsImg"></button>
+        <button class="settingsBtn" onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../art/homeBtn.png" alt="Home" class="settingsImg"></button>
         <button class="settingsBtn" onclick="document.getElementById('settings').classList.remove('hidden')"><img src="../art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
     </div>
 
     
     <!-- settings div - hidden until 'settings' is chosen -->
-
-    <div id="settings" class="hidden">
-        <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
-        <div class="spacerDiv"></div>
-        <div class="soundSetting">
-            <div class="setSelection noBorder">Music</div> 
-            <div class="setSelection hand" id="musicOn" onclick="toggleMusic('on', false); bold('music');">ON</div>
-            <div class="setSelection hand" id="musicOff" onclick="toggleMusic('off', false); bold('music');">OFF</div>
-        </div>
-        <div class="soundSetting">
-             <div class="setSelection noBorder">Sfx</div>
-             <div class="setSelection hand" id="sfxOn" onclick="toggleSfx('on', false); bold('sfx');">ON</div>
-             <div class="setSelection hand" id="sfxOff" onclick="toggleSfx('off', false); bold('sfx');">OFF</div>
-        </div>
-        <div class="colorSetting">
-            <div class="setSelection noBorder">Color?</div>
-            <!-- will eventually have small pictures of colors but may just comment this out if I don't get it working before competition -->
-            <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
-            <div class="setSelection colorSelection hand" style="background-color:gray" onclick="setPlayerColor('grey')"></div>  
-            <div class="setSelection colorSelection hand" style="background-color:blue" onclick="setPlayerColor('blue')" ></div>
-            <div class="setSelection colorSelection hand" style="background-color:purple" onclick="setPlayerColor('purple')"></div>
-            <div class="setSelection colorSelection hand" style="background-color:red" onclick="setPlayerColor('red')"></div>
-            <div class="setSelection colorSelection hand" style="background-color:green" onclick="setPlayerColor('green')"></div>
-            <div class="setSelection colorSelection hand" style="background-color:orange" onclick="setPlayerColor('orange')"></div>
-            <div class="setSelection colorSelection hand" style="background-color:pink" onclick="setPlayerColor('pink')"></div>
-        </div>
-    </div>
-
     <script language="javascript" src="../graphics/environmentMain.js"></script>
     <script language="javascript" src="settings.js"> </script>
     <script language="javascript" src="../classes.js"></script>
-    <!-- END OF SETTINGS -->
+    
+        <div id="settings" class="hidden">
+            <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
+            <div class="spacerDiv"></div>
+            <div class="soundSetting">
+                <div class="setSelection noBorder">Music</div> 
+                <div class="setSelection hand" id="musicOn" onclick="toggleMusic('on', false); bold('music');">ON</div>
+                <div class="setSelection hand" id="musicOff" onclick="toggleMusic('off', false); bold('music');">OFF</div>
+            </div>
+            <div class="soundSetting">
+                 <div class="setSelection noBorder">Sfx</div>
+                 <div class="setSelection hand" id="sfxOn" onclick="toggleSfx('on', false); bold('sfx');">ON</div>
+                 <div class="setSelection hand" id="sfxOff" onclick="toggleSfx('off', false); bold('sfx');">OFF</div>
+            </div>
+            <div class="colorSetting">
+                <div class="setSelection noBorder">Color?</div>
+                <!-- will eventually have small pictures of colors but may just comment this out if I don't get it working before competition -->
+                <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
+                <!-- Divs with X inside show up when selected to indicate current color -->
+                 <div class="setSelection colorSelection hand" style="background-color:gray" onclick="setPlayerColor('grey'); bold('color')"> <div id="greyX" class="hidden selectX">X</div></div>  
+                 <div class="setSelection colorSelection hand" style="background-color:blue" onclick="setPlayerColor('blue'); bold('color')" > <div id="blueX" class="hidden selectX">X</div></div>
+                 <div class="setSelection colorSelection hand" style="background-color:purple" onclick="setPlayerColor('purple'); bold('color')"> <div id="purpleX" class="hidden selectX">X</div></div>
+                 <div class="setSelection colorSelection hand" style="background-color:red" onclick="setPlayerColor('red'); bold('color')"> <div id="redX" class="hidden selectX">X</div></div>
+                 <div class="setSelection colorSelection hand" style="background-color:green" onclick="setPlayerColor('green'); bold('color')"> <div id="greenX" class="hidden selectX">X</div></div>
+                 <div class="setSelection colorSelection hand" style="background-color:orange" onclick="setPlayerColor('orange'); bold('color')"> <div id="orangeX" class="hidden selectX">X</div></div>
+                 <div class="setSelection colorSelection hand" style="background-color:pink" onclick="setPlayerColor('pink'); bold('color')"> <div id="pinkX" class="hidden selectX">X</div></div>
+            </div>
+        </div>
+        <!-- END OF SETTINGS -->
 
         <div class="title"><h1 class="title">This Game Was Made Possible By...</h1></div>
         <div class="credit colorOne">Ryan George, Ashley Tran, and Cordelia Trueax - Programming</div>    
