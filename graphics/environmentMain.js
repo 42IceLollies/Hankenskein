@@ -55,6 +55,7 @@ const player = {
 		// both y rolls updated to match their x counterparts elsewhere
 		rollDown: 0,
 		rollUp: 0,
+		lasso: 0,
 	},
 	// how much speed it can gain, set elsewhere [in resize()]
 	acceleration: 300,
@@ -197,8 +198,10 @@ function frictionPlayerY() {
 	const harshness = 20;
 	player.ySpeeds.rollUp -= (player.ySpeeds.rollUp * game.frictionRate * harshness) / game.fps;
 	player.ySpeeds.rollDown -= (player.ySpeeds.rollDown * game.frictionRate * harshness) / game.fps;
+	player.ySpeeds.lasso -= (player.ySpeeds.lasso * game.frictionRate) / game.fps;
 	if (Math.abs(player.ySpeeds.rollUp) < 1) {player.ySpeeds.rollUp = 0;}
 	if (Math.abs(player.ySpeeds.rollDown) < 1) {player.ySpeeds.rollDown = 0;}
+	if (Math.abs(player.ySpeeds.lasso) < 1) {player.ySpeeds.lasso = 0;}
 }
 
 
@@ -206,10 +209,12 @@ function frictionPlayerY() {
 // propels the player based on arrow keys & adjusts speed based on external elements
 function propelPlayer() {
 	updatePlayerSpeeds();
+
 	// hold the speed seperately for testing
 	let xSpeed = player.xSpeeds.normal;
 	// holds the change amount seperately
 	let speedChange = 0;
+
 	// add the new input speed - unless stopped in that direction (by vertical line)
 	if ((keydown.left || keydown.a) && !player.stopped.left) {
 		xSpeed -= player.acceleration / game.fps;
@@ -219,6 +224,44 @@ function propelPlayer() {
 		xSpeed += player.acceleration / game.fps;
 		speedChange += player.acceleration / game.fps;
 	}
+
+	let lassoChange = 0;
+	if (player.lasso.stage == 3 && keydown.space) {
+		// xSpeeds
+		if (player.lasso.end.shape.x > player.shape.x && !player.stopped.right) {
+			lassoChange = player.acceleration / game.fps;
+		} else if (!player.stopped.left) {
+			lassoChange = -player.acceleration / game.fps;
+		}
+		if (Math.abs(player.lasso.end.shape.x - player.shape.x) < (game.canvas.height*.02)) {
+			lassoChange /= 4;
+		}
+		if (Math.abs(player.lasso.end.shape.x - player.shape.x) < (game.canvas.height*.005)) {
+			lassoChange /= 4;
+		}
+
+		// ySpeeds
+		// let lassoYChange = 0;
+		// if (player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
+		// 	lassoYChange -= player.acceleration / game.fps;
+		// } else {
+		// 	lassoYChange += player.acceleration / game.fps;
+		// }
+		// if (Math.abs(player.lasso.end.shape.y - player.shape.y) < (game.canvas.height*.02)) {
+		// 	lassoYChange /= 4;
+		// }
+		// if (Math.abs(player.lasso.end.shape.x - player.shape.x) < (game.canvas.height*.005)) {
+		// 	lassoYChange /= 4;
+		// }
+		// player.ySpeeds.lasso += lassoYChange;
+	} // end of lassoChange conditionals
+
+	// add the lasso speed to the new xSpeed
+	speedChange += lassoChange;
+	xSpeed += lassoChange;
+
+	player.ySpeeds.lasso
+
 	// avoids dividing by zero in later function calls
 	if (xSpeed == 0) {xSpeed = 0.00001;}
 
@@ -996,7 +1039,7 @@ document.addEventListener("keydown", (e) => {
 			// if (Lasso.lassoCounter == 1) {
 			// 	Lasso.lassoCounter = 0;
 			// }
-			if (player.lasso.stage == 1) {
+			if (player.lasso.stage == 1 || player.lasso.stage == 3) {
 				player.lasso.stage = 0;
 			}
 			break;

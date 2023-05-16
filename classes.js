@@ -1068,6 +1068,7 @@ class Lasso2 {
         ctx.lineWidth = game.canvas.height * .009;
         if (ctx.lineWidth < 1) {ctx.lineWidth = 1;}
         ctx.strokeStyle = color;
+        ctx.fillStyle = color;
         ctx.lineCap = "round";
 
         switch(this.stage) {
@@ -1077,11 +1078,11 @@ class Lasso2 {
                 this.drawAiming(ctx);
                 break;
             case 2: // thrown and moving
-                this.endDraw(ctx);
+                // this.endDraw(ctx); // for testing
                 this.drawArc(ctx);
                 break;
             case 3: // grabbed and pulling
-                // this.drawGrabbed(ctx, color);
+                this.drawGrabbed(ctx);
                 this.drawLine(ctx);
                 break;
         }
@@ -1123,7 +1124,7 @@ class Lasso2 {
 
         ctx.arc(x, y, radius, 0, 2 * Math.PI);
         ctx.fill();
-    } // end of drawEnd
+    } // end of endDraw
 
 
     // draws the arc from start to end points
@@ -1157,9 +1158,16 @@ class Lasso2 {
     } // end of drawLine
 
 
-    // drawGrabbed(ctx) {
+    drawGrabbed(ctx) {
+        ctx.beginPath();
+        
+        const x = this.end.shape.x;
+        const y = this.end.shape.y;
+        const radius = this.end.shape.radius/1.5;
 
-    // }
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
 } // end of Lasso2
 
 
