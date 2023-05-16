@@ -6,7 +6,7 @@
 	<title>Level 1</title>
 	<!-- css -->
 	<link rel="stylesheet" type="text/css" href="level1.css">
-	<link rel="stylesheet" href="/nonLevelPages/settings.css">
+	<link rel="stylesheet" href="../nonLevelPages/settings.css">
 	<!-- favicon -->
 	<link rel="shortcut icon" href="../Art/hankenskein_favicon.ico" type="image/x-icon">
 	<link rel="icon" href="../Art/hankenskein_favicon.ico" type="image/x-icon">
@@ -14,7 +14,7 @@
 <body>
 
 <canvas id='canvas' width='1000' height='500'></canvas>
-<audio src="/Art/mainHankenskeinTheme.mp3" id="mainTheme"></audio>
+<audio src="../Art/mainHankenskeinTheme.mp3" id="mainTheme"></audio>
 
 
 <script language="javascript" src="../classes.js"></script>
@@ -52,14 +52,14 @@
 
     <!-- pause and play buttons are at top of level screen instead of just home and settings -->
     <div id="pauseAndPlay" class="container">
-        <button class="pauseAndPlay settingsBtn level" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="/art/play.png" alt="Play"></button>
-        <button class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="/art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
+        <button class="pauseAndPlay settingsBtn level" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
+        <button class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
 
         <!-- Home and settings buttons are hidden until pause is selected -->
         <!-- On level  -->
         <div class="buttonDiv level hidden" id="hiddenBtns">
-            <button class="settingsBtn level" onClick="window.location.assign('/nonLevelPages/mainmenu.html')"><img src="/art/homeBtn.png" alt="Home" class="settingsImg"></button>
-            <button class="settingsBtn level" onclick="document.getElementById('settings').classList.remove('hidden')"><img src="/art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
+            <button class="settingsBtn level" onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
+            <button class="settingsBtn level" onclick="document.getElementById('settings').classList.remove('hidden')"><img src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
         </div>
 
     </div>
@@ -94,8 +94,9 @@
         </div>
     </div>
 
-    <!-- <script language="javascript" src="../graphics/gameAndPlayerObjects.js"></script> -->
-    <script language="javascript" src="/nonLevelPages/settings.js"> </script>
+    <script language="javascript" src="../graphics/environmentMain.js"></script>
+    <script language="javascript" src="../nonLevelPages/settings.js"> </script>
+    <script language="javascript" src="../classes.js"></script>
     <!-- END OF SETTINGS -->
 
 </body>

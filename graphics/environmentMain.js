@@ -82,7 +82,7 @@ const player = {
 	yarnTrail: undefined,
 	color: "purple",
 	image: new Image(),
-};
+}; // end of player
 
 
 
@@ -133,11 +133,11 @@ function createLines(pointsArray, offset) {
 //=================
 
 //data is saved routinely and restored when page is reloaded
-setInterval(() => { storeData();	
-}, 5000);
+setInterval(() => {storeData();}, 5000);
+setTimeout(() => {setDataObjects();}, 500);
 
 //objects are updated with saved values when code runs through the first time
-setDataObjects();
+// setDataObjects(); // can't run first time, hasn't loaded
 
 //makes a copy of the needed values from data objects and sends them to local storage through backup class
 function storeData()
@@ -165,6 +165,8 @@ function setDataObjects()
 	game.music = toSet.music;
 	game.sfx = toSet.sfx;
 	player.color = toSet.color;
+	// player.fillColor = player.color;
+	// player.image.src = "../Art/playerColors/" + player.color + "Hank.png";
 	
 	console.log(toSet);
 
@@ -1051,6 +1053,8 @@ let count = 0;
 document.addEventListener("mousedown", (e) => {
 	mouse.down = true;
 
+	if (game.music) {audio.play();}
+
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
 
@@ -1625,11 +1629,12 @@ function pauseMusic()
 
 
 //turns on music first time through code
-if(game.music == true)
-{
-	console.log(game.music);
-	playMusic();
-} 
+// user has to interact with it before it can play the music, cause of ad regulations
+// if(game.music == true)
+// {
+// 	console.log(game.music);
+// 	playMusic();
+// } 
 
 
 // =================
@@ -1672,37 +1677,37 @@ function setPlayerColor(color)
 	
 	switch(player.color){
 		case "pink":
-			 player.image.src = "/Art/playerColors/Hankenskein.png";
+			 player.image.src = "../Art/playerColors/Hankenskein.png";
 			 player.fillColor = "#e2619f";
 		break;
 
 		case "blue":
-			player.image.src="/Art/playerColors/blueHank.png";
+			player.image.src="../Art/playerColors/blueHank.png";
 			player.fillColor = "blue";
 		break;
 
 		case "orange":
-			player.image.src="/Art/playerColors/orangeHank.png"
+			player.image.src="../Art/playerColors/orangeHank.png"
 			player.fillColor = "orange";
 		break;
 
 		case "red":
-			player.image.src="/Art/playerColors/redHank.png";
+			player.image.src="../Art/playerColors/redHank.png";
 			player.fillColor = "red";
 		break;
 
 		case "green":
-			player.image.src="/Art/playerColors/greenHank.png";
+			player.image.src="../Art/playerColors/greenHank.png";
 			player.fillColor = "green";
 		break;
 
 		case "grey":
-			player.image.src="/Art/playerColors/greyHank.png";
+			player.image.src="../Art/playerColors/greyHank.png";
 			player.fillColor = "black";
 		break;
 
 		case "purple":
-			player.image.src="/Art/playerColors/purpleHank.png";
+			player.image.src="../Art/playerColors/purpleHank.png";
 			player.fillColor = "purple";
 		break;
 	}
