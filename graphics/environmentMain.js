@@ -241,19 +241,21 @@ function propelPlayer() {
 		}
 
 		// ySpeeds
-		// let lassoYChange = 0;
-		// if (player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
-		// 	lassoYChange -= player.acceleration / game.fps;
-		// } else {
+		let lassoYChange = 0;
+		if (player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
+			// lassoYChange -= player.acceleration / game.fps;
+			lassoYChange -= Physics.gravityAcceleration(game.fps, getPxPerM());
+		} 
+		// else {
 		// 	lassoYChange += player.acceleration / game.fps;
 		// }
-		// if (Math.abs(player.lasso.end.shape.y - player.shape.y) < (game.canvas.height*.02)) {
-		// 	lassoYChange /= 4;
-		// }
-		// if (Math.abs(player.lasso.end.shape.x - player.shape.x) < (game.canvas.height*.005)) {
-		// 	lassoYChange /= 4;
-		// }
-		// player.ySpeeds.lasso += lassoYChange;
+		if (Math.abs(player.lasso.end.shape.y - player.shape.y) < (game.canvas.height*.02)) {
+			lassoYChange /= 4;
+		}
+		if (Math.abs(player.lasso.end.shape.x - player.shape.x) < (game.canvas.height*.005)) {
+			lassoYChange /= 4;
+		}
+		player.ySpeeds.gravity += lassoYChange;
 	} // end of lassoChange conditionals
 
 	// add the lasso speed to the new xSpeed
@@ -1039,9 +1041,9 @@ document.addEventListener("keydown", (e) => {
 			// if (Lasso.lassoCounter == 1) {
 			// 	Lasso.lassoCounter = 0;
 			// }
-			if (player.lasso.stage == 1 || player.lasso.stage == 3) {
+			// if (player.lasso.stage == 1 || player.lasso.stage == 3) {
 				player.lasso.stage = 0;
-			}
+			// }
 			break;
 	}
 }); // end of keydown listener
@@ -1453,14 +1455,15 @@ function levelUp()
 {
 	if(game.xOffset >= game.levelEndPoint-2 && game.xOffset<= game.levelEndPoint+2)
 	{
-		if(game.level!= game.maxLevel) {
+		if(game.level < game.maxLevel) {
 			window.location.assign("/levels/level" + (game.level+1) + ".html");
 		} else {
-			window.location.assign("/nonLevelPages/endPage.html");
+			// window.location.assign("/nonLevelPages/endPage.html"); // not gonna link here until it's something
+			window.location.assign("../nonLevelPages/mainmenu.html");
 		}
 	}
 	
-}
+} // end of levelUp
 
 
 // =================

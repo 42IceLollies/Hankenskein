@@ -18,11 +18,11 @@
 <body>
 
 <canvas id='canvas' width='1000' height='500'></canvas>
-
+<audio src="../Art/mainHankenskeinTheme.mp3" id="mainTheme"></audio>
 
 <script language="javascript" src="../classes.js"></script>
 <script language="javascript" src='../graphics/environmentMain.js'></script>
-<script language="javascript" src="../graphics/gameAndPlayerObjects.js"></script>
+<script language="javascript" src="../nonLevelPages/settings.js"> </script>
 
 <script type="text/javascript">
 	setTimeout(() => {
@@ -69,7 +69,7 @@
   <!-- START OF SETTINGS -->
     <!-- Home and settings buttons -->
     <div class="buttonDiv">
-        <button class="settingsBtn" onClick="window.location.assign('/nonLevelPages/mainmenu.html')"><img src="../art/homeBtn.png" alt="Home" class="settingsImg"></button>
+        <button class="settingsBtn" onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../art/homeBtn.png" alt="Home" class="settingsImg"></button>
         <button class="settingsBtn" onclick="document.getElementById('settings').classList.remove('hidden')"><img src="../art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
     </div>
 
@@ -93,19 +93,16 @@
             <div class="setSelection noBorder">Color?</div>
             <!-- will eventually have small pictures of colors but may just comment this out if I don't get it working before competition -->
             <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
-			<div class="setSelection colorSelection hand level" style="background-color:gray" onclick="setPlayerColor('grey')"></div>  
-			<div class="setSelection colorSelection hand level" style="background-color:blue" onclick="setPlayerColor('blue')" ></div>
-			<div class="setSelection colorSelection hand level" style="background-color:purple" onclick="setPlayerColor('purple')"></div>
-			<div class="setSelection colorSelection hand level" style="background-color:red" onclick="setPlayerColor('red')"></div>
-			<div class="setSelection colorSelection hand level" style="background-color:green" onclick="setPlayerColor('green')"></div>
-			<div class="setSelection colorSelection hand level" style="background-color:orange" onclick="setPlayerColor('orange')"></div>
-			<div class="setSelection colorSelection hand level" style="background-color:hotpink" onclick="setPlayerColor('pink')"></div>
+			<div id="greyX" class="setSelection colorSelection hand level" style="background-color:gray" onclick="setPlayerColor('grey')"></div>  
+			<div id="blueX"class="setSelection colorSelection hand level" style="background-color:blue" onclick="setPlayerColor('blue')" ></div>
+			<div id="purpleX"class="setSelection colorSelection hand level" style="background-color:purple" onclick="setPlayerColor('purple')"></div>
+			<div id="redX"class="setSelection colorSelection hand level" style="background-color:red" onclick="setPlayerColor('red')"></div>
+			<div id="greenX"class="setSelection colorSelection hand level" style="background-color:green" onclick="setPlayerColor('green')"></div>
+			<div id="orangeX"class="setSelection colorSelection hand level" style="background-color:orange" onclick="setPlayerColor('orange')"></div>
+			<div id="pinkX"class="setSelection colorSelection hand level" style="background-color:hotpink" onclick="setPlayerColor('pink')"></div>
         </div>
     </div>
 
-    <script language="javascript" src="../graphics/environmentMain.js"></script>
-    <script language="javascript" src="../nonLevelPages/settings.js"> </script>
-    <script language="javascript" src="../classes.js"></script>
     <!-- END OF SETTINGS -->
 
 </body>
