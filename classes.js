@@ -938,6 +938,8 @@ class Lasso2 {
 
         this.hank.x = playerShape[0];
         this.hank.y = playerShape[1];
+
+        this.changeMouseLocation({clientX: this.mouse.x, clientY: this.mouse.y});
     } // end of update
 
 
