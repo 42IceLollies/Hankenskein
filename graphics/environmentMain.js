@@ -133,10 +133,9 @@ function hideComic()
 	{
 		let els = document.getElementsByClassName("comic");
 		Array.prototype.forEach.call(els, function(el){el.classList.add("hidden")});
+		main();
 	}
-
-	main();
-}
+} // end of hideComic
 
 
 //=================
@@ -234,6 +233,14 @@ function propelPlayer() {
 	if ((keydown.right || keydown.d) && !player.stopped.right) {
 		xSpeed += player.acceleration / game.fps;
 		speedChange += player.acceleration / game.fps;
+	}
+
+	// unsticking time
+	if ((keydown.left || keydown.a) && player.stopped.right) {
+		game.xOffset += 2;
+	}
+	if ((keydown.right || keydown.d) && player.stopped.left) {
+		game.xOffset -= 2;
 	}
 
 	let lassoChange = 0;
@@ -1233,6 +1240,8 @@ function resize() {
 	const lassoEnd = [(player.lasso.end.shape.x - player.shape.x)/player.shape.radius, player.lasso.end.shape.y/game.canvas.height];
 	const lassoForce = [(player.lasso.forceX - player.shape.x)/player.shape.radius, player.lasso.forceY/game.canvas.height];
 
+	const endPoint = game.levelEndPoint / game.canvas.height;
+
 	// resize the canvas to fill the whole window
 	resizeCanvas();
 
@@ -1289,6 +1298,8 @@ function resize() {
 	player.lasso.end.shape.moveTo((lassoEnd[0] * player.shape.radius) + (player.shape.x), lassoEnd[1]*game.canvas.height, game.xOffset);
 	player.lasso.forceX = (lassoForce[0] * player.shape.radius) + player.shape.x;
 	player.lasso.forceY = lassoForce[1] * game.canvas.height;
+
+	game.levelEndPoint = endPoint * game.canvas.height;
 } // end of resize
 
 
@@ -1468,8 +1479,9 @@ function levelUp()
 {
 	if(game.xOffset >= game.levelEndPoint-2 && game.xOffset<= game.levelEndPoint+2)
 	{
+		console.log(game.levelEndPoint)
 		if(game.level < game.maxLevel) {
-			window.location.assign("/levels/level" + (game.level+1) + ".html");
+			window.location.assign("../levels/level" + (game.level+1) + ".html");
 		} else {
 			// window.location.assign("/nonLevelPages/endPage.html"); // not gonna link here until it's something
 			window.location.assign("../nonLevelPages/mainmenu.html");
@@ -1908,7 +1920,7 @@ function main() {
 
 	// sets level in game object by calling level's html file
 	//idk if i was the one who commented this out but in the case of not - was it causing problems/ should i find another way to set level?
-	setLevel();
+	setLevel(); // i haven't had any issues, I think cause it's in main it won't have any load errors
 
 
 	// main! the animate loop, cycles everything
@@ -1923,9 +1935,9 @@ function main() {
 		player.lasso.update(game.xOffset, [mouse.x, mouse.y], [player.shape.x, player.shape.y]);
 
 		// if it's touching ground, apply friction
-		if (atRest()) {
+		// if (atRest()) {
 			frictionPlayerX();
-		}
+		// }
 		// decay the vertical friction to avoid bugs
 		frictionPlayerY();
 
@@ -1956,6 +1968,8 @@ function main() {
 		levelUp();
 
 		draw(game.ctx);
+
+		console.log(player.lasso.forceX, player.lasso.forceY);
 
 	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 
