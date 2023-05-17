@@ -3,9 +3,9 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Level 1</title>
+	<title>Level 5</title>
 	<!-- css -->
-	<link rel="stylesheet" type="text/css" href="level1.css">
+	<link rel="stylesheet" type="text/css" href="comicLevel.css">
 	<link rel="stylesheet" href="../nonLevelPages/settings.css">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,10 +28,8 @@
 
 <script type="text/javascript">
 	setTimeout(() => {
-		let backgroundPath = "../Art/Backgrounds/levelOneBackground.png";
-		let linePoints = [[[0, 0], [0, 499]], [[0, 499], [2666, 500]], [[2666, 500], [2666, 0]], [[0, 0], [2600, 0]], [[827, 500], [1092, 367]],[[1092, 367], [1098, 379]], [[1098, 379], [1162, 378]], [[1162, 378], [1162, 446]], [[1162, 446], [1162, 500]], [[1940, 500], [1940, 300]], [[1940, 300], [2285, 300]], [[2285, 300], [2285, 500]], [[1993, 215], [2075, 214]],
-			[[1023, 273], [1023, 152]], [[1023, 152], [1118, 153]], [[1118, 153], [1118, 272]], [[1118, 272], [1023, 273]],
-			];
+		let backgroundPath = "../Art/Backgrounds/levelFiveBackground.png";
+		let linePoints = [[[0, 498],[2800,498]], [[0,0],[0,498]], [[2800,0],[2800,498]]];
 		setup(linePoints, backgroundPath);
 		stop();
 	}, 0);
@@ -41,9 +39,9 @@
 	//function to set the level in game object
 	function setLevel()
 	{
-		game.level = 1;
+		game.level = 5;
 		//also need ot make this realistic but idk what it is rn and gtg
-		game.levelEndPoint = -2560;
+		game.levelEndPoint = -2700;
         game.levelEndY = 490;
 	}
 
@@ -54,7 +52,7 @@
     <!-- background -->
     <div class="comicBackdrop comic" id="comic"></div>
     <!-- comic -->
-    <div class="comicDiv comic"><img class="comicImg" src="../Art/comics/hanksDreamComic.png" alt="Hank has a dream of becoming a doctor."></div>
+    <div class="comicDiv comic"><img class="comicImg" src="../Art/comics/comic5.png" alt="Hank is nearly out!"></div>
     <!-- instructions -->
     <!-- add event listener to set this all to hidden when the space bar is clicked -->
     <div class="comicInstructions comic">(press space to continue)</div>

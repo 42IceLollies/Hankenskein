@@ -26,11 +26,12 @@ const game = {
 	points: [], // points hank collides with, which are the ends of the lines
 	level: 1, // which level the player's on
 	levelEndPoint: undefined,
+	levelEndY:undefined,
 	music: true, // if music is on
 	sfx: true, // if sound effects should be on
 	canvas: undefined, // the canvas object
 	ctx: undefined, // the context we draw on
-	maxLevel: 2, // the highest level available
+	maxLevel: 5, // the highest level available
 	paused: false,
 };
 
@@ -1030,7 +1031,7 @@ document.addEventListener("keydown", (e) => {
 			keydown.space = true;
 			player.lasso.throw(); // only works in stage 1/aiming
 			//clears comic from the screen if in one of the levels that has a comic
-			if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
+			 if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
 			break;
 		case 87:
 			keydown.w = true;
@@ -1118,7 +1119,7 @@ document.addEventListener("mousedown", (e) => {
 
 	if (window.location.href.includes("/levels/level") && game.music) {audio.play();}
 
-	// console.log(e.x - game.xOffset, e.y); // leave for testing
+	 console.log(e.x - game.xOffset, e.y); // leave for testing
 
 
 	// KEEP THE STUFF BELOW
@@ -1243,7 +1244,7 @@ function resize() {
 	const endPoint = game.levelEndPoint / game.canvas.height;
 
 	// resize the canvas to fill the whole window
-	resizeCanvas();
+	//resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
@@ -1477,18 +1478,26 @@ function updatePlayerSpeeds() {
 //when hank hits the end of the level (or a specified end point), the level changes
 function levelUp()
 {
-	if(game.xOffset >= game.levelEndPoint-2 && game.xOffset<= game.levelEndPoint+2)
+	if(game.xOffset >= game.levelEndPoint-5 && game.xOffset<= game.levelEndPoint+5)
 	{
-		console.log(game.levelEndPoint)
 		if(game.level < game.maxLevel) {
 			window.location.assign("../levels/level" + (game.level+1) + ".html");
 		} else {
 			// window.location.assign("/nonLevelPages/endPage.html"); // not gonna link here until it's something
 			window.location.assign("../nonLevelPages/mainmenu.html");
+			game.level = 1;
 		}
 	}
 	
 } // end of levelUp
+
+//draws a circle around the point where hank needs to reach to level up
+function drawEndOfLevel(ctx){
+	let end = new Circle(100, 100, 5);
+	console.log(end);
+	end.outline(ctx, "yellow");
+
+}//end of drawEndOfLevel
 
 
 // =================
@@ -1890,6 +1899,7 @@ function draw(ctx) {
 	drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
+	drawEndOfLevel(ctx);
 } // end of draw
 
 
@@ -1969,7 +1979,7 @@ function main() {
 
 		draw(game.ctx);
 
-		console.log(player.lasso.forceX, player.lasso.forceY);
+		// console.log(player.lasso.forceX, player.lasso.forceY);
 
 	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 
