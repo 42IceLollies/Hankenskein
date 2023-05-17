@@ -235,7 +235,8 @@ function propelPlayer() {
 		speedChange += player.acceleration / game.fps;
 	}
 
-	// unsticking time
+	// unsticks the player if they're on the line and moving away
+	// hopefully not too visibly noticeable
 	if ((keydown.left || keydown.a) && player.stopped.right) {
 		game.xOffset += 2;
 	}
@@ -262,7 +263,7 @@ function propelPlayer() {
 		let lassoYChange = 0;
 		if (player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
 			// lassoYChange -= player.acceleration / game.fps;
-			lassoYChange -= Physics.gravityAcceleration(game.fps, getPxPerM());
+			lassoYChange -= 2*Physics.gravityAcceleration(game.fps, getPxPerM());
 		} 
 		// else {
 		// 	lassoYChange += player.acceleration / game.fps;
@@ -279,8 +280,6 @@ function propelPlayer() {
 	// add the lasso speed to the new xSpeed
 	speedChange += lassoChange;
 	xSpeed += lassoChange;
-
-	player.ySpeeds.lasso
 
 	// avoids dividing by zero in later function calls
 	if (xSpeed == 0) {xSpeed = 0.00001;}
@@ -1030,7 +1029,7 @@ document.addEventListener("keydown", (e) => {
 			keydown.space = true;
 			player.lasso.throw(); // only works in stage 1/aiming
 			//clears comic from the screen if in one of the levels that has a comic
-			if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
+			// if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
 			break;
 		case 87:
 			keydown.w = true;
@@ -1116,7 +1115,15 @@ let count = 0;
 document.addEventListener("mousedown", (e) => {
 	mouse.down = true;
 
-	if (window.location.href.includes("/levels/level") && game.music) {audio.play();}
+	if (window.location.href.includes("/levels/level") && game.music) {
+		if (game.music) {
+			audio.play();
+		}
+		if (game.level == 1 || game.level == 2 || game.level == 5) {
+			hideComic()
+		};
+	}
+	
 
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
@@ -1969,7 +1976,7 @@ function main() {
 
 		draw(game.ctx);
 
-		console.log(player.lasso.forceX, player.lasso.forceY);
+		// console.log(player.lasso.forceX, player.lasso.forceY);
 
 	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 
