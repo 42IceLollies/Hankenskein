@@ -12,3 +12,40 @@ canvas {
 	margin: 0;
 	padding: 0;
 }
+
+.comicBackdrop{
+	background-color: #ffe0f0;
+	position:absolute;
+	top:0;
+	left:0;
+	width:100vw;
+	height:100vh;
+	z-index:3;
+}
+
+.comicDiv{
+	position:absolute;
+	z-index:3;
+	top:3vh;
+	left:15vw;
+	width:70vw;
+	height:auto;
+}
+
+.comicImg{
+	width:100%;
+	height: 100%;
+	border: 5px solid black;
+}
+
+.comicInstructions{
+	color:gray;
+	font-family: 'Raleway', sans-serif;
+    font-weight:bold;  
+	font-size:120%;
+	text-align:center;
+	position:absolute;
+	z-index:3;
+	bottom:2vh;
+	left:40vw;
+}

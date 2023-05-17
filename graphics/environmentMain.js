@@ -24,7 +24,7 @@ const game = {
 	background: undefined, // the background image
 	lines: [], // lines hank can collide with
 	points: [], // points hank collides with, which are the ends of the lines
-	level: undefined, // which level the player's on
+	level: 1, // which level the player's on
 	levelEndPoint: undefined,
 	music: true, // if music is on
 	sfx: true, // if sound effects should be on
@@ -126,6 +126,17 @@ function createLines(pointsArray, offset) {
 	}
 } // end of createLines
 
+
+function hideComic()
+{
+	if(!document.getElementById("comic").classList.contains("hidden"))
+	{
+		let els = document.getElementsByClassName("comic");
+		Array.prototype.forEach.call(els, function(el){el.classList.add("hidden")});
+	}
+
+	main();
+}
 
 
 //=================
@@ -1011,6 +1022,8 @@ document.addEventListener("keydown", (e) => {
 		case 32:
 			keydown.space = true;
 			player.lasso.throw(); // only works in stage 1/aiming
+			//clears comic from the screen if in one of the levels that has a comic
+			if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
 			break;
 		case 87:
 			keydown.w = true;
@@ -1894,7 +1907,8 @@ function main() {
 
 
 	// sets level in game object by calling level's html file
-	// setLevel();
+	//idk if i was the one who commented this out but in the case of not - was it causing problems/ should i find another way to set level?
+	setLevel();
 
 
 	// main! the animate loop, cycles everything
