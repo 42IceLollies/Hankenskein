@@ -28,7 +28,7 @@
     <img id = "flowers" src = "../Art/menuFlowers.png">
     <div class="boxAboveTheBox"></div>
     <div id = "box"> 
-        <a class="selection" href="../levels/level1.html"> <h1 class="selection">Start</h1></a> <!---will need to edit this to last saved level -->
+        <div class="selection hand" onclick="window.location.assign('../levels/level' + game.level + '.html')"> <h1 class="selection">Start</h1></div> <!---will need to edit this to last saved level -->
         <a class="selection" href="./levelSelection.html"> <h1 class="selection">Select Level</h1></a> 
         <div class="selection hand" href="" onclick="document.getElementById('settings').classList.remove('hidden')"> <h1 class="selection">Settings</h1> </div>
         <a class="selection" href="./credits.html"> <h1 class="selection">Credits</h1> </a>
