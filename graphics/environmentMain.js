@@ -175,7 +175,9 @@ function setDataObjects()
 	const toSet = Backup.retrieve("gameAndPlayerData");
 
 	// game.xOffset = toSet.xOffset;
-	game.level = toSet.level;
+	if(window.location.href.indexOf("level")<0){
+		game.level = toSet.level;
+	}
 	game.music = toSet.music;
 	game.sfx = toSet.sfx;
 	player.color = toSet.color;
@@ -1497,7 +1499,7 @@ function levelUp()
 //draws a circle around the point where hank needs to reach to level up
 function drawEndOfLevel(ctx){
 	let end = new Circle(100, 100, 5);
-	console.log(end);
+	//console.log(end);
 	end.outline(ctx, "yellow");
 
 }//end of drawEndOfLevel
