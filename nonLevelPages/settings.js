@@ -128,3 +128,9 @@ function playGame()
     document.getElementById("settings").classList.add("hidden");
     main();
 } // end of playGame
+
+function toggleInstructions() {
+    const instructions = document.getElementById("instructions");
+
+    instructions.classList.toggle("hidden");
+} // end of toggleInstructions
