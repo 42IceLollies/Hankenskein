@@ -55,7 +55,7 @@
     <div class="comicDiv comic"><img class="comicImg" src="../Art/comics/comic5.png" alt="Hank is nearly out!"></div>
     <!-- instructions -->
     <!-- add event listener to set this all to hidden when the space bar is clicked -->
-    <div class="comicInstructions comic">(press space to continue)</div>
+    <div class="comicInstructions comic">(click anywhere to continue)</div>
 
     <!-- START OF SETTINGS -->    
     <!-- settings div - hidden until 'settings' is chosen -->
@@ -64,13 +64,12 @@
     <div id="pauseAndPlay" class="container">
         <button class="pauseAndPlay settingsBtn level" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
         <button class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
+        <button class="pauseAndPlay settingsBtn level" onclick=""><img src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
 
         <!-- Home and settings buttons are hidden until pause is selected -->
         <!-- On level  -->
-        <div class="buttonDiv level hidden" id="hiddenBtns">
-            <button class="settingsBtn level" onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
-            <button class="settingsBtn level" onclick="document.getElementById('settings').classList.remove('hidden')"><img src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
-        </div>
+            <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
+            <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onclick="document.getElementById('settings').classList.remove('hidden')"><img src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
 
     </div>
 

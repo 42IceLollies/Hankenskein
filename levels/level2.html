@@ -76,15 +76,24 @@
     <div class="comicInstructions comic">(click anywhere to continue)</div>
     <!-- <div class="comicInstructions comic">(press space to continue)</div> -->
 
-  <!-- START OF SETTINGS -->
-    <!-- Home and settings buttons -->
-    <div class="buttonDiv">
-        <button class="settingsBtn" onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../art/homeBtn.png" alt="Home" class="settingsImg"></button>
-        <button class="settingsBtn" onclick="document.getElementById('settings').classList.remove('hidden')"><img src="../art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
+    <!-- START OF SETTINGS -->    
+    <!-- settings div - hidden until 'settings' is chosen -->
+
+    <!-- pause and play buttons are at top of level screen instead of just home and settings -->
+    <div id="pauseAndPlay" class="container">
+        <button class="pauseAndPlay settingsBtn level" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
+        <button class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
+        <button class="pauseAndPlay settingsBtn level" onclick=""><img src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
+
+        <!-- Home and settings buttons are hidden until pause is selected -->
+        <!-- On level  -->
+            <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
+            <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onclick="document.getElementById('settings').classList.remove('hidden')"><img src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
+
     </div>
 
-    
-    <!-- settings div - hidden until 'settings' is chosen -->
+    <!-- overlays screen when game is paused to dim it out -->
+    <div id="pauseDiv" class="hidden"></div>
 
     <div id="settings" class="hidden">
         <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
@@ -96,20 +105,21 @@
         </div>
         <div class="soundSetting">
              <div class="setSelection noBorder">Sfx</div>
-             <div class="setSelection hand" id="sfxOn" onclick="toggleSfx('on'); bold('sfx');">ON</div>
-             <div class="setSelection hand" id="sfxOff" onclick="toggleSfx('off'); bold('sfx');">OFF</div>
+             <div class="setSelection hand" id="sfxOn" onclick="toggleSfx('on', true); bold('sfx');">ON</div>
+             <div class="setSelection hand" id="sfxOff" onclick="toggleSfx('off', true); bold('sfx');">OFF</div>
         </div>
         <div class="colorSetting">
             <div class="setSelection noBorder">Color?</div>
             <!-- will eventually have small pictures of colors but may just comment this out if I don't get it working before competition -->
-            <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
-			<div id="greyX" class="setSelection colorSelection hand level" style="background-color:gray" onclick="setPlayerColor('grey')"></div>  
-			<div id="blueX"class="setSelection colorSelection hand level" style="background-color:blue" onclick="setPlayerColor('blue')" ></div>
-			<div id="purpleX"class="setSelection colorSelection hand level" style="background-color:purple" onclick="setPlayerColor('purple')"></div>
-			<div id="redX"class="setSelection colorSelection hand level" style="background-color:red" onclick="setPlayerColor('red')"></div>
-			<div id="greenX"class="setSelection colorSelection hand level" style="background-color:green" onclick="setPlayerColor('green')"></div>
-			<div id="orangeX"class="setSelection colorSelection hand level" style="background-color:orange" onclick="setPlayerColor('orange')"></div>
-			<div id="pinkX"class="setSelection colorSelection hand level" style="background-color:hotpink" onclick="setPlayerColor('pink')"></div>
+                <!-- it's mostly because I feel like there needs to be something else to fill the settings box -->
+                <!-- Divs with X inside show up when selected to indicate current color -->
+                <div class="setSelection colorSelection hand level" style="background-color:gray" onclick="setPlayerColor('grey'); bold('color')"> <div id="greyX" class="hidden selectX">X</div></div>  
+                <div class="setSelection colorSelection hand level" style="background-color:blue" onclick="setPlayerColor('blue'); bold('color')" > <div id="blueX" class="hidden selectX">X</div></div>
+                <div class="setSelection colorSelection hand level" style="background-color:purple" onclick="setPlayerColor('purple'); bold('color')"> <div id="purpleX" class="hidden selectX">X</div></div>
+                <div class="setSelection colorSelection hand level" style="background-color:red" onclick="setPlayerColor('red'); bold('color')"> <div id="redX" class="hidden selectX">X</div></div>
+                <div class="setSelection colorSelection hand level" style="background-color:green" onclick="setPlayerColor('green'); bold('color')"> <div id="greenX" class="hidden selectX">X</div></div>
+                <div class="setSelection colorSelection hand level" style="background-color:orange" onclick="setPlayerColor('orange'); bold('color')"> <div id="orangeX" class="hidden selectX">X</div></div>
+                <div class="setSelection colorSelection hand level" style="background-color: hotpink" onclick="setPlayerColor('pink'); bold('color')"> <div id="pinkX" class="hidden selectX">X</div></div>
         </div>
     </div>
 

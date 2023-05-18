@@ -2,16 +2,20 @@
 <html>
     <head>
         <title>End Page</title>
-        <link rel="stylesheet" href="endPage.css">
+        <!-- <link rel="stylesheet" href="endPage.css"> -->
         <link rel="stylesheet" href="../nonLevelPages/settings.css">
+        <link rel="stylesheet" href="../levels/comicLevel.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:wght@100&family=Ysabeau:wght@1&display=swap" rel="stylesheet">
         <link rel="icon" href="../Art/hankenskein_favicon.ico" type="image/x-icon"> <!-- favicon -->
 
     </head>
-    <body>
-        <div class="backgroundImg"><img class="backgroundImg" src="../Art/comics/endComic.png" alt="Good Job! You're done!"></div>
+
+
+    <!-- end comic/img -->
+    <body style=" background-color: #ffe0f0;">
+        <div class="comicDiv comic"><img class="comicImg" src="../Art/comics/endComic.png" alt="Good Job! You're done!"></div>
                 <!-- START OF SETTINGS -->
     <!-- Home and settings buttons -->
     <div class="buttonDiv">
@@ -54,5 +58,10 @@
         </div>
         <!-- END OF SETTINGS -->
         
+         <!-- sets level back to one -->
+        <script>
+            setInterval(()=>{game.level = 1}, 100);
+        </script>
+
     </body>
 </html>

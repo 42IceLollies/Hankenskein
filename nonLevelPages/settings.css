@@ -11,18 +11,21 @@
 
 .settingsBtn
 {
-    width: 40%;
     height:100%;
+    /* width:13%; */
     border-radius:100%;
     border: 1px solid white;
     background-color:rgba(193, 193, 193, .25);
-    padding:5%;
+    padding:2%;
+    margin-left:0.25%;
+    margin-right:0.25%;
 
 }
 
 .settingsImg{
-    width:100%;
+    /* width:%; */
     height:100%;
+    width:100%;
 }
 
 .settingsBtn:hover{
@@ -152,7 +155,7 @@
 
 #pauseAndPlay.container{
     position:fixed;
-    width:25vh;
+    width:50vw;
     height:10vh;
     top:7vh;
     left:7vh;

@@ -65,7 +65,7 @@ body{
     width: 30vw; 
     margin:auto; 
     padding: 0.25%;
-    height:40vh;
+    height:55vh;
 }
 
 /* selection links */
@@ -74,7 +74,7 @@ a.selection, div.selection{
     text-decoration:none; 
     text-align:center; 
     font-family: 'Ysabeau', sans-serif;
-    font-size:100%;
+    font-size:98%
     /* margin:1px; */
 }
 

@@ -1489,7 +1489,7 @@ function levelUp()
 			window.location.assign("../levels/level" + (game.level+1) + ".html");
 		} else {
 			// window.location.assign("/nonLevelPages/endPage.html"); // not gonna link here until it's something
-			window.location.assign("../nonLevelPages/mainmenu.html");
+			window.location.assign("../nonLevelPages/endPage.html");
 			game.level = 1;
 		}
 	}

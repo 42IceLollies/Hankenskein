@@ -112,7 +112,9 @@ setTimeout(() => {bold("all")}, 100);
 
 function pauseGame()
 {
-    document.getElementById("hiddenBtns").classList.remove("hidden");
+    let els = document.getElementsByClassName('hiddenBtns');
+    Array.prototype.forEach.call(els, function(el){el.classList.remove("hidden")});
+    // document.getElementById("hiddenBtns").classList.remove("hidden");
     document.getElementById("pauseDiv").classList.remove("hidden");
     stop();
 } // end of pauseGame
@@ -120,7 +122,8 @@ function pauseGame()
 function playGame()
 {
     console.log("play");
-    document.getElementById("hiddenBtns").classList.add("hidden");
+    let els = document.getElementsByClassName('hiddenBtns');
+    Array.prototype.forEach.call(els, function(el){el.classList.add("hidden")});
     document.getElementById("pauseDiv").classList.add("hidden");
     document.getElementById("settings").classList.add("hidden");
     main();
