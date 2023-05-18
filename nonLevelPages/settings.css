@@ -203,7 +203,42 @@
 
 /* tells the player the general idea of the game */
 .mainInstructions{
+ margin-left:3%;
+ text-align:center;
+}
 
+.sectionTitle{
+ float:left;  
+ margin:5%;
+ margin-top:0;
+}
+
+.instruction{
+    clear:left;
+}
+
+.header{
+   
+    margin: 4%;
+    float:left;
+    margin-top:0;
+}
+
+.key{
+    float:left;
+    border: 2px solid darkgray;
+    border-radius:10%;
+    padding:3%;
+    width:4.5vw;
+    height:4.5vw;
+    font-size:150%;
+    text-align: center;
+}
+
+.notSquare{
+    width: auto;
+    height:fit-content;
+    font-size:150%;
 }
 
 
