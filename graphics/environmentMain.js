@@ -1121,6 +1121,8 @@ document.addEventListener("mousedown", (e) => {
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
 	 console.log(e.x - game.xOffset, e.y); // leave for testing
+	
+	 if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
 
 
 	// KEEP THE STUFF BELOW
@@ -1245,7 +1247,7 @@ function resize() {
 	const endPoint = game.levelEndPoint / game.canvas.height;
 
 	// resize the canvas to fill the whole window
-	//resizeCanvas();
+	resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
