@@ -174,6 +174,8 @@ function setDataObjects()
 	//if it's not on a non level page??
 	const toSet = Backup.retrieve("gameAndPlayerData");
 
+	if (toSet == null) {return;} // avoid errors when first used
+
 	// game.xOffset = toSet.xOffset;
 	if(window.location.href.indexOf("level")<0){
 		game.level = toSet.level;
