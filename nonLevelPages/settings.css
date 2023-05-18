@@ -37,7 +37,7 @@
     display:none;
 }
 
-#settings{
+#settings, #instructions{
     position:absolute;
     background-color:rgba(255,255,255,0.9);
     width:70vw;
@@ -189,6 +189,21 @@
     top:0;
     left:0;
     background-color:rgba(0,0,0,0.25);
+}
+
+
+
+/* ===================================INSTRUCTIONS RULESETS======================================== */
+
+/* sets fonts for all children of instructions div*/
+#instructions{
+    font-family: 'Raleway', sans-serif;
+    font-weight:bold;
+}
+
+/* tells the player the general idea of the game */
+.mainInstructions{
+
 }
 
 
