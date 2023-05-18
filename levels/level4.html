@@ -55,8 +55,8 @@
     <div id="pauseAndPlay" class="container">
         <button class="pauseAndPlay settingsBtn level" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
         <button class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
-        <button class="pauseAndPlay settingsBtn level" onclick=""><img src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
-
+        <button class="pauseAndPlay settingsBtn level" onclick="toggleInstructions()"><img src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
+       
         <!-- Home and settings buttons are hidden until pause is selected -->
         <!-- On level  -->
             <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
@@ -96,6 +96,39 @@
     </div>
 
     <!-- END OF SETTINGS -->
+
+       <!-- INSTRUCTIONS DIV-->
+       <div id="instructions" class="hidden">
+        <div class="xButton" onclick="document.getElementById('instructions').classList.add('hidden')">X</div>
+        <div class="mainInstructions"><h1>Maneuver around the obstacles to reach the yellow circle and help Hank leave the house.</h1></div>
+        <div>
+            <div class="sectionTitle" style="width:20%"><h1>Rolling</h1>
+                <div class="instruction"> <div class="key">A</div><div class="key">D</div></div>
+                <div class="instruction"><div class="key">←</div> <div class="key">→</div></div>
+            </div>
+
+            <div class="sectionTitle" style="width:60%;  margin-bottom:0"><h1>Using Lasso</h1>
+                <div class="header"><p style="font-size:150%">To Aim:</p>
+                     <div class="instruction"><div class="key">W</div> <div class="key">S</div></div>
+                    <div class="instruction"><div class="key">↑</div> <div class="key">↓</div></div>
+                </div>
+
+                <div class="header"><p style="font-size:150%">To Throw:</p>
+                    <div class="instruction key notSquare">[Space]</div>
+                </div>
+
+                <div class="header"><p style="font-size:150%">To Pull In:</p>
+                    <div class="instruction key notSquare">[Space]</div>
+                </div>
+
+                <div class="header"><p style="font-size:150%">To Clear:</p>
+                    <div class="instruction key notSquare">[Backspace]</div>
+                </div>
+            </div>
+
+    </div>
+
+    <!-- END OF INSTRUCTIONS -->
 
 </body>
 </html>

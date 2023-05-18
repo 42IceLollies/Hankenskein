@@ -1117,14 +1117,18 @@ document.addEventListener("keyup", (e) => {
 const newPoints = [];
 let count = 0;
 
+
 document.addEventListener("mousedown", (e) => {
 	mouse.down = true;
+	console.log('hello');
 
-	if (window.location.href.includes("/levels/level") && game.music) {
+	if (window.location.href.includes("/levels/level")){
+		console.log("howdy");
 		if (game.music) {
 			audio.play();
 		}
 		if (game.level == 1 || game.level == 2 || game.level == 5) {
+			console.log("hi");
 			hideComic();
 		}
 	} // end of level specific conditional
