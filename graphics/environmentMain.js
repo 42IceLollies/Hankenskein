@@ -1118,13 +1118,16 @@ let count = 0;
 document.addEventListener("mousedown", (e) => {
 	mouse.down = true;
 
-	if (window.location.href.includes("/levels/level") && game.music) {audio.play();}
+	if (window.location.href.includes("/levels/level") && game.music) {
+		if (game.music) {
+			audio.play();
+		}
+		if (game.level == 1 || game.level == 2 || game.level == 5) {
+			hideComic();
+		}
+	} // end of level specific conditional
 
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
-
-	 console.log(e.x - game.xOffset, e.y); // leave for testing
-	
-	 if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
 
 
 	// KEEP THE STUFF BELOW
@@ -1935,7 +1938,9 @@ function main() {
 
 	// sets level in game object by calling level's html file
 	//idk if i was the one who commented this out but in the case of not - was it causing problems/ should i find another way to set level?
-	setLevel(); // i haven't had any issues, I think cause it's in main it won't have any load errors
+	if (window.location.href.includes("levels/level")) {
+		setLevel();
+	}
 
 
 	// main! the animate loop, cycles everything
