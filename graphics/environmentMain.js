@@ -296,16 +296,17 @@ function propelPlayer() {
 
 		// ySpeed
 		const distance = Math.abs(player.lasso.end.shape.x - player.shape.x);
-		if (distance < game.canvas.height * .2 && player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
+		if (distance < game.canvas.height * .5 && player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
 			lassoYChange = -Physics.gravityAcceleration(game.fps, getPxPerM());
 			// console.log(.2 - Math.abs(distance / (game.canvas.height*.2)));
 			// lassoYChange *= (.2 - Math.abs(distance/(game.canvas.height*.2))) * 1.8;
-			lassoYChange *= 2 - 2*(distance / (game.canvas.height*.2));
+			// lassoYChange *= 2 - 2*(distance / (game.canvas.height*.2));
+			lassoYChange *= 2;
 			if (lassoYChange > -Physics.gravityAcceleration(game.fps, getPxPerM())) {lassoYChange = -Physics.gravityAcceleration(game.fps, getPxPerM());}
-		} else if (distance < game.canvas.height * .45) {
-			lassoYChange *= 1.3;
 		} else if (distance < game.canvas.height) {
-			lassoYChange *= 1.2;
+			lassoYChange *= 1.6
+		} else if (distance < game.canvas.height * 2) {
+			lassoYChange *= 1.3;
 		}
 
 		// if it's close vertically, reduce the amount
