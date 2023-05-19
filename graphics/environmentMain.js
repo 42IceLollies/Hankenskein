@@ -189,6 +189,7 @@ function setDataObjects()
 	// game.xOffset = toSet.xOffset;
 	if(window.location.href.indexOf("level")<0){
 		game.level = toSet.level;
+		//idk if this is even actually working?
 	}
 	game.music = toSet.music;
 	game.sfx = toSet.sfx;
@@ -196,6 +197,12 @@ function setDataObjects()
 	game.musicTime = toSet.musicTime;
 	// player.fillColor = player.color;
 	// player.image.src = "../Art/playerColors/" + player.color + "Hank.png";
+
+	//if music is turned off, gets rid of the instruction to click to start it
+	if((game.level == 3 || game.level == 4) && !game.music)
+	{
+		document.getElementById("musicInstruction").classList.add("hidden");
+	}
 	
 	// console.log(toSet);
 } // end of setDataObjects
