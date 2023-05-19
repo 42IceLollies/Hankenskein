@@ -1749,7 +1749,9 @@ setTimeout(() => {
 function playMusic()
 {	
 	audio.loop = true;
-	audio.currentTime = game.musicTime;
+	if(audio.currentTime == 0) {
+		audio.currentTime = game.musicTime;
+	}
 	audio.play();
 }
 

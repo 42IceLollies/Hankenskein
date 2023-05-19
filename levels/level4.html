@@ -72,6 +72,17 @@
 
 </script>
 
+
+  <!-- Tells user to click screen in order to start music -->
+  <div id="musicInstruction">Click to start music</div>
+
+  <!-- hides above div when screen has been clicked -->
+  <script>
+      document.addEventListener("mousedown", (e)=>{document.getElementById("musicInstruction").classList.add("hidden")});
+      //also turned off if music is not on after music has been set gotten from localStorage
+  </script>
+
+
     <!-- START OF SETTINGS -->    
     <!-- settings div - hidden until 'settings' is chosen -->
 
