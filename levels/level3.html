@@ -54,7 +54,6 @@
 		setup(linePoints, backgroundPath);
 	}, 0);
 
-	//let endPoint = new Point(100,100);
 
 	//function to set the level in game object
 	function setLevel()
@@ -72,8 +71,8 @@
 
     <!-- pause and play buttons are at top of level screen instead of just home and settings -->
     <div id="pauseAndPlay" class="container">
-        <button class="pauseAndPlay settingsBtn level" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
-        <button class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
+        <button id="playBtn" class="pauseAndPlay settingsBtn level hidden" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
+        <button id="pauseBtn" class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
         <button class="pauseAndPlay settingsBtn level" onclick="toggleInstructions()"><img src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
        
         <!-- Home and settings buttons are hidden until pause is selected -->
