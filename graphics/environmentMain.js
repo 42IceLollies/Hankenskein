@@ -165,14 +165,31 @@ function storeData()
 		game.musicTime = audio.currentTime;
 	}
 
-	const toSave =
+	let toSave = undefined;
+
+	if(!window.location.href.includes("/levels/level"))
 	{
-		xOffset: game.xOffset,
-		level: game.level,
-		music: game.music,
-		sfx: game.sfx,
-		color: player.color,
-		musicTime: game.musicTime,
+		console.log("undefined");
+		 toSave = 
+		{
+			xOffset: undefined,
+			level: undefined,
+			music: game.music,
+			sfx: game.sfx,
+			color:player.color,
+			musicTime: undefined
+		}
+	} else {
+
+		 toSave =
+		{
+			xOffset: game.xOffset,
+			level: game.level,
+			music: game.music,
+			sfx: game.sfx,
+			color: player.color,
+			musicTime: game.musicTime,
+		}
 	}
 	Backup.save("gameAndPlayerData", toSave);
 } // end of storeData
@@ -187,14 +204,15 @@ function setDataObjects()
 	if (toSet == null) {return;} // avoid errors when first used
 
 	// game.xOffset = toSet.xOffset;
-	if(window.location.href.indexOf("level")<0){
-		game.level = toSet.level;
+	//if(window.location.href.includes("/levels/level")){
+	if(toSet.level!=undefined){game.level = toSet.level};
+	console.log(toSet.level);
 		//idk if this is even actually working?
-	}
+	//}
 	game.music = toSet.music;
 	game.sfx = toSet.sfx;
 	player.color = toSet.color;
-	game.musicTime = toSet.musicTime;
+	if(toSet.musicTim!=undefined){game.musicTime = toSet.musicTime;}
 	// player.fillColor = player.color;
 	// player.image.src = "../Art/playerColors/" + player.color + "Hank.png";
 
@@ -1534,7 +1552,7 @@ function levelUp()
 		} else {
 			// window.location.assign("/nonLevelPages/endPage.html"); // not gonna link here until it's something
 			window.location.assign("../nonLevelPages/endPage.html");
-			game.level = 1;
+			//game.level = 1;
 		}
 	}
 	

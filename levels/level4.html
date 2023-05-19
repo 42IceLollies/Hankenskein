@@ -66,7 +66,7 @@
 		game.level = 4;
 		//also need ot make this realistic but idk what it is rn and gtg
 		game.levelEndPoint = -3150;
-        game.levelEndY = 490;
+        game.levelEndY = 250;
         console.log('level4');
 	}
 
@@ -133,38 +133,43 @@
 
     <!-- END OF SETTINGS -->
 
-       <!-- INSTRUCTIONS DIV-->
-       <div id="instructions" class="hidden">
-        <div class="xButton" onclick="document.getElementById('instructions').classList.add('hidden')">X</div>
-        <div class="mainInstructions"><h1>Maneuver around the obstacles to reach the yellow circle and help Hank leave the house.</h1></div>
-        <div>
-            <div class="sectionTitle" style="width:20%"><h1>Rolling</h1>
-                <div class="instruction"> <div class="key">A</div><div class="key">D</div></div>
-                <div class="instruction"><div class="key">←</div> <div class="key">→</div></div>
+   <!-- INSTRUCTIONS DIV-->
+   <div id="instructions" class="hidden">
+    <div class="xButton" onclick="document.getElementById('instructions').classList.add('hidden')">X</div>
+    <div class="mainInstructions"><h1>Maneuver around the obstacles to reach the yellow circle and help Hank leave the house.</h1></div>
+    <div>
+        <div class="sectionTitle" style="width:16%"><h1>Rolling</h1>
+            <div class="instruction"> <div class="key">A</div><div class="key">D</div></div>
+            <div class="instruction"><div class="key">←</div> <div class="key">→</div></div>
+
+            <div class="header" style="width:110%; font-size:120%;"><p style="font-size:150%">Restart Level:</p>
+                <div class="instruction"> <div class="key">R</div></div>
+            </div>
+        </div>
+
+        <div class="sectionTitle" style="width:65%; margin-bottom:0"><h1 style="width:40%; float:left; margin:0;">Using Lasso</h1>
+            <div class="header" style="float:left"><p style="font-size:150%; margin:0; ">Aim with cursor.</p></div>
+            <div class="header" style="width:30%;"><p style="font-size:150%">Add Force to Launch:</p>
+                 <div class="instruction"><div class="key">W</div> <div class="key">S</div></div>
+                <div class="instruction"><div class="key">↑</div> <div class="key">↓</div></div>
             </div>
 
-            <div class="sectionTitle" style="width:60%;  margin-bottom:0"><h1>Using Lasso</h1>
-                <div class="header"><p style="font-size:150%">To Aim:</p>
-                     <div class="instruction"><div class="key">W</div> <div class="key">S</div></div>
-                    <div class="instruction"><div class="key">↑</div> <div class="key">↓</div></div>
-                </div>
-
-                <div class="header"><p style="font-size:150%">To Throw:</p>
-                    <div class="instruction key notSquare">[Space]</div>
-                </div>
-
-                <div class="header"><p style="font-size:150%">To Pull In:</p>
-                    <div class="instruction key notSquare">[Space]</div>
-                </div>
-
-                <div class="header"><p style="font-size:150%">To Clear:</p>
-                    <div class="instruction key notSquare">[Backspace]</div>
-                </div>
+            <div class="header"><p style="font-size:150%">To Throw:</p>
+                <div class="instruction key notSquare">[Space]</div>
             </div>
 
-    </div>
+            <div class="header"><p style="font-size:150%">To Pull In:</p>
+                <div class="instruction key notSquare">[Space]</div>
+            </div>
 
-    <!-- END OF INSTRUCTIONS -->
+            <div class="header"><p style="font-size:150%">To Clear:</p>
+                <div class="instruction key notSquare">[Backspace]</div>
+            </div>
+        </div>
+
+</div>
+
+<!-- END OF INSTRUCTIONS -->
 
 </body>
 </html>
