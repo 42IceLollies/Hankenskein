@@ -57,3 +57,18 @@ div.title{
 .colorTwo{
     color:rgb(112, 43, 233);
 }
+
+.hankDefinition{
+    width:100vw;
+    text-align:center;
+    font-family: 'Ysabeau', sans-serif;
+    font-weight:bold;
+    color:gray;
+    font-size:200%;
+    margin-top: 15vh;
+}
+
+.boldTerm{
+    font-weight:bolder;
+    font-size:113%;
+}

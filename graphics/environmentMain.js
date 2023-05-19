@@ -167,19 +167,19 @@ function storeData()
 
 	let toSave = undefined;
 
-	if(!window.location.href.includes("/levels/level"))
-	{
-		console.log("undefined");
-		 toSave = 
-		{
-			xOffset: undefined,
-			level: undefined,
-			music: game.music,
-			sfx: game.sfx,
-			color:player.color,
-			musicTime: undefined
-		}
-	} else {
+	// if(!window.location.href.includes("/levels/level"))
+	// {
+	// 	console.log("undefined");
+	// 	 toSave = 
+	// 	{
+	// 		xOffset: undefined,
+	// 		level: undefined,
+	// 		music: game.music,
+	// 		sfx: game.sfx,
+	// 		color:player.color,
+	// 		musicTime: undefined
+	// 	}
+	// } else {
 
 		 toSave =
 		{
@@ -190,7 +190,7 @@ function storeData()
 			color: player.color,
 			musicTime: game.musicTime,
 		}
-	}
+	// }
 	Backup.save("gameAndPlayerData", toSave);
 } // end of storeData
 
@@ -204,10 +204,13 @@ function setDataObjects()
 	if (toSet == null) {return;} // avoid errors when first used
 
 	// game.xOffset = toSet.xOffset;
-	//if(window.location.href.includes("/levels/level")){
-	if(toSet.level!=undefined){game.level = toSet.level};
+	if(!window.location.href.includes("/levels/level")){
+	//if(toSet.level!=undefined){game.level = toSet.level};
+	game.level = toSet.level;
 	console.log(toSet.level);
+	}
 		//idk if this is even actually working?
+		//which is exactly why it was working xD
 	//}
 	game.music = toSet.music;
 	game.sfx = toSet.sfx;
@@ -220,6 +223,7 @@ function setDataObjects()
 	if((game.level == 3 || game.level == 4) && !game.music)
 	{
 		document.getElementById("musicInstruction").classList.add("hidden");
+		console.log("hi");
 	}
 	
 	// console.log(toSet);
