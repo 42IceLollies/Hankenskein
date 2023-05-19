@@ -96,7 +96,9 @@ function setup(linesArray, backgroundPath) {
 
 	xOffsetStart = 430; // cor if you have the issue again uncomment this line
 	// center player
-	player.shape = new Circle(game.canvas.width / 2, 400, game.canvas.height * player.screenPercent * player.unravelPercent);
+	// player.shape = new Circle(game.canvas.width / 2, 400, game.canvas.height * player.screenPercent * player.unravelPercent);
+	//changing cos i want to see something
+	player.shape = new Circle(game.canvas.width / 2, 50, game.canvas.height * player.screenPercent * player.unravelPercent);
 
 	// makes line objects from the (x, y) points in the array
 	createLines(linesArray, xOffsetStart);
@@ -1152,34 +1154,34 @@ document.addEventListener("mousedown", (e) => {
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
 
-	// KEEP THE STUFF BELOW
-	// if (count == 0) {
-	// 	newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
-	// 	count++;
-	// } else if (count == 1) {
-	// 	newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
-	// 	count++;
-	// } else {
-	// 	newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
-	// 	count++;
-	// }
-	// let str = "";
-	// for (let j = 0; j < newPoints.length; j++) {
-	// 	const line = newPoints[j];
-	// 	str += "[";
-	// 	for (let h = 0; h < line.length; h++) {
-	// 		const point = line[h];
-	// 		str += "[";
-	// 		for (let i = 0; i < point.length; i++) {
-	// 			str += point[i];
-	// 			if (i != point.length-1) {str += ", ";}
-	// 		}
-	// 		str += "]";
-	// 		if (h == 0) {str += ", ";}
-	// 	}
-	// 	str += "], ";
-	// }
-	// console.log(str);
+	//KEEP THE STUFF BELOW
+	if (count == 0) {
+		newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
+		count++;
+	} else if (count == 1) {
+		newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
+		count++;
+	} else {
+		newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
+		count++;
+	}
+	let str = "";
+	for (let j = 0; j < newPoints.length; j++) {
+		const line = newPoints[j];
+		str += "[";
+		for (let h = 0; h < line.length; h++) {
+			const point = line[h];
+			str += "[";
+			for (let i = 0; i < point.length; i++) {
+				str += point[i];
+				if (i != point.length-1) {str += ", ";}
+			}
+			str += "]";
+			if (h == 0) {str += ", ";}
+		}
+		str += "], ";
+	}
+	console.log(str);
 
 	//idk if this is needed still but it was doing weird stuff
 	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
