@@ -198,11 +198,11 @@ class Circle {
     } // end of fill
 
 
-    outline(ctx, color) {
+    outline(ctx, color, thickness) {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
         ctx.strokeStyle = color;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = thickness;
         ctx.stroke();
     } // end of outline
 } // end of Circle

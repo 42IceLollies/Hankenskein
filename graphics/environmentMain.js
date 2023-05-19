@@ -1542,9 +1542,11 @@ function levelUp()
 
 //draws a circle around the point where hank needs to reach to level up
 function drawEndOfLevel(ctx){
-	let end = new Circle(100, 100, 5);
+	let circleCenter= new Point((0-game.levelEndPoint)+750, game.levelEndY);
+	circleCenter.adjustX(game.xOffset);
+	let end = new Circle(circleCenter.x, circleCenter.y, 100);
 	//console.log(end);
-	end.outline(ctx, "yellow");
+	end.outline(ctx, "yellow", 6);
 
 }//end of drawEndOfLevel
 
@@ -1876,8 +1878,8 @@ function drawPlayerEyes(ctx) {
 
 	eye1.fill(ctx, "white");
 	eye2.fill(ctx, "white");
-	eye1.outline(ctx, "black");
-	eye2.outline(ctx, "black");
+	eye1.outline(ctx, "black", 1);
+	eye2.outline(ctx, "black", 1);
 
 	// draw the smaller black circle
 
