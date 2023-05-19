@@ -251,11 +251,21 @@ function propelPlayer() {
 
 	let lassoChange = 0;
 	if (player.lasso.stage == 3 && keydown.space) {
+
+		let lassoYChange = 0;
+
 		// xSpeeds
 		if (player.lasso.end.shape.x > player.shape.x && !player.stopped.right) {
 			lassoChange = player.acceleration / game.fps;
+			if (player.xSpeed > 0 && player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
+				lassoYChange -= 2*Physics.gravityAcceleration(game.fps, getPxPerM());
+			}
 		} else if (!player.stopped.left) {
 			lassoChange = -player.acceleration / game.fps;
+
+			if (player.xSpeed < 0 && player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
+				lassoYChange -= 2*Physics.gravityAcceleration(game.fps, getPxPerM());
+			}
 		}
 		if (Math.abs(player.lasso.end.shape.x - player.shape.x) < (game.canvas.height*.02)) {
 			lassoChange /= 4;
@@ -264,14 +274,12 @@ function propelPlayer() {
 			lassoChange /= 4;
 		}
 
+
 		// ySpeeds
-		let lassoYChange = 0;
-		if (player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
-			// lassoYChange -= player.acceleration / game.fps;
-			lassoYChange -= 2*Physics.gravityAcceleration(game.fps, getPxPerM());
-		} 
-		// else {
-		// 	lassoYChange += player.acceleration / game.fps;
+		
+		// if (player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
+		// 	if (player.lasso.end.shape.x)
+		// 	lassoYChange -= 2*Physics.gravityAcceleration(game.fps, getPxPerM());
 		// }
 		if (Math.abs(player.lasso.end.shape.y - player.shape.y) < (game.canvas.height*.02)) {
 			lassoYChange /= 4;
@@ -281,6 +289,7 @@ function propelPlayer() {
 		}
 		player.ySpeeds.gravity += lassoYChange;
 	} // end of lassoChange conditionals
+
 
 	// add the lasso speed to the new xSpeed
 	speedChange += lassoChange;
@@ -1255,7 +1264,7 @@ function resize() {
 	const endPoint = game.levelEndPoint / game.canvas.height;
 
 	// resize the canvas to fill the whole window
-	// resizeCanvas();
+	resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
