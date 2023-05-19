@@ -32,7 +32,7 @@
     <div id = "box"> 
         <div class="selection hand" onclick="window.location.assign('../levels/level' + game.level + '.html')"> <h1 class="selection" style="font-size:300%;">Start</h1></div> <!---will need to edit this to last saved level -->
         <a class="selection" href="./levelSelection.html"> <h1 class="selection">Select Level</h1></a> 
-        <a class="selection" href="../nonLevelPages/instructions.html"><h1 class="selection">Instructions</h1></a>
+        <div class="selection hand" onclick="document.getElementById('instructions').classList.remove('hidden')"><h1 class="selection">Instructions</h1></div>
         <div class="selection hand" href="" onclick="document.getElementById('settings').classList.remove('hidden')"> <h1 class="selection">Settings</h1> </div>
         <a class="selection" href="./credits.html"> <h1 class="selection">Credits</h1> </a>
      
@@ -73,6 +73,38 @@
             </div>
         </div>
         <!-- END OF SETTINGS -->
+        <!-- INSTRUCTIONS DIV-->
+	   <div id="instructions" class="hidden">
+        <div class="xButton" onclick="document.getElementById('instructions').classList.add('hidden')">X</div>
+        <div class="mainInstructions"><h1>Maneuver around the obstacles to reach the yellow circle and help Hank leave the house.</h1></div>
+        <div>
+            <div class="sectionTitle" style="width:16%"><h1>Rolling</h1>
+                <div class="instruction"> <div class="key">A</div><div class="key">D</div></div>
+                <div class="instruction"><div class="key">←</div> <div class="key">→</div></div>
+            </div>
+
+            <div class="sectionTitle" style="width:65%;  margin-bottom:0"><h1>Using Lasso</h1>
+                <div class="header" style="width:30%;"><p style="font-size:150%">To Aim:</p>
+                     <div class="instruction"><div class="key">W</div> <div class="key">S</div></div>
+                    <div class="instruction"><div class="key">↑</div> <div class="key">↓</div></div>
+                </div>
+
+                <div class="header"><p style="font-size:150%">To Throw:</p>
+                    <div class="instruction key notSquare">[Space]</div>
+                </div>
+
+                <div class="header"><p style="font-size:150%">To Pull In:</p>
+                    <div class="instruction key notSquare">[Space]</div>
+                </div>
+
+                <div class="header"><p style="font-size:150%">To Clear:</p>
+                    <div class="instruction key notSquare">[Backspace]</div>
+                </div>
+            </div>
+
+    </div>
+
+    <!-- END OF INSTRUCTIONS -->
 
 <!-- </div id ="box">
     </div> -->
