@@ -19,6 +19,7 @@
     padding:2%;
     margin-left:0.25%;
     margin-right:0.25%;
+    outline:none;
 
 }
 
@@ -32,6 +33,7 @@
     /* border:3px; */
     background-color:rgba(193,193,193,.75);
 }
+
 
 .settingsBtn:select
 {
