@@ -33,6 +33,7 @@ const game = {
 	ctx: undefined, // the context we draw on
 	maxLevel: 5, // the highest level available
 	paused: false,
+	musicTime:undefined,//where the music is in playing
 };
 
 // holds all the player information
@@ -158,6 +159,12 @@ setTimeout(() => {setDataObjects();}, 100);
 //makes a copy of the needed values from data objects and sends them to local storage through backup class
 function storeData()
 {
+	if(game.music && audio.currentTime>0)
+	{
+		//saves current time of music
+		game.musicTime = audio.currentTime;
+	}
+
 	const toSave =
 	{
 		xOffset: game.xOffset,
@@ -165,6 +172,7 @@ function storeData()
 		music: game.music,
 		sfx: game.sfx,
 		color: player.color,
+		musicTime: game.musicTime,
 	}
 	Backup.save("gameAndPlayerData", toSave);
 } // end of storeData
@@ -185,6 +193,7 @@ function setDataObjects()
 	game.music = toSet.music;
 	game.sfx = toSet.sfx;
 	player.color = toSet.color;
+	game.musicTime = toSet.musicTime;
 	// player.fillColor = player.color;
 	// player.image.src = "../Art/playerColors/" + player.color + "Hank.png";
 	
@@ -1134,7 +1143,7 @@ document.addEventListener("mousedown", (e) => {
 
 	if (window.location.href.includes("/levels/level")){
 		if (game.music) {
-			audio.play();
+			playMusic();
 		}
 		if (game.level == 1 || game.level == 2 || game.level == 5) {
 			hideComic();
@@ -1145,33 +1154,33 @@ document.addEventListener("mousedown", (e) => {
 
 
 	//KEEP THE STUFF BELOW
-	if (count == 0) {
-		newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
-		count++;
-	} else if (count == 1) {
-		newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
-		count++;
-	} else {
-		newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
-		count++;
-	}
-	let str = "";
-	for (let j = 0; j < newPoints.length; j++) {
-		const line = newPoints[j];
-		str += "[";
-		for (let h = 0; h < line.length; h++) {
-			const point = line[h];
-			str += "[";
-			for (let i = 0; i < point.length; i++) {
-				str += point[i];
-				if (i != point.length-1) {str += ", ";}
-			}
-			str += "]";
-			if (h == 0) {str += ", ";}
-		}
-		str += "], ";
-	}
-	console.log(str);
+	// if (count == 0) {
+	// 	newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
+	// 	count++;
+	// } else if (count == 1) {
+	// 	newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
+	// 	count++;
+	// } else {
+	// 	newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
+	// 	count++;
+	// }
+	// let str = "";
+	// for (let j = 0; j < newPoints.length; j++) {
+	// 	const line = newPoints[j];
+	// 	str += "[";
+	// 	for (let h = 0; h < line.length; h++) {
+	// 		const point = line[h];
+	// 		str += "[";
+	// 		for (let i = 0; i < point.length; i++) {
+	// 			str += point[i];
+	// 			if (i != point.length-1) {str += ", ";}
+	// 		}
+	// 		str += "]";
+	// 		if (h == 0) {str += ", ";}
+	// 	}
+	// 	str += "], ";
+	// }
+	// console.log(str);
 
 	//idk if this is needed still but it was doing weird stuff
 	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
@@ -1723,12 +1732,14 @@ setTimeout(() => {
 function playMusic()
 {	
 	audio.loop = true;
+	audio.currentTime = game.musicTime;
 	audio.play();
 }
 
 //pauses music
 function pauseMusic()
 {
+	game.musicTime = audio.currentTime;
 	audio.pause();
 }
 
@@ -1918,7 +1929,7 @@ function draw(ctx) {
 	ctx.fill();
 	game.background.updateDimensions(game.canvas.height);
 	game.background.draw(ctx);
-	drawLines(ctx);
+	//drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
 	drawEndOfLevel(ctx);

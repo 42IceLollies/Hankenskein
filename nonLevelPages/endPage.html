@@ -17,6 +17,7 @@
     <!-- end comic/img -->
     <body style=" background-color: #ffe0f0;">
         <div class="comicDiv comic"><img class="comicImg" src="../Art/comics/endComic.png" alt="Good Job! You're done!"></div>
+        <div class="comicInstructions comic">(click to return to main menu)</div>
                 <!-- START OF SETTINGS -->
     <!-- Home and settings buttons -->
     <div class="buttonDiv">
@@ -62,6 +63,9 @@
          <!-- sets level back to one -->
         <script>
             setInterval(()=>{game.level = 1}, 100);
+
+            //sends page back to main menu when clicked
+            document.addEventListener("mousedown", (e)=>{window.location.assign("mainMenu.html")} );
         </script>
 
     </body>
