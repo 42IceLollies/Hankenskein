@@ -133,8 +133,13 @@ function playGame()
     main();
 } // end of playGame
 
-function toggleInstructions() {
-    const instructions = document.getElementById("instructions");
+function toggleDiv(togglingDivId, closingDivId) {
+    const toggling = document.getElementById(togglingDivId);
 
-    instructions.classList.toggle("hidden");
+    toggling.classList.toggle("hidden");
+    
+    if(!toggling.classList.contains("hidden"))
+    {
+        document.getElementById(closingDivId).classList.add("hidden");
+    }
 } // end of toggleInstructions

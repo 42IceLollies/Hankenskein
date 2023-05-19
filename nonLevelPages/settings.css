@@ -204,6 +204,7 @@
 #instructions{
     font-family: 'Raleway', sans-serif;
     font-weight:bold;
+    z-index:5;
 }
 
 /* tells the player the general idea of the game */
