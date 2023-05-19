@@ -33,6 +33,11 @@
     background-color:rgba(193,193,193,.75);
 }
 
+.settingsBtn:select
+{
+    border: 2px solid white;
+}
+
 .hidden{
     display:none;
 }

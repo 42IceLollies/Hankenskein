@@ -1120,15 +1120,12 @@ let count = 0;
 
 document.addEventListener("mousedown", (e) => {
 	mouse.down = true;
-	console.log('hello');
 
 	if (window.location.href.includes("/levels/level")){
-		console.log("howdy");
 		if (game.music) {
 			audio.play();
 		}
 		if (game.level == 1 || game.level == 2 || game.level == 5) {
-			console.log("hi");
 			hideComic();
 		}
 	} // end of level specific conditional
@@ -1258,7 +1255,7 @@ function resize() {
 	const endPoint = game.levelEndPoint / game.canvas.height;
 
 	// resize the canvas to fill the whole window
-	resizeCanvas();
+	// resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
