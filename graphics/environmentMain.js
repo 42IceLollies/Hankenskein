@@ -263,19 +263,20 @@ function propelPlayer() {
 	let lassoChange = 0;
 	if (player.lasso.stage == 3 && keydown.space) {
 
-		let lassoYChange = 0;
+		let lassoYChange = 0; // ySpeed
 
 		// xSpeeds
 		if (player.lasso.end.shape.x > player.shape.x && !player.stopped.right) {
 			lassoChange = player.acceleration / game.fps;
+			// ySpeed
 			if (player.xSpeed > 0 && player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
-				lassoYChange -= 2*Physics.gravityAcceleration(game.fps, getPxPerM());
+				lassoYChange -= Physics.gravityAcceleration(game.fps, getPxPerM());
 			}
 		} else if (!player.stopped.left) {
 			lassoChange = -player.acceleration / game.fps;
-
+			// ySpeed
 			if (player.xSpeed < 0 && player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
-				lassoYChange -= 2*Physics.gravityAcceleration(game.fps, getPxPerM());
+				lassoYChange -= Physics.gravityAcceleration(game.fps, getPxPerM());
 			}
 		}
 		if (Math.abs(player.lasso.end.shape.x - player.shape.x) < (game.canvas.height*.02)) {
@@ -286,12 +287,21 @@ function propelPlayer() {
 		}
 
 
-		// ySpeeds
-		
-		// if (player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
-		// 	if (player.lasso.end.shape.x)
-		// 	lassoYChange -= 2*Physics.gravityAcceleration(game.fps, getPxPerM());
-		// }
+		// ySpeed
+		const distance = Math.abs(player.lasso.end.shape.x - player.shape.x);
+		if (distance < game.canvas.height * .2 && player.lasso.end.shape.y < player.shape.y && !player.blocked.up) {
+			lassoYChange = -Physics.gravityAcceleration(game.fps, getPxPerM());
+			// console.log(.2 - Math.abs(distance / (game.canvas.height*.2)));
+			// lassoYChange *= (.2 - Math.abs(distance/(game.canvas.height*.2))) * 1.8;
+			lassoYChange *= 2 - 2*(distance / (game.canvas.height*.2));
+			if (lassoYChange > -Physics.gravityAcceleration(game.fps, getPxPerM())) {lassoYChange = -Physics.gravityAcceleration(game.fps, getPxPerM());}
+		} else if (distance < game.canvas.height * .45) {
+			lassoYChange *= 1.3;
+		} else if (distance < game.canvas.height) {
+			lassoYChange *= 1.2;
+		}
+
+		// if it's close vertically, reduce the amount
 		if (Math.abs(player.lasso.end.shape.y - player.shape.y) < (game.canvas.height*.02)) {
 			lassoYChange /= 4;
 		}
