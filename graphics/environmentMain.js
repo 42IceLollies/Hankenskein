@@ -33,7 +33,7 @@ const game = {
 	ctx: undefined, // the context we draw on
 	maxLevel: 5, // the highest level available
 	paused: false,
-	musicTime:undefined,//where the music is in playing
+	musicTime: 0,//where the music is in playing
 };
 
 // holds all the player information
@@ -159,7 +159,7 @@ setTimeout(() => {setDataObjects();}, 100);
 //makes a copy of the needed values from data objects and sends them to local storage through backup class
 function storeData()
 {
-	if(game.music && audio.currentTime>0)
+	if(game.music && audio != null && audio.currentTime>0)
 	{
 		//saves current time of music
 		game.musicTime = audio.currentTime;
@@ -1090,7 +1090,16 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 32:
 			keydown.space = true;
+
+			const woosh = document.getElementById("woosh");
+			if (woosh != null && player.lasso.stage == 1) {
+				woosh.currentTime = 0;
+				woosh.play();
+			}
+
 			player.lasso.throw(); // only works in stage 1/aiming
+			
+			
 			//clears comic from the screen if in one of the levels that has a comic
 			// if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
 			break;
@@ -1192,33 +1201,33 @@ document.addEventListener("mousedown", (e) => {
 
 
 	//KEEP THE STUFF BELOW
-	if (count == 0) {
-		newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
-		count++;
-	} else if (count == 1) {
-		newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
-		count++;
-	} else {
-		newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
-		count++;
-	}
-	let str = "";
-	for (let j = 0; j < newPoints.length; j++) {
-		const line = newPoints[j];
-		str += "[";
-		for (let h = 0; h < line.length; h++) {
-			const point = line[h];
-			str += "[";
-			for (let i = 0; i < point.length; i++) {
-				str += point[i];
-				if (i != point.length-1) {str += ", ";}
-			}
-			str += "]";
-			if (h == 0) {str += ", ";}
-		}
-		str += "], ";
-	}
-	console.log(str);
+	// if (count == 0) {
+	// 	newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
+	// 	count++;
+	// } else if (count == 1) {
+	// 	newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
+	// 	count++;
+	// } else {
+	// 	newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
+	// 	count++;
+	// }
+	// let str = "";
+	// for (let j = 0; j < newPoints.length; j++) {
+	// 	const line = newPoints[j];
+	// 	str += "[";
+	// 	for (let h = 0; h < line.length; h++) {
+	// 		const point = line[h];
+	// 		str += "[";
+	// 		for (let i = 0; i < point.length; i++) {
+	// 			str += point[i];
+	// 			if (i != point.length-1) {str += ", ";}
+	// 		}
+	// 		str += "]";
+	// 		if (h == 0) {str += ", ";}
+	// 	}
+	// 	str += "], ";
+	// }
+	// console.log(str);
 
 	//idk if this is needed still but it was doing weird stuff
 	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
@@ -1310,10 +1319,10 @@ function resize() {
 	const lassoEnd = [(player.lasso.end.shape.x - player.shape.x)/player.shape.radius, player.lasso.end.shape.y/game.canvas.height];
 	const lassoForce = [(player.lasso.forceX - player.shape.x)/player.shape.radius, player.lasso.forceY/game.canvas.height];
 
-	const endPoint = game.levelEndPoint / game.canvas.height;
+	const endPoint = (game.levelEndPoint - player.shape.x) / player.shape.radius;
 
 	// resize the canvas to fill the whole window
-	//resizeCanvas();
+	resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
@@ -1369,7 +1378,7 @@ function resize() {
 	player.lasso.forceX = (lassoForce[0] * player.shape.radius) + player.shape.x;
 	player.lasso.forceY = lassoForce[1] * game.canvas.height;
 
-	game.levelEndPoint = endPoint * game.canvas.height;
+	game.levelEndPoint =  endPoint*player.shape.radius + player.shape.x;
 } // end of resize
 
 
@@ -1562,9 +1571,10 @@ function levelUp()
 
 //draws a circle around the point where hank needs to reach to level up
 function drawEndOfLevel(ctx){
-	let circleCenter= new Point((0-game.levelEndPoint)+750, game.levelEndY);
+	// let circleCenter= new Point((0-game.levelEndPoint)+750, game.levelEndY);
+	let circleCenter = new Point((-game.levelEndPoint+game.canvas.width/2), game.levelEndY);
 	circleCenter.adjustX(game.xOffset);
-	let end = new Circle(circleCenter.x, circleCenter.y, 100);
+	let end = new Circle(circleCenter.x, circleCenter.y, game.canvas.height * .13);
 	//console.log(end);
 	end.outline(ctx, "yellow", 6);
 
