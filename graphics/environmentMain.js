@@ -207,7 +207,6 @@ function setDataObjects()
 	if(!window.location.href.includes("/levels/level")){
 	//if(toSet.level!=undefined){game.level = toSet.level};
 	game.level = toSet.level;
-	console.log(toSet.level);
 	}
 		//idk if this is even actually working?
 		//which is exactly why it was working xD
@@ -223,7 +222,6 @@ function setDataObjects()
 	if((game.level == 3 || game.level == 4) && !game.music)
 	{
 		document.getElementById("musicInstruction").classList.add("hidden");
-		console.log("hi");
 	}
 	
 	// console.log(toSet);
@@ -1194,33 +1192,33 @@ document.addEventListener("mousedown", (e) => {
 
 
 	//KEEP THE STUFF BELOW
-	// if (count == 0) {
-	// 	newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
-	// 	count++;
-	// } else if (count == 1) {
-	// 	newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
-	// 	count++;
-	// } else {
-	// 	newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
-	// 	count++;
-	// }
-	// let str = "";
-	// for (let j = 0; j < newPoints.length; j++) {
-	// 	const line = newPoints[j];
-	// 	str += "[";
-	// 	for (let h = 0; h < line.length; h++) {
-	// 		const point = line[h];
-	// 		str += "[";
-	// 		for (let i = 0; i < point.length; i++) {
-	// 			str += point[i];
-	// 			if (i != point.length-1) {str += ", ";}
-	// 		}
-	// 		str += "]";
-	// 		if (h == 0) {str += ", ";}
-	// 	}
-	// 	str += "], ";
-	// }
-	// console.log(str);
+	if (count == 0) {
+		newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
+		count++;
+	} else if (count == 1) {
+		newPoints[0][1] = [Math.round(e.x - game.xOffset)-430, e.y];
+		count++;
+	} else {
+		newPoints.push([newPoints[count-2][1], [Math.round(e.x - game.xOffset)-430, e.y]]);
+		count++;
+	}
+	let str = "";
+	for (let j = 0; j < newPoints.length; j++) {
+		const line = newPoints[j];
+		str += "[";
+		for (let h = 0; h < line.length; h++) {
+			const point = line[h];
+			str += "[";
+			for (let i = 0; i < point.length; i++) {
+				str += point[i];
+				if (i != point.length-1) {str += ", ";}
+			}
+			str += "]";
+			if (h == 0) {str += ", ";}
+		}
+		str += "], ";
+	}
+	console.log(str);
 
 	//idk if this is needed still but it was doing weird stuff
 	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
@@ -1315,7 +1313,7 @@ function resize() {
 	const endPoint = game.levelEndPoint / game.canvas.height;
 
 	// resize the canvas to fill the whole window
-	resizeCanvas();
+	//resizeCanvas();
 
 	// compare the new and old dimensions
 	// if there was no change, end it now
@@ -1973,7 +1971,7 @@ function draw(ctx) {
 	ctx.fill();
 	game.background.updateDimensions(game.canvas.height);
 	game.background.draw(ctx);
-	//drawLines(ctx);
+	drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
 	drawEndOfLevel(ctx);
