@@ -1090,12 +1090,15 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 32:
 			keydown.space = true;
-			player.lasso.throw(); // only works in stage 1/aiming
+
 			const woosh = document.getElementById("woosh");
-			if (woosh != null) {
+			if (woosh != null && player.lasso.stage == 1) {
 				woosh.currentTime = 0;
 				woosh.play();
 			}
+
+			player.lasso.throw(); // only works in stage 1/aiming
+			
 			
 			//clears comic from the screen if in one of the levels that has a comic
 			// if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
