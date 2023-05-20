@@ -1974,7 +1974,7 @@ function draw(ctx) {
 	drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
-	drawEndOfLevel(ctx);
+	//drawEndOfLevel(ctx);
 } // end of draw
 
 
