@@ -1310,7 +1310,7 @@ function resize() {
 	const lassoEnd = [(player.lasso.end.shape.x - player.shape.x)/player.shape.radius, player.lasso.end.shape.y/game.canvas.height];
 	const lassoForce = [(player.lasso.forceX - player.shape.x)/player.shape.radius, player.lasso.forceY/game.canvas.height];
 
-	const endPoint = game.levelEndPoint / game.canvas.height;
+	const endPoint = (game.levelEndPoint - player.shape.x) / player.shape.radius;
 
 	// resize the canvas to fill the whole window
 	resizeCanvas();
@@ -1369,7 +1369,7 @@ function resize() {
 	player.lasso.forceX = (lassoForce[0] * player.shape.radius) + player.shape.x;
 	player.lasso.forceY = lassoForce[1] * game.canvas.height;
 
-	game.levelEndPoint = endPoint * game.canvas.height;
+	game.levelEndPoint =  endPoint*player.shape.radius + player.shape.x;
 } // end of resize
 
 
@@ -1563,9 +1563,9 @@ function levelUp()
 //draws a circle around the point where hank needs to reach to level up
 function drawEndOfLevel(ctx){
 	// let circleCenter= new Point((0-game.levelEndPoint)+750, game.levelEndY);
-	let circleCenter = new Point(-game.levelEndPoint+game.canvas.width/2, game.levelEndY);
+	let circleCenter = new Point((-game.levelEndPoint+game.canvas.width/2), game.levelEndY);
 	circleCenter.adjustX(game.xOffset);
-	let end = new Circle(circleCenter.x, circleCenter.y, 100);
+	let end = new Circle(circleCenter.x, circleCenter.y, game.canvas.height * .13);
 	//console.log(end);
 	end.outline(ctx, "yellow", 6);
 
