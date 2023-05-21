@@ -1319,7 +1319,7 @@ function resize() {
 	const lassoEnd = [(player.lasso.end.shape.x - player.shape.x)/player.shape.radius, player.lasso.end.shape.y/game.canvas.height];
 	const lassoForce = [(player.lasso.forceX - player.shape.x)/player.shape.radius, player.lasso.forceY/game.canvas.height];
 
-	const endPoint = (game.levelEndPoint - player.shape.x) / player.shape.radius;
+	const endPoint = game.levelEndPoint / game.canvas.height;
 
 	// resize the canvas to fill the whole window
 	resizeCanvas();
@@ -1378,7 +1378,7 @@ function resize() {
 	player.lasso.forceX = (lassoForce[0] * player.shape.radius) + player.shape.x;
 	player.lasso.forceY = lassoForce[1] * game.canvas.height;
 
-	game.levelEndPoint =  endPoint*player.shape.radius + player.shape.x;
+	game.levelEndPoint =  endPoint * game.canvas.height;
 } // end of resize
 
 
@@ -1981,7 +1981,7 @@ function draw(ctx) {
 	ctx.fill();
 	game.background.updateDimensions(game.canvas.height);
 	game.background.draw(ctx);
-	drawLines(ctx);
+	//drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
 	//drawEndOfLevel(ctx);
