@@ -1054,7 +1054,7 @@ const keydown = {
 	r: false,
 	a: false,
 	d: false,
-	mouse: false,
+	shift: false,
 }; // end of keydown object
 
 
@@ -1136,6 +1136,9 @@ document.addEventListener("keydown", (e) => {
 				player.lasso.stage = 0;
 			// }
 			break;
+		case 16: // shift
+			keydown.shift = true;
+			break;
 	}
 }); // end of keydown listener
 
@@ -1177,6 +1180,9 @@ document.addEventListener("keyup", (e) => {
 			break;
 		case 68:
 			keydown.d = false;
+			break;
+		case 16: // shift
+			keydown.shift = false;
 			break;
 	}
 }); // end of keyup listener
@@ -2021,6 +2027,15 @@ function main() {
 	}
 
 
+	// clears the lasso
+	const shiftId = setInterval(() => {
+		if (keydown.shift) {
+			player.lasso.stage = 0;
+			player.lasso.resetForceBase();
+		}
+	}, 100)
+
+
 	// main! the animate loop, cycles everything
 	const animateId = setInterval(() => {
 
@@ -2072,7 +2087,7 @@ function main() {
 	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 
 	// saves them all so they can be turned off
-	game.idList = [wUpId, gravityId, animateId];
+	game.idList = [wUpId, gravityId, animateId, shiftId];
 } // end of main
 
 
