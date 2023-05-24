@@ -1556,7 +1556,8 @@ function updatePlayerSpeeds() {
 //when hank hits the end of the level (or a specified end point), the level changes
 function levelUp()
 {
-	if(game.xOffset >= game.levelEndPoint-5 && game.xOffset<= game.levelEndPoint+5)
+	// if(game.xOffset >= game.levelEndPoint-5 && game.xOffset<= game.levelEndPoint+5)
+	if (game.xOffset <= game.levelEndPoint-10)
 	{
 		if(game.level < game.maxLevel) {
 			window.location.assign("../levels/level" + (game.level+1) + ".html");
