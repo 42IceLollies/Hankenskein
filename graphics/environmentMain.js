@@ -1078,42 +1078,26 @@ document.addEventListener("keydown", (e) => {
 			break;
 		case 38:
 			keydown.up = true;
-			// if (Lasso.lassoCounter == 3) {
-			// 	Lasso.incrementLassoStage();
-			// }
-			// if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
-			// Lasso.pullInLasso();
 			break;
 		case 40:
 			keydown.down = true;
-			// if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			break;
 		case 32:
 			keydown.space = true;
-
+			// plays the woosh sound effect if woosh is defined and the lasso is in the aiming stage
 			const woosh = document.getElementById("woosh");
 			if (woosh != null && player.lasso.stage == 1) {
 				woosh.currentTime = 0;
 				woosh.play();
 			}
-
-			player.lasso.throw(); // only works in stage 1/aiming
-			
-			
-			//clears comic from the screen if in one of the levels that has a comic
-			// if(game.level == 1 || game.level == 2 || game.level == 5) {hideComic()};
+			// throws the lasso, switches from stage 1 to stage 2
+			player.lasso.throw(); // only works in stage 1/aiming (that's built into the method so no conditional needed here)
 			break;
 		case 87:
 			keydown.w = true;
-			// if (Lasso.lassoCounter == 3) {
-			// 	Lasso.incrementLassoStage();
-			// }
-			// if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
-			// Lasso.pullInLasso();
 			break;
 		case 83:
 			keydown.s = true;
-			// if (Lasso.lassoCounter == 0) {Lasso.incrementLassoStage();}
 			break;
 		case 82:
 			keydown.r = true;
@@ -1126,15 +1110,7 @@ document.addEventListener("keydown", (e) => {
 			keydown.d = true;
 			break;
 		case 8: // backspace
-			// Lasso.resetForceBase();
-			player.lasso.resetForceBase();
-			// Lasso.forceLength = 0;
-			// if (Lasso.lassoCounter == 1) {
-			// 	Lasso.lassoCounter = 0;
-			// }
-			// if (player.lasso.stage == 1 || player.lasso.stage == 3) {
-				player.lasso.stage = 0;
-			// }
+			keydown.backspace = true;
 			break;
 		case 16: // shift
 			keydown.shift = true;
@@ -1161,10 +1137,6 @@ document.addEventListener("keyup", (e) => {
 			break;
 		case 32:
 			keydown.space = false;
-			// if(Lasso.lassoStage==1){
-			// 	clearInterval(Lasso.intervalId);
-			// 	document.removeEventListener('mousemove', mouseMove);
-			// }
 			break;
 		case 87:
 			keydown.w = false;
@@ -1181,6 +1153,9 @@ document.addEventListener("keyup", (e) => {
 		case 68:
 			keydown.d = false;
 			break;
+		case 8:
+			keydown.backspace = false;
+			break;
 		case 16: // shift
 			keydown.shift = false;
 			break;
@@ -1193,11 +1168,13 @@ let count = 0;
 
 document.addEventListener("mousedown", (e) => {
 	mouse.down = true;
-
-	if (window.location.href.includes("/levels/level")){
+	// code only for the level pages
+	if (window.location.href.includes("/levels/level")) {
+		// play the music if on
 		if (game.music) {
 			playMusic();
 		}
+		// hide the comic if it's a comic level
 		if (game.level == 1 || game.level == 2 || game.level == 5) {
 			hideComic();
 		}
@@ -1206,7 +1183,9 @@ document.addEventListener("mousedown", (e) => {
 	// console.log(e.x - game.xOffset, e.y); // leave for testing
 
 
-	//KEEP THE STUFF BELOW
+	//KEEP THE STUFF BELOW. We use it to more quickly implement the lines
+	// it formats the points you click into arrays to be directly copied into the html setup
+	// 
 	// if (count == 0) {
 	// 	newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
 	// 	count++;
@@ -1235,20 +1214,6 @@ document.addEventListener("mousedown", (e) => {
 	// }
 	// console.log(str);
 
-	//idk if this is needed still but it was doing weird stuff
-	//Lasso.setMouseCoordinates(e.clientX, e.clientY);
-
-	//will need to uncomment this stuff but thought I'd revert it to a point that at least semi works before commiting
-	// if (Lasso.lassoCounter == 2 || Lasso.lassoCounter == 3 || Lasso.lassoCounter == 5) {
-	// 	Lasso.incrementLassoStage();
-	// }
-		
-	// if(Lasso.lassoCounter==1) {
-		// Lasso.resetForceBase();
-		// player.lasso.resetForceBase();
-	// 	Lasso.intervalId = setInterval(Lasso.incrementForce, 100);
-	// 	also add the mouse update in here
-	// }
 }); // end of mousedown listener
 
 
@@ -1259,9 +1224,7 @@ document.addEventListener("mousemove", (e) => {
 
 	if (player.lasso == undefined) {return;}
 
-	// Lasso.setMouseCoordinates(e.clientX, e.clientY);
 	player.lasso.setMouseCoordinants(e.clientX, e.clientY);
-	// Lasso.changeMouseLocation(e);
 	player.lasso.changeMouseLocation(e);
 });
 
@@ -1276,25 +1239,16 @@ document.addEventListener("mouseout", () => {
 })
 
 
-//external function for eventListener above so it's easier to cancel later
+// updates where the cursor is in the lasso
 function mouseMove(e) {
-	//setMouseCoordinates(e.clientX, e.clientY); // need to get rid of this line once changeMouseLocation is working
-	Lasso.changeMouseLocation(e);
 	player.lasso.changeMouseLocation(e);
-	//Lasso.setPointProperties(Lasso.forceX, Lasso.forceY); 
 } // end of mouseMove
 
-	//clears listener for mouse move whenever the lasso is launched
-function clearMouseMove() {
-	if(Lasso.lassoCounter==2){
-		document.removeEventListener('mousemove', mouseMove)
-	}
-} // end of clearMouseMove
 
 
 // ================
 // =RESIZING
-// =======
+// ================
 
 
 // resizes everything in the canvas to stay the same relative to each other when the canvas changes size
@@ -1531,15 +1485,6 @@ function movePoints() {
 		game.points[i].adjustX(game.xOffset);
 	}
 } // end of movePoints
-
-
-function moveLassoPoints() {
-	if (Lasso.lassoPoints == undefined) {return;}
-	for (let i = 0; i < Lasso.lassoPoints.length; i++) {
-		// adjust every lasso point's location
-		Lasso.lassoPoints[i].adjustX(game.xOffset);
-	}
-} // end of moveLassoPoints
 
 
 // updates the main speeds in player
@@ -1988,7 +1933,7 @@ function draw(ctx) {
 	ctx.fill();
 	game.background.updateDimensions(game.canvas.height);
 	game.background.draw(ctx);
-	//drawLines(ctx);
+	// drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
 	//drawEndOfLevel(ctx);
@@ -2003,12 +1948,10 @@ function main() {
 	// lengthens the lasso forceLength
 	const wUpId = setInterval(() => {
 		if ((keydown.up || keydown.w) && !mouse.out) {
-			Lasso.incrementForce();
 			player.lasso.incrementForce();
 		}
 
 		if ((keydown.down || keydown.s) && !mouse.out) {
-			Lasso.decrementForce();
 			player.lasso.decrementForce();
 		}
 	}, 100); // end of wUp loop
@@ -2044,7 +1987,6 @@ function main() {
 
 		// called here so collision still works
 		moveLines();
-		// moveLassoPoints();
 		player.lasso.update(game.xOffset, [mouse.x, mouse.y], [player.shape.x, player.shape.y]);
 
 		// if it's touching ground, apply friction
@@ -2081,8 +2023,6 @@ function main() {
 		levelUp();
 
 		draw(game.ctx);
-
-		// console.log(player.lasso.forceX, player.lasso.forceY);
 
 	}, 1000 / game.fps); // 1000 is 1 second // end of animate loop
 
