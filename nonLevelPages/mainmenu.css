@@ -11,6 +11,16 @@ body{
 
 }
 
+@font-face {
+    font-family: "Raleway-Local";
+    src: url("../fonts/Raleway-VariableFont_wght.ttf");
+}
+
+@font-face {
+    font-family: "Ysabeau-Local";
+    src: url("../fonts/Ysabeau-Regular.ttf");
+}
+
 /* background */
 #bg{
     position:absolute;
@@ -73,8 +83,9 @@ a.selection, div.selection{
     color:white; 
     text-decoration:none; 
     text-align:center; 
-    font-family: 'Ysabeau', sans-serif;
-    font-size:98%
+    font-family: 'Ysabeau-Local', sans-serif;
+/*    font-weight: lighter;*/
+    font-size: 98%;
     /* margin:1px; */
 }
 

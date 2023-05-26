@@ -2,6 +2,16 @@ body{
     background-color: #ffe0f0;
 }
 
+@font-face {
+    font-family: "Raleway-Local";
+    src: url("../fonts/Raleway-VariableFont_wght.ttf");
+}
+
+@font-face {
+    font-family: "Ysabeau-Local";
+    src: url("../fonts/Ysabeau-Regular.ttf");
+}
+
 img.levelImg{
     height:17vh;
     width:40vw;
@@ -13,7 +23,8 @@ img.levelImg{
 /* Title settings (same as credits but adjusted for scrollbar) */
 h1.title{
     color:black;
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway-Local', sans-serif;
+    font-weight: 400;
     font-size:300%;
     text-align: center;
 }
@@ -47,7 +58,7 @@ div.title{
 /* level labels */
 .label{
     font-size:150%;
-    font-family: 'Ysabeau', sans-serif;
+    font-family: 'Ysabeau-Local', sans-serif;
 }
 
 img.levelImg:hover{

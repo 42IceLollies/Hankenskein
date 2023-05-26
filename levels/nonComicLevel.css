@@ -1,3 +1,13 @@
+@font-face {
+    font-family: "Raleway-Local";
+    src: url("../fonts/Raleway-VariableFont_wght.ttf");
+}
+
+@font-face {
+    font-family: "Ysabeau-Local";
+    src: url("../fonts/Ysabeau-Regular.ttf");
+}
+
 * {
 	box-sizing: border-box;
 }
@@ -19,7 +29,7 @@ canvas {
 	bottom:3vh;
 	left:3vh;
 	color:white;
-	font-family: 'Raleway', sans-serif;
+	font-family: 'Raleway-Local', sans-serif;
     font-weight:bold;  
 	font-size:300%;
 

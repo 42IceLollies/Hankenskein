@@ -1,3 +1,13 @@
+@font-face {
+    font-family: "Raleway-Local";
+    src: url("../fonts/Raleway-VariableFont_wght.ttf");
+}
+
+@font-face {
+    font-family: "Ysabeau-Local";
+    src: url("../fonts/Ysabeau-Regular.ttf");
+}
+
 html{
     height:100%;
     padding:0;
@@ -11,9 +21,10 @@ body{
 
 h1.title{
     color:black;
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway-Local', sans-serif;
     font-size:300%;
     text-align: center;
+    font-weight: 400;
 }
 
 div.title{
@@ -30,10 +41,10 @@ div.title{
     text-align:center;
     width:100vw;
     /* font-family: 'Oswald', sans-serif; */
-     /* font-family: 'Raleway', sans-serif; */
-    font-family: 'Ysabeau', sans-serif;
+     /* font-family: 'Raleway-Local', sans-serif; */
+    font-family: 'Ysabeau-Local', sans-serif;
     font-size:200%;
-    font-weight:bold;
+/*    font-weight:bold;*/
     margin-top:3vh;
     /* margin-bottom:3vh; */
 
@@ -42,8 +53,8 @@ div.title{
 .subCredit{
     text-align:center;
     width:100vw;
-    font-family: 'Ysabeau', sans-serif;
-    font-weight:bold;
+    font-family: 'Ysabeau-Local', sans-serif;
+/*    font-weight:bold;*/
     margin-top:1vh;
     margin-bottom:3vh;
     font-size: 150%;
@@ -61,8 +72,8 @@ div.title{
 .hankDefinition{
     width:100vw;
     text-align:center;
-    font-family: 'Ysabeau', sans-serif;
-    font-weight:bold;
+    font-family: 'Ysabeau-Local', sans-serif;
+/*    font-weight:bold;*/
     color:gray;
     font-size:200%;
     margin-top: 15vh;
