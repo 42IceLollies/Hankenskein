@@ -2028,13 +2028,18 @@ function main() {
 
 	// saves them all so they can be turned off
 	game.idList = [wUpId, gravityId, animateId, shiftId];
+	// log it
+	game.paused = false;
 } // end of main
 
 
 function stop() {
+	// clear every interval so it all stops
 	for (let i = 0; i < game.idList.length; i++) {
 		clearInterval(game.idList[i]);
 	}
+	// log it
+	game.paused = true;
 } // end of stop
 
 

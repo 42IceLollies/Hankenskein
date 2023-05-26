@@ -30,7 +30,7 @@
 <script type="text/javascript">
 	setTimeout(() => {
 		let backgroundPath = "../Art/Backgrounds/levelFiveBackground.png";
-		let linePoints = [[[0, 498],[2800,499]], [[0,-500],[0,498]], [[2800,-500],[2800,498]],
+		let linePoints = [[[0, 498],[2800,499]], [[0,-1500],[0,498]], [[2800,-1500],[2800,498]],
         //stairs
        [[0, 75], [143, 77]], [[143, 77], [143, 131]], [[147, 131], [203, 136]], [[209, 136], [209, 191]], [[209, 191], [273, 197]], [[274, 197], [274, 249]], 
        [[276, 249], [539, 252]], [[539, 252], [539, 304]], [[539, 304], [607, 309]], [[608, 309], [608, 361]], [[608, 361], [677, 362]], [[680, 362], [680, 425]], [[680, 425], [745, 422]], [[745, 422], [754, 469]], [[752, 469], [895, 469]], [[895, 469], [895, 503]], 
@@ -71,7 +71,7 @@
     <!-- background -->
     <div class="comicBackdrop comic" id="comic"></div>
     <!-- comic -->
-    <div class="comicDiv comic"><img class="comicImg" src="../Art/comics/comic5.png" alt="Hank is nearly out!"></div>
+    <div class="comicDiv comic"><img draggable="false" class="comicImg" src="../Art/comics/comic5.png" alt="Hank is nearly out!"></div>
     <!-- instructions -->
     <!-- add event listener to set this all to hidden when the space bar is clicked -->
     <div class="comicInstructions comic">(click anywhere to continue)</div>
@@ -81,15 +81,15 @@
 
     <!-- pause and play buttons are at top of level screen instead of just home and settings -->
     <div id="pauseAndPlay" class="container">
-        <button id="playBtn" class="pauseAndPlay settingsBtn level hidden" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
-        <button id="pauseBtn" class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
-		<button class="pauseAndPlay settingsBtn level" onclick="toggleDiv('instructions', 'settings')"><img src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
+        <button id="playBtn" class="pauseAndPlay settingsBtn level hidden" onclick="playGame()"><img draggable="false" class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
+        <button id="pauseBtn" class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img draggable="false" src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
+		<button class="pauseAndPlay settingsBtn level" onclick="toggleDiv('instructions', 'settings')"><img draggable="false" src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
        
 
         <!-- Home and settings buttons are hidden until pause is selected -->
         <!-- On level  -->
-            <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
-            <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onclick="toggleDiv('settings', 'instructions');"><img src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
+            <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img draggable="false" src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
+            <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onclick="toggleDiv('settings', 'instructions');"><img draggable="false" src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
 
     </div>
 
@@ -97,7 +97,7 @@
     <div id="pauseDiv" class="hidden"></div>
 
     <div id="settings" class="hidden">
-        <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
+        <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden'); playGame();">X</div>
         <div class="spacerDiv"></div>
         <div class="soundSetting">
             <div class="setSelection noBorder">Music</div> 

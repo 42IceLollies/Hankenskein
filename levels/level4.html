@@ -30,7 +30,7 @@
 <script type="text/javascript">
 	setTimeout(() => {
 		let backgroundPath = "../Art/Backgrounds/levelFourBackground.png";
-		let linePoints = [[[0,498],[3250,499]],[[3250,498],[3250,-500]], [[0,-500],[0,498]],
+		let linePoints = [[[0,498],[3250,499]],[[3250,498],[3250,-1500]], [[0,-1500],[0,498]],
         //shelf at beginning
         [[0, 157], [174, 161]], [[174, 161], [177, 188]], [[177, 188], [88, 188]], [[88, 189], [91, 210]], [[91, 210], [85, 221]], [[85, 221], [85, 237]], [[85, 237], [101, 242]], 
         [[101, 242], [99, 271]], [[99, 271], [80, 281]], [[80, 281], [60, 271]], [[60, 271], [60, 255]], [[60, 255], [67, 239]], [[67, 239], [78, 241]], [[78, 241], [76, 221]], [[76, 221], [66, 210]], [[66, 210], [77, 203]], [[77, 203], [83, 206]], [[83, 206], [81, 186]], [[81, 186], [2, 189]], 
@@ -88,15 +88,15 @@
 
    <!-- pause and play buttons are at top of level screen instead of just home and settings -->
    <div id="pauseAndPlay" class="container">
-    <button id="playBtn" class="pauseAndPlay settingsBtn level hidden" onclick="playGame()"><img class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
-    <button id="pauseBtn" class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
-    <button class="pauseAndPlay settingsBtn level" onclick="toggleDiv('instructions', 'settings')"><img src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
+    <button id="playBtn" class="pauseAndPlay settingsBtn level hidden" onclick="playGame()"><img draggable="false" class="pauseAndPlay settingsImg" src="../Art/play.png" alt="Play"></button>
+    <button id="pauseBtn" class="pauseAndPlay settingsBtn level" onclick="pauseGame()"><img draggable="false" src="../Art/pause.png" class="pauseAndPlay settingsImg" alt="Pause"></button>
+    <button class="pauseAndPlay settingsBtn level" onclick="toggleDiv('instructions', 'settings')"><img draggable="false" src="../Art/instructions.png" class="pauseAndPlay settingsImg" alt="instructions"></button>
    
 
     <!-- Home and settings buttons are hidden until pause is selected -->
     <!-- On level  -->
-        <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
-        <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onclick="toggleDiv('settings', 'instructions');"><img src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
+        <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img draggable="false" src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
+        <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onclick="toggleDiv('settings', 'instructions');"><img draggable="false" src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
 
     </div>
 
@@ -104,7 +104,7 @@
     <div id="pauseDiv" class="hidden"></div>
 
     <div id="settings" class="hidden">
-        <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
+        <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden'); playGame();">X</div>
         <div class="spacerDiv"></div>
         <div class="soundSetting">
             <div class="setSelection noBorder">Music</div> 

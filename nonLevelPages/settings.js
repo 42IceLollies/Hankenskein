@@ -114,7 +114,6 @@ function pauseGame()
 {
     let els = document.getElementsByClassName('hiddenBtns');
     Array.prototype.forEach.call(els, function(el){el.classList.remove("hidden")});
-    // document.getElementById("hiddenBtns").classList.remove("hidden");
     document.getElementById("pauseDiv").classList.remove("hidden");
     document.getElementById("pauseBtn").classList.add("hidden");
     document.getElementById("playBtn").classList.remove("hidden");
@@ -123,7 +122,6 @@ function pauseGame()
 
 function playGame()
 {
-    // console.log("play");
     let els = document.getElementsByClassName('hiddenBtns');
     Array.prototype.forEach.call(els, function(el){el.classList.add("hidden")});
     document.getElementById("pauseDiv").classList.add("hidden");
