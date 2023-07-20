@@ -1521,6 +1521,11 @@ function levelUp()
 	
 } // end of levelUp
 
+//sets the level data upon startup of script
+setTimeout(() => {
+	setLevel();
+}, 100);
+
 
 //draws a circle around the point where hank needs to reach to level up
 function drawEndOfLevel(ctx){
@@ -1926,6 +1931,7 @@ function drawLines(ctx) {
 // } // end of drawWalls
 
 
+
 function draw(ctx) {
 	clearCanvas(ctx);
 	ctx.beginPath();
@@ -1963,14 +1969,6 @@ function main() {
 		timer += 0.1;
 	}, 100); // end of gravity timer loop
 
-
-	// sets level in game object by calling level's html file
-	// if (window.location.href.includes("levels/level") && game.leveledUp) {
-	// 	setLevel();
-	// 	game.leveledUp = false;
-	// }
-	//sets the level data when a new level page is loaded rather than every time main was run
-	window.addEventListener("load", setLevel());
 
 	// clears the lasso
 	const shiftId = setInterval(() => {
