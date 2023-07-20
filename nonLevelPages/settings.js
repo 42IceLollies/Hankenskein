@@ -128,6 +128,7 @@ function playGame()
     document.getElementById("settings").classList.add("hidden");
     document.getElementById("pauseBtn").classList.remove("hidden");
     document.getElementById("playBtn").classList.add("hidden");
+    // resize();
     main();
 } // end of playGame
 

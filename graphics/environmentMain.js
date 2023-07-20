@@ -1521,6 +1521,7 @@ function levelUp()
 	
 } // end of levelUp
 
+
 //draws a circle around the point where hank needs to reach to level up
 function drawEndOfLevel(ctx){
 	// let circleCenter= new Point((0-game.levelEndPoint)+750, game.levelEndY);
@@ -1936,7 +1937,7 @@ function draw(ctx) {
 	// drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
-	//drawEndOfLevel(ctx);
+	drawEndOfLevel(ctx);
 } // end of draw
 
 
@@ -1964,11 +1965,12 @@ function main() {
 
 
 	// sets level in game object by calling level's html file
-	//idk if i was the one who commented this out but in the case of not - was it causing problems/ should i find another way to set level?
-	if (window.location.href.includes("levels/level")) {
-		setLevel();
-	}
-
+	// if (window.location.href.includes("levels/level") && game.leveledUp) {
+	// 	setLevel();
+	// 	game.leveledUp = false;
+	// }
+	//sets the level data when a new level page is loaded rather than every time main was run
+	window.addEventListener("load", setLevel());
 
 	// clears the lasso
 	const shiftId = setInterval(() => {
@@ -1981,6 +1983,7 @@ function main() {
 
 	// main! the animate loop, cycles everything
 	const animateId = setInterval(() => {
+
 
 		resize();
 		updatePlayerSpeeds();
