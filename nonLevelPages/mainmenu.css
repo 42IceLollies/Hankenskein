@@ -79,18 +79,20 @@ body{
 }
 
 /* selection links */
-a.selection, div.selection{
+ a.selection, div.selection{
     color:white; 
     text-decoration:none; 
     text-align:center; 
     font-family: 'Ysabeau-Local', sans-serif;
 /*    font-weight: lighter;*/
-    font-size: 98%;
+    font-size: 2.5vmin;
+    height:10%;
     /* margin:1px; */
 }
 
 
-a:hover, div.selection:hover{ 
-    font-size:120%;
+ a.selection:hover, div.selection:hover{ 
+    font-size:3vh;
+    height:9%;
 }
 

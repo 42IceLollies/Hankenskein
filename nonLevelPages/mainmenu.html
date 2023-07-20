@@ -30,11 +30,11 @@
     <img draggable="false" id = "flowers" src = "../Art/menuFlowers.png">
     <div class="boxAboveTheBox"></div>
     <div id = "box"> 
-        <div class="selection hand" onclick="window.location.assign('../levels/level' + game.level + '.html'); console.log(game.level)"> <h1 class="selection" style="font-size:300%;">Start</h1></div> <!---will need to edit this to last saved level -->
-        <a class="selection" href="./levelSelection.html"> <h1 class="selection">Select Level</h1></a> 
+        <div class="selection hand" onclick="window.location.assign('../levels/level' + game.level + '.html'); console.log(game.level)" style="margin-bottom:7vmin"> <h1 class="selection" style="font-size:300%;">Start</h1></div> <!---will need to edit this to last saved level -->
+        <div class="selection hand"><a class="selection" href="./levelSelection.html"> <h1 class="selection">Select Level</h1></a> </div>
         <div class="selection hand" onclick="document.getElementById('instructions').classList.remove('hidden')"><h1 class="selection">Instructions</h1></div>
         <div class="selection hand" href="" onclick="document.getElementById('settings').classList.remove('hidden')"> <h1 class="selection">Settings</h1> </div>
-        <a class="selection" href="./credits.html"> <h1 class="selection">Credits</h1> </a>
+       <div class="selection hand"> <a class="selection" href="./credits.html"> <h1 class="selection">Credits</h1> </a></div>
      
     </div>
 
@@ -47,7 +47,7 @@
     
         <div id="settings" class="hidden">
             <div class="xButton" onclick="document.getElementById('settings').classList.add('hidden')">X</div>
-            <div class="spacerDiv"></div>
+            <div class="spacerDiv"></div>s
             <div class="soundSetting">
                 <div class="setSelection noBorder">Music</div> 
                 <div class="setSelection hand" id="musicOn" onclick="toggleMusic('on', false); bold('music');">ON</div>
@@ -72,7 +72,7 @@
                  <div class="setSelection colorSelection hand nonLevel" style="background-color:hotpink" onclick="setPlayerColor('pink'); bold('color')"> <div id="pinkX" class="hidden selectX">X</div></div>
             </div>
         </div>
-        <!-- END OF SETTINGS -->
+        <!-- END OF SETTINGS --> 
         <!-- INSTRUCTIONS DIV-->
 	   <div id="instructions" class="hidden">
         <div class="xButton" onclick="document.getElementById('instructions').classList.add('hidden')">X</div>

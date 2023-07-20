@@ -2,6 +2,10 @@
 	box-sizing: border-box;
 }
 
+:root{
+	--comic-height:calc(70vw*0.57);
+}
+
 /*@font-face {
 	font-family: 'Raleway_Bold';
 	src: "../fonts/Raleway-Bold.ttf";
@@ -31,10 +35,16 @@ canvas {
 .comicDiv{
 	position:absolute;
 	z-index:3;
-	top:3vh;
-	left:15vw;
+	left:50vw;
+	top:50vh;
 	width:70vw;
-	height:auto;
+	/* top:0; */
+	/* left:0; */
+	height:var(--comic-height);
+	/* top:calc(100vw/2 - var(--comic-width)/2); */
+	/* top: 24.9vw; */
+	margin-left:-35vw;
+	margin-top:calc(-1/2* var(--comic-height));
 }
 
 .comicImg{
@@ -50,7 +60,8 @@ canvas {
 	font-size:120%;
 	text-align:center;
 	position:absolute;
+	width:100vw;
 	z-index:3;
 	bottom:2vh;
-	left:40vw;
+	/* left:40vw; */
 }
