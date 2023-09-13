@@ -1,4 +1,12 @@
 
+/* Makes divs correct height with inside padding */
+* { 
+    -moz-box-sizing: border-box; 
+    -webkit-box-sizing: border-box; 
+     box-sizing: border-box; 
+}
+
+
 /* =================== Settings Rulesets =================== */
 
 @font-face {
@@ -76,18 +84,14 @@ h1 {
     float:right;
     margin:3%;
     font-family: 'Raleway-Local', sans-serif;
-    font-size:200%;
+    font-size:2.25vw;
     font-weight: 400;
 }
 
-.xButton:hover{
-    /* width:6%;
-    border-width:3px;
-    padding-top:2%;
-    padding-bottom:2%; */
 
+.xButton:hover{
     border-width:3px;
-    /* background-color:white; */
+    cursor:pointer; 
 }
 
 .spacerDiv{
@@ -129,14 +133,12 @@ h1 {
     
 }
 
-.colorSelection.nonLevel{
-    width:1.5vw;
-    height:1.5vw;
-}
 
-.colorSelection.level{
+.colorSelection{
     width:3.5vw;
     height:3.5vw;
+    padding-top:1.25vw;
+    font-size: 2vw;
 }
 
 .setSelection:hover{
