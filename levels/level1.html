@@ -49,7 +49,8 @@
 	{
 		game.level = 1;
 		game.levelEndPoint = -2570;
-        game.levelEndY = 600;
+        //value is a fraction of the screen height
+        game.levelEndY = 0.95;
 	}
 
 </script>
@@ -81,6 +82,8 @@
             <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onClick="window.location.assign('../nonLevelPages/mainmenu.html')"><img draggable="false" src="../Art/homeBtn.png" alt="Home" class="settingsImg"></button>
             <button class="pauseAndPlay settingsBtn level hiddenBtns hidden"  onclick="toggleDiv('settings', 'instructions');"><img draggable="false" src="../Art/settingsBtn.png" alt="Settings" class="settingsImg"></button>
 
+        <!-- shows label on the screen that indicates how to find instructions -->
+            <div class="hidden" id="instructionLabel"><img style="width:100%; height:100%;" src="../Art/instructions/instructionsInstruction.png" alt="Instructions are available here throughout game."></div>
     </div>
 
     <!-- overlays screen when game is paused to dim it out -->

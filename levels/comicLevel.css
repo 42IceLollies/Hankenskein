@@ -65,3 +65,14 @@ canvas {
 	bottom:2vh;
 	/* left:40vw; */
 }
+
+
+/* ruleset for instruction label */
+#instructionLabel{
+	width:20vw;
+	height:20vw;
+	position:fixed;
+	padding:0;
+	margin-left:15vw;
+	top:13vh;
+}

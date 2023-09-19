@@ -114,7 +114,8 @@ function setup(linesArray, backgroundPath) {
 	//ALSO UNCOMMENTED THIS FOR THE MOMENT- IN CASE I FORGET TO REVERT IT BEFORE PUSHING
 	// creates the yarn trail
 	//player.yarnTrail = new YarnTrail(yarnCoords, game.xOffset);
-
+	setLevel();
+	console.log("called");
 	main();
 } // end of setup
 
@@ -137,7 +138,14 @@ function hideComic()
 	{
 		let els = document.getElementsByClassName("comic");
 		Array.prototype.forEach.call(els, function(el){el.classList.add("hidden")});
+
+		//shows the instructions to find instructions if it's level one
+		if(game.level == 1)
+		{
+			document.getElementById("instructionLabel").classList.remove("hidden");
+		}
 		main();
+
 	}
 } // end of hideComic
 
@@ -1279,7 +1287,13 @@ function resize() {
 	const lassoEnd = [(player.lasso.end.shape.x - player.shape.x)/player.shape.radius, player.lasso.end.shape.y/game.canvas.height];
 	const lassoForce = [(player.lasso.forceX - player.shape.x)/player.shape.radius, player.lasso.forceY/game.canvas.height];
 
-	const endPoint = game.levelEndPoint / game.canvas.height;
+	// resizes the x of the end point (endPoint is x but its in too many places to change it now)
+	const endPoint = game.levelEndPoint / game.background.width;
+	console.log(endPoint);
+	console.log(game.background.width);
+	console.log(game.levelEndPoint);
+	console.log(" ");
+	//const endY = game.levelEndY / game.canvas.height;
 
 	// resize the canvas to fill the whole window
 	resizeCanvas();
@@ -1338,7 +1352,12 @@ function resize() {
 	player.lasso.forceX = (lassoForce[0] * player.shape.radius) + player.shape.x;
 	player.lasso.forceY = lassoForce[1] * game.canvas.height;
 
-	game.levelEndPoint =  endPoint * game.canvas.height;
+	// corrects endpoints
+	game.levelEndPoint =  endPoint * game.background.width;
+	game.levelEndY *= (window.innerHeight-10);
+	console.log(game.levelEndPoint);
+	console.log(" ");
+	
 } // end of resize
 
 
@@ -1522,9 +1541,10 @@ function levelUp()
 } // end of levelUp
 
 //sets the level data upon startup of script
-setTimeout(() => {
-	setLevel();
-}, 100);
+// setTimeout(() => {
+// 	setLevel();
+// 	console.log("called");
+// }, 100);
 
 
 //draws a circle around the point where hank needs to reach to level up
