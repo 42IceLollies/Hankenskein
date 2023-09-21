@@ -149,6 +149,26 @@ function hideComic()
 	}
 } // end of hideComic
 
+//fades out the instruction label after a certain x offset
+function hideInstructionLabel()
+{
+	let label = document.getElementById("instructionLabel");
+
+	if(game.xOffset<= -800 && game.xOffset>= -1000)
+	{
+		label.style.opacity = 1-(Math.abs(game.xOffset+800)/200);
+	}
+
+	if(game.xOffset>-1000 && label.classList.contains("hidden"))
+	{
+		label.classList.remove("hidden");
+	}
+	else if(game.xOffset<-1000 && !label.classList.contains("hidden"))
+	{
+		label.classList.remove("hidden");
+	}
+}
+
 
 //=================
 //=SAVING DATA
@@ -2038,6 +2058,12 @@ function main() {
 		// set new trajectories if needed
 		for (let i = 0; i < game.lines.length; i++) {
 			circleLineBounce(player, game.lines[i]);
+		}
+
+		//if it's level one, hide the instruction label
+		if(game.level==1)
+		{
+			hideInstructionLabel();
 		}
 
 		levelUp();
