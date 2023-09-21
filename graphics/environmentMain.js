@@ -98,7 +98,7 @@ function setup(linesArray, backgroundPath) {
 	xOffsetStart = 430; // cor if you have the issue again uncomment this line
 	// center player
 	// player.shape = new Circle(game.canvas.width / 2, 400, game.canvas.height * player.screenPercent * player.unravelPercent);
-	//changing cos i want to see something
+	//changing cos i want to see somethingdddddawd
 	player.shape = new Circle(game.canvas.width / 2, 50, game.canvas.height * player.screenPercent * player.unravelPercent);
 
 	// makes line objects from the (x, y) points in the array
@@ -1289,10 +1289,7 @@ function resize() {
 
 	// resizes the x of the end point (endPoint is x but its in too many places to change it now)
 	const endPoint = game.levelEndPoint / game.background.width;
-	console.log(endPoint);
-	console.log(game.background.width);
-	console.log(game.levelEndPoint);
-	console.log(" ");
+	console.log();
 	//const endY = game.levelEndY / game.canvas.height;
 
 	// resize the canvas to fill the whole window
@@ -1355,8 +1352,8 @@ function resize() {
 	// corrects endpoints
 	game.levelEndPoint =  endPoint * game.background.width;
 	game.levelEndY *= (window.innerHeight-10);
-	console.log(game.levelEndPoint);
-	console.log(" ");
+	// console.log(game.levelEndPoint);
+	// console.log(" ");
 	
 } // end of resize
 
@@ -1527,7 +1524,7 @@ function updatePlayerSpeeds() {
 function levelUp()
 {
 	// if(game.xOffset >= game.levelEndPoint-5 && game.xOffset<= game.levelEndPoint+5)
-	if (game.xOffset <= game.levelEndPoint-10)
+	if (game.xOffset <= game.levelEndPoint+(window.innerWidth/100))
 	{
 		if(game.level < game.maxLevel) {
 			window.location.assign("../levels/level" + (game.level+1) + ".html");
@@ -1555,6 +1552,8 @@ function drawEndOfLevel(ctx){
 	let end = new Circle(circleCenter.x, circleCenter.y, game.canvas.height * .13);
 	//console.log(end);
 	end.outline(ctx, "yellow", 6);
+
+	console.log(game.levelEndY, + " " + game.levelEndPoint);
 
 }//end of drawEndOfLevel
 
