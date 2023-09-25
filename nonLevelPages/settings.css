@@ -177,7 +177,7 @@ h1 {
 #pauseAndPlay.container{
     position:fixed;
     width:50vw;
-    height:10vh;
+    height:20vh;
     top:7vh;
     left:7vh;
     z-index:5;
@@ -185,16 +185,17 @@ h1 {
 
 
 /* only the child soundSetting elements */
-#pauseAndPlay.settingsBtn, #pauseAndPlay.settingsImg{
+.pauseAndPlay.settingsBtn, #pauseAndPlay.settingsImg{
     font-size:150%;
     float:left;
     text-align:center;
     font-family: 'Raleway-Local', sans-serif;
     font-weight: 400;
-    border:2px solid black;
-    margin:3%;
-    padding:1%;
+    border:2px solid white;
+    margin-left:3%;
+    padding:2%;
     border-radius:100%;
+    height:55%;
 
 }
 
@@ -230,6 +231,18 @@ h1 {
  margin-left:3%;
  text-align:center;
  font-size:1.35vw;
+}
+
+
+/* ruleset for instruction label */
+#instructionLabel{
+	width:20vw;
+	height:15vw;
+	padding:0;
+    float:right;
+    margin-right:10vw;
+    margin-top:0;
+    /* bottom:0; */
 }
 
 

@@ -27,6 +27,7 @@ const game = {
 	level: 1, // which level the player's on
 	levelEndPoint: undefined,
 	levelEndY:undefined,
+	levelEndYTemp: undefined,
 	music: true, // if music is on
 	sfx: true, // if sound effects should be on
 	canvas: undefined, // the canvas object
@@ -115,7 +116,7 @@ function setup(linesArray, backgroundPath) {
 	// creates the yarn trail
 	//player.yarnTrail = new YarnTrail(yarnCoords, game.xOffset);
 	setLevel();
-	console.log("called");
+	// console.log("called");
 	main();
 } // end of setup
 
@@ -1309,7 +1310,7 @@ function resize() {
 
 	// resizes the x of the end point (endPoint is x but its in too many places to change it now)
 	const endPoint = game.levelEndPoint / game.background.width;
-	console.log();
+	// console.log();
 	//const endY = game.levelEndY / game.canvas.height;
 
 	// resize the canvas to fill the whole window
@@ -1371,7 +1372,7 @@ function resize() {
 
 	// corrects endpoints
 	game.levelEndPoint =  endPoint * game.background.width;
-	game.levelEndY *= (window.innerHeight-10);
+	game.levelEndY = game.levelEndYTemp* (window.innerHeight-10);
 	// console.log(game.levelEndPoint);
 	// console.log(" ");
 	
@@ -1573,7 +1574,7 @@ function drawEndOfLevel(ctx){
 	//console.log(end);
 	end.outline(ctx, "yellow", 6);
 
-	console.log(game.levelEndY, + " " + game.levelEndPoint);
+	// console.log(game.levelEndY + " " + game.levelEndPoint);
 
 }//end of drawEndOfLevel
 
@@ -1979,7 +1980,7 @@ function draw(ctx) {
 	ctx.fill();
 	game.background.updateDimensions(game.canvas.height);
 	game.background.draw(ctx);
-	// drawLines(ctx);
+	 //drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
 	drawEndOfLevel(ctx);
