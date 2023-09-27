@@ -44,16 +44,21 @@
 
 	//let endPoint = new Point(100,100);
 
+     // declares the ending location of the level to be set in the main JS file
+     const levelEndPoint = 
+    {
+        //values are fractions of screen height/background width
+        y: 0.95,
+        x: -0.96,
+    }
+
 	//function to set the level in game object
 	function setLevel()
 	{
 		game.level = 1;
-		game.levelEndPoint = -2570;
-        //value is a fraction of the screen height
-        game.levelEndY = 0.95;
-        game.levelEndYTemp= game.levelEndY;
 	}
-
+    
+   
 </script>
 
 

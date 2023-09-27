@@ -59,15 +59,19 @@
 		setup(linePoints, backgroundPath);
 	}, 0);
 
+   // declares the ending location of the level to be set in the main JS file
+   const levelEndPoint = 
+    {
+        y: 0.4,
+        x: -0.97,
+    }
+
 
 	//function to set the level in game object
 	function setLevel()
 	{
 		game.level = 4;
-		game.levelEndPoint = -3150;
-        game.levelEndY = 0.4;
-        game.levelEndYTemp= game.levelEndY;
-	}
+    }
 
 </script>
 

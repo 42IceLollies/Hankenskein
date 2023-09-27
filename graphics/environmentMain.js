@@ -25,9 +25,9 @@ const game = {
 	lines: [], // lines hank can collide with
 	points: [], // points hank collides with, which are the ends of the lines
 	level: 1, // which level the player's on
-	levelEndPoint: undefined,
+	//levelEndPoint: undefined,
+	levelEndX: undefined,
 	levelEndY:undefined,
-	levelEndYTemp: undefined,
 	music: true, // if music is on
 	sfx: true, // if sound effects should be on
 	canvas: undefined, // the canvas object
@@ -166,7 +166,7 @@ function hideInstructionLabel()
 	}
 	else if(game.xOffset<-1000 && !label.classList.contains("hidden"))
 	{
-		label.classList.remove("hidden");
+		label.classList.add("hidden");
 	}
 }
 
@@ -1308,10 +1308,6 @@ function resize() {
 	const lassoEnd = [(player.lasso.end.shape.x - player.shape.x)/player.shape.radius, player.lasso.end.shape.y/game.canvas.height];
 	const lassoForce = [(player.lasso.forceX - player.shape.x)/player.shape.radius, player.lasso.forceY/game.canvas.height];
 
-	// resizes the x of the end point (endPoint is x but its in too many places to change it now)
-	const endPoint = game.levelEndPoint / game.background.width;
-	// console.log();
-	//const endY = game.levelEndY / game.canvas.height;
 
 	// resize the canvas to fill the whole window
 	resizeCanvas();
@@ -1371,10 +1367,9 @@ function resize() {
 	player.lasso.forceY = lassoForce[1] * game.canvas.height;
 
 	// corrects endpoints
-	game.levelEndPoint =  endPoint * game.background.width;
-	game.levelEndY = game.levelEndYTemp* (window.innerHeight-10);
+	game.levelEndX =  levelEndPoint.x* game.background.width;
+	game.levelEndY = levelEndPoint.y* (window.innerHeight-10);
 	// console.log(game.levelEndPoint);
-	// console.log(" ");
 	
 } // end of resize
 
@@ -1390,6 +1385,18 @@ function resizeCanvas() {
 function meterPixelRate() {
 	return player.shape.radius / player.radiusActual;
 } // end of meterPixelRate
+
+//in the case that the level end point is not a number, (probably a result of setup code being called out of order),
+//set it to the correct point
+// function checkEndPoint()
+// {
+// 	if(game.levelEndPoint == NaN)
+// 	{
+// 		console.log("fixed NaN");
+// 		game.levelEndPoint = tempLevelInfo.levelEndX * game.background.width;
+
+// 	}
+// }
 
 
 // =====================
@@ -1545,7 +1552,7 @@ function updatePlayerSpeeds() {
 function levelUp()
 {
 	// if(game.xOffset >= game.levelEndPoint-5 && game.xOffset<= game.levelEndPoint+5)
-	if (game.xOffset <= game.levelEndPoint+(window.innerWidth/100))
+	if (game.xOffset <= game.levelEndX+(window.innerWidth/100))
 	{
 		if(game.level < game.maxLevel) {
 			window.location.assign("../levels/level" + (game.level+1) + ".html");
@@ -1567,14 +1574,13 @@ function levelUp()
 
 //draws a circle around the point where hank needs to reach to level up
 function drawEndOfLevel(ctx){
-	// let circleCenter= new Point((0-game.levelEndPoint)+750, game.levelEndY);
-	let circleCenter = new Point((-game.levelEndPoint+game.canvas.width/2), game.levelEndY);
+	// let circleCenter= new Point((0-game.levelEndX)+750, game.levelEndY);
+	let circleCenter = new Point((-game.levelEndX+game.canvas.width/2), game.levelEndY);
 	circleCenter.adjustX(game.xOffset);
 	let end = new Circle(circleCenter.x, circleCenter.y, game.canvas.height * .13);
 	//console.log(end);
 	end.outline(ctx, "yellow", 6);
 
-	// console.log(game.levelEndY + " " + game.levelEndPoint);
 
 }//end of drawEndOfLevel
 
