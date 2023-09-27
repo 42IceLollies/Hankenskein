@@ -13,6 +13,22 @@
         <link rel="icon" href="../Art/hankenskein_favicon.ico" type="image/x-icon">
     </head>
 
+    
+ <!-- LOADING ANIMATION -->
+ <div id="loader"><img id="loaderImg" src="../Art/playerColors/Hankenskein.png" alt="loading..."></div>
+
+ <script>
+     document.onreadystatechange = () =>{
+         if(document.readyState==="complete")
+         {
+             document.getElementById("loader").classList.add("hidden");
+         }
+         else{
+             document.getElementById("loader").classList.remove("hidden");
+         }
+     }
+ </script>
+
 
     <!-- end comic/img -->
     <body style=" background-color: #ffe0f0;">

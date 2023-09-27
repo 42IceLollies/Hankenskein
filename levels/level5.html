@@ -27,6 +27,24 @@
 <script language="javascript" src="../nonLevelPages/settings.js"> </script>
 <script language="javascript" src="../classes.js"></script>
 
+
+
+ <!-- LOADING ANIMATION -->
+ <div id="loader"><img id="loaderImg" src="../Art/playerColors/Hankenskein.png" alt="loading..."></div>
+
+ <script>
+     document.onreadystatechange = () =>{
+         if(document.readyState==="complete")
+         {
+             document.getElementById("loader").classList.add("hidden");
+         }
+         else{
+             document.getElementById("loader").classList.remove("hidden");
+         }
+     }
+ </script>
+
+
 <script type="text/javascript">
 	setTimeout(() => {
 		let backgroundPath = "../Art/Backgrounds/levelFiveBackground.png";
@@ -169,6 +187,9 @@
 </div>
 
 <!-- END OF INSTRUCTIONS -->
+
+<!-- Loading animation -->
+<div class="loader"></div>
 
 </body>
 </html>

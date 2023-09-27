@@ -108,8 +108,26 @@
             </div>
 
     </div>
+    </div>
 
     <!-- END OF INSTRUCTIONS -->
+
+    <!-- LOADING ANIMATION -->
+    <div id="loader"><img id="loaderImg" src="../Art/playerColors/Hankenskein.png" alt="loading..."></div>
+
+    <script>
+        document.onreadystatechange = () =>{
+            if(document.readyState==="complete")
+            {
+                document.getElementById("loader").classList.add("hidden");
+                console.log('hidden');
+            }
+            else{
+                document.getElementById("loader").classList.remove("hidden");
+                console.log(document.getElementById("loader").style.width);
+            }
+        }
+    </script>
 
 <!-- </div id ="box">
     </div> -->

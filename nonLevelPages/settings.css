@@ -292,4 +292,41 @@ h1 {
 }
 
 
+/* ===========================LOADER================================= */
+/* Loading animation for all of site */
+
+#loader{
+    width:5vw;
+    height:5vw;
+    position:absolute;
+    top:47vh;
+    left:47vw;
+    z-index: 10;
+    /* link animation here */
+    animation-name: spin; 
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+
+#loaderImg{
+    width:100%;
+    height:100%;
+}
+
+@keyframes spin{
+    0%{
+        transform:rotate(0deg);
+    }
+
+    50%{
+        transform:rotate(180deg);
+    }
+
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
 

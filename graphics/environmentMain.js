@@ -1554,6 +1554,9 @@ function levelUp()
 	// if(game.xOffset >= game.levelEndPoint-5 && game.xOffset<= game.levelEndPoint+5)
 	if (game.xOffset <= game.levelEndX+(window.innerWidth/100))
 	{
+		//unhides loading element
+		document.getElementById("loader").classList.remove("hidden");
+
 		if(game.level < game.maxLevel) {
 			window.location.assign("../levels/level" + (game.level+1) + ".html");
 		} else {

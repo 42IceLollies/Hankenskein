@@ -22,6 +22,24 @@
 
 <body>
 
+
+    
+ <!-- LOADING ANIMATION -->
+ <div id="loader"><img id="loaderImg" src="../Art/playerColors/Hankenskein.png" alt="loading..."></div>
+
+ <script>
+     document.onreadystatechange = () =>{
+         if(document.readyState==="complete")
+         {
+             document.getElementById("loader").classList.add("hidden");
+         }
+         else{
+             document.getElementById("loader").classList.remove("hidden");
+         }
+     }
+ </script>
+
+
      <!-- START OF SETTINGS -->
     <!-- Home and settings buttons -->
     <div class="buttonDiv">
