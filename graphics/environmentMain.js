@@ -1556,8 +1556,10 @@ function levelUp()
 	{
 		//unhides loading element
 		document.getElementById("loader").classList.remove("hidden");
+		console.log("entered");
 
 		if(game.level < game.maxLevel) {
+			console.log("assigning");
 			window.location.assign("../levels/level" + (game.level+1) + ".html");
 		} else {
 			// window.location.assign("/nonLevelPages/endPage.html"); // not gonna link here until it's something

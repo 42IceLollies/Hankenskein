@@ -6,6 +6,16 @@
      box-sizing: border-box; 
 }
 
+html{
+    margin:0;
+    padding:0;
+}
+
+body{
+    margin:0;
+    padding:0;
+}
+
 
 /* =================== Settings Rulesets =================== */
 
@@ -20,29 +30,39 @@ h1 {
 
 .buttonDiv{
  position:fixed;
- width:17vw;
+ width:10vw;
  height:10vh;
- top:7vh;
+ top:3vh;
  left:3vh;
 }
 
 .settingsBtn
 {
-    height:100%;
-    /* width:13%; */
+    height:55%;
     border-radius:100%;
-    border: 1px solid white;
+    border: 2px solid white;
     background-color:rgba(193, 193, 193, .25);
-    padding:2%;
-    margin-left:0.25%;
-    margin-right:0.25%;
+    margin-top:0;
     outline:none;
+    float:left;
+    margin-left:3%;
+    padding:2%;
+    border-radius:100%;
+
 
 }
 
+.buttonDiv.nonLevel{
+    width: 40vw;
+    height:20vh;
+    margin-top:0;
+    padding-top:0;
+}
+
+
 .settingsImg{
     /* width:%; */
-    height:100%;
+    height:90%;
     width:100%;
 }
 
@@ -198,6 +218,7 @@ h1 {
     height:55%;
 
 }
+
 
 .buttonDiv.level{
     left: 14% ;
