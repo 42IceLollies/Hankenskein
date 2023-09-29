@@ -1213,8 +1213,8 @@ document.addEventListener("mousedown", (e) => {
 
 
 	//KEEP THE STUFF BELOW. We use it to more quickly implement the lines
-	// it formats the points you click into arrays to be directly copied into the html setup
-	// 
+	//it formats the points you click into arrays to be directly copied into the html setup
+	
 	// if (count == 0) {
 	// 	newPoints.push([[Math.round(e.x - game.xOffset)-430, e.y], []]);
 	// 	count++;
@@ -1991,7 +1991,7 @@ function draw(ctx) {
 	ctx.fill();
 	game.background.updateDimensions(game.canvas.height);
 	game.background.draw(ctx);
-	 //drawLines(ctx);
+	//  drawLines(ctx);
 	player.lasso.draw(ctx, player.fillColor);
 	drawPlayer(ctx);
 	drawEndOfLevel(ctx);

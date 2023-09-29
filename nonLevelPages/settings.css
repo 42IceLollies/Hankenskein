@@ -36,7 +36,23 @@ h1 {
  left:3vh;
 }
 
-.settingsBtn
+.settingsBtn.level
+{
+    height:100%;
+    /* width:13%; */
+    border-radius:100%;
+    border: 1px solid white;
+    background-color:rgba(193, 193, 193, .25);
+    padding:2%;
+    margin-left:0.25%;
+    margin-right:0.25%;
+    outline:none;
+
+
+
+}
+
+.settingsBtn.nonLevel
 {
     height:55%;
     border-radius:100%;
@@ -48,8 +64,6 @@ h1 {
     margin-left:3%;
     padding:2%;
     border-radius:100%;
-
-
 }
 
 .buttonDiv.nonLevel{
